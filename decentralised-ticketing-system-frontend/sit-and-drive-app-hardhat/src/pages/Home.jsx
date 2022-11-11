@@ -9,9 +9,6 @@ function Home() {
         goodies.
       </p>
       <div className="mt-5">
-        <Link to="/styleguide" className="btn btn-primary">
-          See styleguide
-        </Link>
       </div>
     </div>
   );

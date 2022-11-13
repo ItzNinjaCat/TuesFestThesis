@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 function Home() {
   return (
     <div className="container my-5">
@@ -9,9 +8,6 @@ function Home() {
         goodies.
       </p>
       <div className="mt-5">
-        <Link to="/styleguide" className="btn btn-primary">
-          See styleguide
-        </Link>
       </div>
     </div>
   );

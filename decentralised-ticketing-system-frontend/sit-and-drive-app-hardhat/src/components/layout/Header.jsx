@@ -2,6 +2,7 @@ import React from 'react';
 // import useProvider from '../../hooks/useProvider';
 import Button from "react-bootstrap/Button";
 import SelectWalletModal from '../ui/ConnectModal';
+import useProvider from '../../hooks/useProvider';
 function Header() {
   // const provider = useProvider();
 
@@ -15,13 +16,14 @@ function Header() {
         <div className="container">
           <div className="d-flex justify-content-between align-items-center">
             <p>🔥</p>
-            {/* <p>{provider ?
+            {/* {provider ?
             <>
-              <code>{provider.signerData.userAddress}</code>
+              <p><code>{provider.signerData.userAddress}</code></p>
               <Button onClick={disconnect}>Disconnect</Button>
             </>
-            : }</p> */}
+            : } */}
             <SelectWalletModal/>
+            
           </div>
         </div>
       </div>

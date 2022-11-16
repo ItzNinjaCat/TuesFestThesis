@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
-    "start": "react-scripts start"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "browserslist": {
     "production": [
@@ -31,15 +32,17 @@
     "@walletconnect/ethereum-provider": "^2.1.2",
     "@web3-react/coinbase-wallet": "^8.0.34-beta.0",
     "@web3-react/core": "^8.0.35-beta.0",
+    "@web3-react/gnosis-safe": "^8.0.6-beta.0",
     "@web3-react/metamask": "^8.0.28-beta.0",
     "@web3-react/network": "^8.0.27-beta.0",
     "@web3-react/types": "^8.0.20-beta.0",
-    "@web3-react/walletconnect": "^8.0.35-beta.0",
     "assert": "^2.0.0",
     "bootstrap": "^5.2.2",
     "buffer": "^6.0.3",
     "dotenv": "^16.0.2",
-    "react": "^18.2.0",
+    "pino": "^8.7.0",
+    "process": "^0.11.10",
+    "react": "^17.0.2",
     "react-bootstrap": "^2.6.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
@@ -61,8 +64,8 @@
     "@typechain/hardhat": "^6.1.2",
     "chai": "^4.2.0",
     "ethers": "^5.7.2",
-    "hardhat": "^2.11.2",
     "hardhat-gas-reporter": "^1.0.8",
+    "react-app-rewired": "^2.2.1",
     "solidity-coverage": "^0.8.0",
     "typechain": "^8.1.0"
   }

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { hooks, coinbaseWallet } from '../../connectors/CoinbaseWallet';
 import ConnectWallet from './ConnectWallet';
 
-export default function CoinbaseWalletConnect(
+export function CoinbaseWalletConnect(
     props
 ) {
 

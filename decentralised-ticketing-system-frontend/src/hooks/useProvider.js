@@ -12,7 +12,7 @@ const useProvider = () => {
       };
 
       const web3Modal = new Web3Modal({
-        network: 'ropsten', // optional
+        network: 'rinkeby', // optional
         cacheProvider: true, // optional
         providerOptions, // required
       });

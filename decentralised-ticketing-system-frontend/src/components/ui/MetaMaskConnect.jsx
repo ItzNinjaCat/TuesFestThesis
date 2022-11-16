@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { hooks, metaMask } from '../../connectors/MetaMask';
 import ConnectWallet from './ConnectWallet';
 
-export default function MetaMaskConnect(
+export function MetaMaskConnect(
     props
 ) {
     useEffect(() => {

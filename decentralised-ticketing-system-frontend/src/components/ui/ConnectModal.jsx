@@ -3,9 +3,9 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Stack from 'react-bootstrap/Stack';
 import React, { useState } from 'react';
-import WalletConnectConnect from './WalletConnectConnect';
-import MetaMaskConnect from './MetaMaskConnect';
-import CoinbaseWalletConnect from './CoinbaseWalletConnect';
+import { WalletConnectConnect } from './WalletConnectConnect';
+import { MetaMaskConnect } from './MetaMaskConnect';
+import { CoinbaseWalletConnect } from './CoinbaseWalletConnect';
 // import { useWeb3React } from "@web3-react/core";
 export default function SelectWalletModal() {
   const [show, setShow] = useState(false);

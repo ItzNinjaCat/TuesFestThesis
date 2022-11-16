@@ -1,8 +1,9 @@
 
 import Button from "react-bootstrap/Button"; 
 import { useState } from "react";
-
-
+import { walletConnect } from "../../connectors/WalletConnect";
+import { WalletConnect } from "@web3-react/walletconnect";
+import { useWeb3React } from '@web3-react/core';
 
 export default function ConnectWallet({
       connector,
@@ -11,7 +12,7 @@ export default function ConnectWallet({
       handleClose
 }){ 
     const { useChainId, useAccounts, useIsActivating, useProvider, useENSNames } = hooks
-    const setError = useState();
+    const [error, setError] = useState();
     const isActivating = useIsActivating();
     const provider = useProvider();
     const ENSNames = useENSNames(provider);
@@ -27,8 +28,7 @@ export default function ConnectWallet({
             ? undefined
             : () =>
             connector.activate(chainId)
-            .then(() => setError(undefined))
-            .catch(setError)
+
             .then(handleClose())
         }
     >

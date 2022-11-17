@@ -4,25 +4,18 @@ import App from './components/App';
 import './style/style.scss';
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
-import { hooks as coinbaseWalletHooks, coinbaseWallet } from './connectors/CoinbaseWallet';
-import { hooks as metaMaskHooks, metaMask } from './connectors/MetaMask';
-import { hooks as networkHooks, network } from './connectors/Network';
-import { hooks as walletConnectHooks, walletConnect } from './connectors/WalletConnect';
+import { ethers } from 'ethers';
 
-function getLibrary(provider) {
-  return new Web3Provider(provider);
-}
-const connectors = [
-  [metaMask, metaMaskHooks],
-  [walletConnect, walletConnectHooks],
-  [coinbaseWallet, coinbaseWalletHooks],
-  [network, networkHooks],
-];
+const getLibrary = provider => {
+  const library = new ethers.providers.Web3Provider(provider);
+  library.pollingInterval = 8000; // frequency provider is polling
+  return library;
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Web3ReactProvider getLibrary={getLibrary} connectors={connectors}>
+    <Web3ReactProvider getLibrary={getLibrary}>
       <App />
     </Web3ReactProvider>
   </React.StrictMode>,

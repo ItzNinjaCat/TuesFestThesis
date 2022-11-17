@@ -1,11 +1,13 @@
 const webpack = require('webpack');
 
 module.exports = function override(config, env) {
-  //do stuff with the webpack config...
   config.resolve.fallback = {
     ...config.resolve.fallback,
     stream: require.resolve('stream-browserify'),
     buffer: require.resolve('buffer'),
+    fs: false,
+    util: require.resolve('util/'),
+    assert: require.resolve('assert/'),
   };
   config.resolve.extensions = [...config.resolve.extensions, '.ts', '.js'];
   config.plugins = [

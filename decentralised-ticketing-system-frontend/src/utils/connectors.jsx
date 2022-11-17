@@ -4,7 +4,7 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 
 const CoinbaseWallet = new WalletLinkConnector({
  url: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
- appName: "Web3-react Demo",
+ appName: "Decentralised ticketing system",
  supportedChainIds: [1, 3, 4, 5, 42],
 });
 
@@ -21,5 +21,5 @@ const Injected = new InjectedConnector({
 export const connectors = {
   injected: Injected,
   walletConnect: WalletConnect,
-  coinbaseWallet: InjectedConnector
+  coinbaseWallet: CoinbaseWallet
 };

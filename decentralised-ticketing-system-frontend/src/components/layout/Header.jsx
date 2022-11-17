@@ -10,7 +10,7 @@ function Header() {
   useEffect(() => {
     const provider = window.localStorage.getItem("provider");
     if (provider) activate(connectors[provider]);
-  }, []);
+  }, [activate]);
   const disconnect = () => {
     window.localStorage.setItem("provider", undefined);
     deactivate();
@@ -19,23 +19,15 @@ function Header() {
   return (
     <div className="header-wrapper">
       <div className="header">
-        <div className="container">
-          <div className="d-flex justify-content-between align-items-center">
-            <p>🔥</p>
+        <div className='d-flex flex-column  align-content-end flex-wrap'>
             {active ?
-            <>
-              <Stack direction="vertical" className="col-md-3 mx-auto" gap={3}>
+              <Stack direction="vertical" className="col-md-3" gap={3}>
                 <code>{account}</code>
                 <Button onClick={disconnect}>Disconnect</Button>
               </Stack>
-            </>
             : <SelectWalletModal/>
-            }
-            
-
-          
+          }
           </div>
-        </div>
       </div>
     </div>
   );

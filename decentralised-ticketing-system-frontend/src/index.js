@@ -4,10 +4,9 @@ import App from './components/App';
 import './style/style.scss';
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
-import { ethers } from 'ethers';
 
 const getLibrary = provider => {
-  const library = new ethers.providers.Web3Provider(provider);
+  const library = new Web3Provider(provider);
   library.pollingInterval = 8000; // frequency provider is polling
   return library;
 };

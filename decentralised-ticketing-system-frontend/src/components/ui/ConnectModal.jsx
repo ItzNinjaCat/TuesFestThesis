@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useWeb3React } from '@web3-react/core'
 import { connectors } from '../../utils/connectors';
 // import { useWeb3React } from "@web3-react/core";
-export default function SelectWalletModal() {
+function SelectWalletModal() {
   const [show, setShow] = useState(false);
 
   const { activate } = useWeb3React();
@@ -55,3 +55,5 @@ export default function SelectWalletModal() {
 
   );
 }
+
+export default SelectWalletModal;

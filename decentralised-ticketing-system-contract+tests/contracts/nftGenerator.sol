@@ -16,7 +16,8 @@ contract nftGenerator is AccessControl, ERC721URIStorage {
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
     uint256 private balance = 0;
 
-    constructor() ERC721("MyNFT", "NFT") {
+    constructor(address _tokenAddress) ERC721("MyNFT", "NFT") {
+        token = TIK(_tokenAddress);
         _grantRole(OWNER_ROLE, msg.sender);
     }
 

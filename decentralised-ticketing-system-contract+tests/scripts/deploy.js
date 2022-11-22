@@ -7,28 +7,22 @@
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
+  const [deployer] = await ethers.getSigners();
+
+  console.log("Deploying contracts with the account:", deployer.address);
+
+  console.log("Account balance:", (await deployer.getBalance()).toString());
+  
+  const TikToken = await hre.ethers.getContractFactory("TIK"); 
+  const tikToken = await TikToken.deploy(); 
+  await tikToken.deployed(); 
+  console.log("Tokens contract deployed to address: ", tikToken.address);
 
   const NFTGenerator = await hre.ethers.getContractFactory("nftGenerator");
-  const gasPrice = await NFTGenerator.signer.getGasPrice();
-  console.log(`Current gas price: ${gasPrice}`);
-  const estimatedGas = await NFTGenerator.signer.estimateGas(
-   NFTGenerator.getDeployTransaction()
-  );
-  console.log(`Estimated gas: ${estimatedGas}`);
-  const deploymentPrice = gasPrice.mul(estimatedGas);
-  const deployerBalance = await NFTGenerator.signer.getBalance();
-  console.log(`Deployer balance:  ${ethers.utils.formatEther(deployerBalance)}`);
-  console.log( `Deployment price:  ${ethers.utils.formatEther(deploymentPrice)}`);
-  if (Number(deployerBalance) < Number(deploymentPrice)) {
-     throw new Error("You dont have enough balance to deploy.");
-  }
-
-  const nftGenetartor = await NFTGenerator.deploy();
+  const nftGenetartor = await NFTGenerator.deploy(tikToken.address);
 
   await nftGenetartor.deployed();
-
-  console.log("Contract deployed to address:", nftGenetartor.address);
+  console.log("NFT Generator contract deployed to address: ", nftGenetartor.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -37,3 +31,4 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+

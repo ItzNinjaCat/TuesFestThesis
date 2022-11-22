@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Home from '../pages/Home';
-import Styleguide from '../pages/Styleguide';
-
+import Profile from '../pages/Profile';
+import Events from '../pages/Events';
 import Header from './layout/Header';
 import Footer from './layout/Footer';
 
@@ -15,7 +15,8 @@ function App() {
         <div className="main">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="styleguide" element={<Styleguide />} />
+            <Route path="profile" element={<Profile/>}/>
+            <Route path="events" element={<Events/>}/>
           </Routes>
         </div>
         <Footer />

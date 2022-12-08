@@ -12,9 +12,14 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   });
 
 module.exports = {
-  defaultNetwork: "goerli",
+  mocha: {
+    timeout: 100000000
+  },
   networks: {
-     hardhat: {},
+    localhost: {
+      url: "http://127.0.0.1:8545"
+    },
+    hardhat: {},
     goerli: {
             chainId: 5,
             url: `https://goerli.infura.io/v3/${process.env.GOERLI_API_KEY}`,

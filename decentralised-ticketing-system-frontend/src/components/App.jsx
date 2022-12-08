@@ -10,7 +10,6 @@ import Footer from './layout/Footer';
 import useScrollDirection from '../hooks/useScrollDirection';
 function App() {
   const scrollDirection = useScrollDirection();
-  console.log(scrollDirection)
   return (
     <BrowserRouter>
       <div className="wrapper">

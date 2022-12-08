@@ -46,7 +46,11 @@ function TicketInfo({
                     placeholder="Ticket name"
                     onChange={setTicketName}
                     value={ticketInputFields.name}
+                    required 
                 />
+                <Form.Control.Feedback type="invalid">
+                    Please provide a ticket name.
+                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="ticketPrice" className="mb-3">
                 <Form.Label>Ticket price (in TIK)</Form.Label>
@@ -56,21 +60,34 @@ function TicketInfo({
                     placeholder="Ticket price"
                     onChange={setTicketPrice}
                     value={ticketInputFields.price}
+                    required
+                    min="0"
                 />
+                <Form.Control.Feedback type="invalid">
+                    Please provide a ticket price.
+                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="ticketImage" className="mb-3">
                 <Form.Label>Ticket image</Form.Label>
                 <Form.Control
                     type="file" 
                     onChange={setTicketImage}
+                    required 
                 />
+                <Form.Control.Feedback type="invalid">
+                    Please provide a ticket image.
+                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="souvenirImage" className={index !== 0 ? "mb-3" : "mb-5"}>
                 <Form.Label>Souvenir image</Form.Label>
                 <Form.Control
                     type="file" 
                     onChange={setTicketSouvenir}
+                    required 
                 />
+                <Form.Control.Feedback type="invalid">
+                    Please provide a souvenir price.
+                </Form.Control.Feedback>
             </Form.Group>  
             {index !== 0 ? <div>
                 <Button variant="light" className="mb-5" onClick={removeTicketInfo}>Remove ticket</Button>

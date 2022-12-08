@@ -39,6 +39,10 @@
     "buffer": "^6.0.3",
     "dotenv": "^16.0.2",
     "graphql": "^16.6.0",
+    "harperdb-websocket-client": "^1.0.5",
+    "ipfs-core": "^0.17.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "react": "^18.2.0",
     "react-bootstrap": "^2.6.0",
@@ -48,7 +52,10 @@
     "sass": "^1.54.0",
     "stream-browserify": "^3.0.0",
     "urql": "^3.0.3",
+    "use-harperdb": "^0.1.6",
     "util": "^0.12.5",
+    "uuid": "^9.0.0",
+    "web3.storage": "^4.4.0",
     "web3modal": "^1.9.9"
   },
   "devDependencies": {

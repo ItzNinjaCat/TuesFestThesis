@@ -10,19 +10,22 @@ async function main() {
   const [deployer] = await ethers.getSigners();
 
   console.log("Deploying contracts with the account:", deployer.address);
-
   console.log("Account balance:", (await deployer.getBalance()).toString());
-  
+
   const TikToken = await hre.ethers.getContractFactory("TIK"); 
   const tikToken = await TikToken.deploy(); 
   await tikToken.deployed(); 
   console.log("Tokens contract deployed to address: ", tikToken.address);
 
-  const NFTGenerator = await hre.ethers.getContractFactory("nftGenerator");
-  const nftGenetartor = await NFTGenerator.deploy(tikToken.address);
+  const SouvenirGenerator = await hre.ethers.getContractFactory("SouvenirGenerator");
+  const souvenirGenerator = await SouvenirGenerator.deploy();
+  await souvenirGenerator.deployed();
+  console.log("Souvenir generator contract deployed to address: ", souvenirGenerator.address);
 
-  await nftGenetartor.deployed();
-  console.log("NFT Generator contract deployed to address: ", nftGenetartor.address);
+  const TicketGenerator = await hre.ethers.getContractFactory("TicketGenerator");
+  const ticketGenerator = await TicketGenerator.deploy(tikToken.address, souvenirGenerator.address);
+  await ticketGenerator.deployed();
+  console.log("Ticket generator contract deployed to address: ", nftGenetartor.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

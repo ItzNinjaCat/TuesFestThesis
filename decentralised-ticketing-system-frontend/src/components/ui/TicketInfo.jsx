@@ -1,12 +1,14 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 function TicketInfo({
     ticketInputFields,
     setTicketInputFields,
     index,
-    tickets,
-    setTickets
+    ticketTypes,
+    setTicketTypes
     }) {
     const setTicketName = (e) => {
         const values = [...ticketInputFields];
@@ -30,16 +32,17 @@ function TicketInfo({
     }
     const removeTicketInfo = () => {
         const values = [...ticketInputFields];
-        const ticketValues = [...tickets];
+        const ticketValues = [...ticketTypes];
         values.splice(index, 1);
         ticketValues.splice(index, 1);
         setTicketInputFields(values);
-        setTickets(ticketValues);
+        setTicketTypes(ticketValues);
     }
 
     return (
-        <>
-            <Form.Group controlId="ticketName" className="mb-3">
+        <div className={!index ?  "mb-5 mt-5" : "mb-5" }>
+            <Row className="mb-3">
+            <Form.Group controlId="ticketName"  as={Col} >
                 <Form.Label>Ticket name</Form.Label>
                 <Form.Control 
                     type="text"
@@ -52,7 +55,7 @@ function TicketInfo({
                     Please provide a ticket name.
                 </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group controlId="ticketPrice" className="mb-3">
+            <Form.Group controlId="ticketPrice"  as={Col}>
                 <Form.Label>Ticket price (in TIK)</Form.Label>
                 <Form.Control 
                     type="number"
@@ -66,33 +69,37 @@ function TicketInfo({
                 <Form.Control.Feedback type="invalid">
                     Please provide a ticket price.
                 </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="ticketImage" className="mb-3">
-                <Form.Label>Ticket image</Form.Label>
-                <Form.Control
-                    type="file" 
-                    onChange={setTicketImage}
-                    required 
-                />
-                <Form.Control.Feedback type="invalid">
-                    Please provide a ticket image.
-                </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="souvenirImage" className={index !== 0 ? "mb-3" : "mb-5"}>
-                <Form.Label>Souvenir image</Form.Label>
-                <Form.Control
-                    type="file" 
-                    onChange={setTicketSouvenir}
-                    required 
-                />
-                <Form.Control.Feedback type="invalid">
-                    Please provide a souvenir price.
-                </Form.Control.Feedback>
-            </Form.Group>  
+                </Form.Group>
+            </Row>
+            <Row className="mb-3">
+                <Form.Group as={Col} controlId="ticketImage">
+                    <Form.Label>Ticket image</Form.Label>
+                    <Form.Control
+                        type="file" 
+                        onChange={setTicketImage}
+                        required 
+                    />
+                    <Form.Control.Feedback type="invalid">
+                        Please provide a ticket image.
+                    </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group controlId="souvenirImage" as={Col} >
+                    <Form.Label>Souvenir image</Form.Label>
+                    <Form.Control
+                        type="file" 
+                        onChange={setTicketSouvenir}
+                        required 
+                    />
+                    <Form.Control.Feedback type="invalid">
+                        Please provide a souvenir price.
+                    </Form.Control.Feedback>
+                </Form.Group>
+            </Row>
             {index !== 0 ? <div>
-                <Button variant="light" className="mb-5" onClick={removeTicketInfo}>Remove ticket</Button>
-            </div> : <></> }
-        </>
+                <Button variant="light" onClick={removeTicketInfo}>Remove ticket</Button>
+                </div> : <></>}
+            </div>
+        
     );
 }
 

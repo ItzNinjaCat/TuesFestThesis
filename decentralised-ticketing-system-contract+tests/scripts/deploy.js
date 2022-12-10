@@ -25,11 +25,11 @@ async function main() {
   const TicketGenerator = await hre.ethers.getContractFactory("TicketGenerator");
   const ticketGenerator = await TicketGenerator.deploy(tikToken.address, souvenirGenerator.address);
   await ticketGenerator.deployed();
-  console.log("Ticket generator contract deployed to address: ", nftGenetartor.address);
+  await souvenirGenerator.setTicketContractAddress(ticketGenerator.address);
+  console.log("Ticket generator contract deployed to address: ", ticketGenerator.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

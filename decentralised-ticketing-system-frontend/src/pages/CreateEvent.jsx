@@ -1,15 +1,14 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import TicketInfo from '../components/ui/TicketInfo';
-import { harperDBConnection } from '../utils/databaseQuerys';
 import { useState, useNavigate } from 'react';
 // import { Web3Storage, getFilesFromPath } from 'web3.storage';
-// import { useHarperDB } from 'use-harperdb';
 // import { v5 as uuidv5 } from 'uuid';
-const HarperDBWebSocketClient =  require('harperdb-websocket-client');
 function CreateEvent() {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [name = '', setName] = useState();
     const [desc = '', setDesc] = useState();
@@ -47,20 +46,7 @@ function CreateEvent() {
             setValidated(true);
             console.log(ticketInputFields);
             const imagesUploadData = await readFiles(images);
-            // insert form data in harperDB using harperDBConnection
-            const client = new harperDBConnection({
-                url: 'https://harperdb-1e3f0f9d-1e3f0f9d.harperdbcloud.com',
-                username: 'admin',
-                password: 'admin',
-                schema: 'dev'
-            });
-            const event = await client.insert('event', {
-                name: name,
-                description: desc,
-                images: imagesUploadData,
-                ticketTypes: ticketInputFields
-            });
-           
+           // TODO web3.storage upload
         }
         // navigate("/");
     }
@@ -100,15 +86,16 @@ function CreateEvent() {
 
 
     return (
-        <div className="container my-5">
+        <div className="my-5 d-flex flex-column align-items-center">
             <h1>Create event</h1>
             <Form 
                 noValidate
                 validated={validated}
                 onSubmit={handleSubmit}
-                className="d-flex flex-column"
-                >
-                    <Form.Group className="mb-3" controlId="eventName">
+                // className="w-30"
+            >
+                <Row className="mb-3">
+                    <Form.Group as={Col}  controlId="eventName">
                         <Form.Label>Event name</Form.Label>
                         <Form.Control 
                             type="text"
@@ -122,7 +109,20 @@ function CreateEvent() {
                             Please provide an event name.
                         </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="eventDescription">
+                    <Form.Group controlId="eventImages" as={Col}>
+                        <Form.Label>Event images</Form.Label>
+                        <Form.Control 
+                            type="file"
+                            multiple 
+                            onChange={uploadEventImages}
+                            required
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            Please provide atleast one event image.
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Row>
+                    <Form.Group as={Col} controlId="eventDescription">
                         <Form.Label>Event description</Form.Label>
                         <Form.Control 
                             as="textarea" 
@@ -137,18 +137,6 @@ function CreateEvent() {
                             Please provide an event description.
                         </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Group controlId="eventImages" className="mb-6">
-                        <Form.Label>Event images</Form.Label>
-                        <Form.Control 
-                            type="file"
-                            multiple 
-                            onChange={uploadEventImages}
-                            required
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            Please provide atleast one event image.
-                        </Form.Control.Feedback>
-                    </Form.Group>
                         {ticketTypes.map(ticket => 
                             <TicketInfo 
                                 key={ticket}
@@ -160,16 +148,14 @@ function CreateEvent() {
                                 
                             />
                         )}
-                    <div>
-                        <Button variant="light" onClick={addTicketInfo}>Add ticket</Button>
-                    </div>
-                    <div className='d-flex flex-row-reverse'>
-                        <Button variant="primary" type="submit">
+                    <Row>
+                        <Button as={Col} md="2" variant="light" onClick={addTicketInfo}>Add ticket</Button>
+                        <Button as={Col}  md={{ span: 2, offset: 8 }}  variant="primary" type="submit">
                             Submit
                         </Button>
-                    </div>
+                    </Row>
             </Form>
-        </div>
+            </div>
     );
 }
 

@@ -2,8 +2,10 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Home from '../pages/Home';
-// import Profile from '../pages/Profile';
-// import Events from '../pages/Events';
+import UserProfile from '../pages/UserProfile';
+import OrganizerProfile from '../pages/OrganizerProfile';
+import Events from '../pages/Events';
+import Event from '../pages/Event';
 import CreateEvent from '../pages/CreateEvent';
 import Header from './layout/Header';
 import Footer from './layout/Footer';
@@ -17,8 +19,10 @@ function App() {
         <div className="main">
           <Routes>
             <Route path="/" element={<Home />} />
-            {/* <Route path="profile" element={<Profile/>}/>
-            <Route path="events" element={<Events/>}/> */}
+            <Route path="user/:id" element={<UserProfile />} />
+            <Route path="organizer/:id" element={<OrganizerProfile />} />
+            <Route path="events/:id" element={<Event/>}/>
+            <Route path="events" element={<Events/>}/>
             <Route path="create-event" element={<CreateEvent/>}/>
           </Routes>
         </div>

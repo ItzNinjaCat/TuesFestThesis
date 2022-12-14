@@ -23,7 +23,7 @@ function App() {
             <Route path="organizer/:id" element={<OrganizerProfile />} />
             <Route path="events/:id" element={<Event/>}/>
             <Route path="events" element={<Events/>}/>
-            <Route path="create-event" element={<CreateEvent/>}/>
+            <Route path="create-event" element={<CreateEvent />} />
           </Routes>
         </div>
         <Footer />

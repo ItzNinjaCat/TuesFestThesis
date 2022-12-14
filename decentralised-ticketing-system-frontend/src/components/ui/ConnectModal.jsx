@@ -2,20 +2,27 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Stack from 'react-bootstrap/Stack';
-import React, { useState } from 'react';
-import { useWeb3React } from '@web3-react/core'
-import { connectors } from '../../utils/connectors';
+import React, { useState, useEffect } from 'react';
+// import { useWeb3React } from '@web3-react/core'
 // import { useWeb3React } from "@web3-react/core";
+import { GOERLI } from '../../constants/abis/chainIds';
+import { connectorHooks, connectors } from '../../utils/connectors';
+
+const connect = async (connector, chainId) => {
+  await connector
+    .activate(chainId)
+    .catch((e) => {
+      console.log(`activate error ${e.message}`)
+    })
+    .then(() => {})
+}
+
+
 function SelectWalletModal() {
   const [show, setShow] = useState(false);
-
-  const { activate } = useWeb3React();
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const setProvider = (type) => {
-    window.localStorage.setItem("provider", type);
-  };
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
@@ -34,20 +41,18 @@ function SelectWalletModal() {
         <Modal.Body>
           <Stack direction="vertical" className="col-md-6 mx-auto" gap={3}>
             <Button variant="light" onClick={() => { 
-              activate(connectors.coinbaseWallet);
-              setProvider("coinbaseWallet");
-              handleClose();
-               }}>Coinbase Wallet</Button>
-            <Button variant="light" onClick={() => { 
-              activate(connectors.walletConnect);
-              setProvider("walletConnect");
+              connect(connectors['walletConnect'], GOERLI);
               handleClose();
                }}>Wallet Connect</Button>
-            <Button variant="light"onClick={() => { 
-              activate(connectors.injected);
-              setProvider("injected");
+            <Button variant="light" onClick={() => { 
+              connect(connectors['metaMask'], GOERLI);
               handleClose();
-              }}>Metamask</Button>
+               }}>MetaMask</Button>
+            <Button variant="light" onClick={() => { 
+              console.log("connecting");
+              connect(connectors['coinbaseWallet'], GOERLI);
+              handleClose();
+              }}>Coinbase Wallet</Button>
           </Stack>
         </Modal.Body>
       </Modal>

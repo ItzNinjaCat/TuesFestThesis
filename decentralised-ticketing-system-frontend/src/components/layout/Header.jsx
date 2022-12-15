@@ -22,14 +22,12 @@ import { SOUVENIR_ADDRESS, SOUVENIR_ABI } from '../../constants/contracts';
 function useBalances(
   provider,
   accounts,
-  account
+  contract
 ){
   const [balances, setBalances] = useState();
   useEffect(() => {
     if (provider && accounts?.length) {
       let stale = false
-      
-      const contract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
       void Promise.all(accounts.map((account) => contract.balanceOf(account))).then((balances) => {
         if (stale) return
         setBalances(balances.map((balance) => formatEther(balance)));
@@ -47,7 +45,7 @@ function useBalances(
 
 function  Header() {
   const { connector } = useWeb3React();
-  const [balance, setBalance] = React.useState(0);
+  const [balance, setBalance] = React.useState(undefined);
   const hooks = connectorHooks[getName(connector)];
   const { useAccount, useAccounts, useIsActivating, useIsActive, useProvider, useENSNames } = hooks;
   const accounts = useAccounts();
@@ -59,9 +57,15 @@ function  Header() {
   const ENSNames = useENSNames(provider);
 
   const [error, setError] = useState(undefined);
-  const balances = useBalances(provider, accounts, account);
-  // console.log(balances);
-  
+  const contract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
+  // setBalances(useBalances(provider, accounts, contract));
+  const balances = useBalances(provider, accounts, contract);
+
+  useEffect(() => {
+    if (provider && account && balances?.length) {
+      setBalance(balances[0]);
+    }
+  }, [balances])
   useEffect(() => {
     connector.connectEagerly().catch(() => {
       console.debug('Failed to connect eagerly')
@@ -107,8 +111,8 @@ function  Header() {
                 <div className='d-flex flex-column align-items-end mx-2'>
                   <code>{account}</code>
                   <div>
-                    <Deposit className='me-auto'/>
-                    <code>Balance: {balances} Tik</code>
+                    <Deposit tokenContract={contract} provider={provider} accounts={accounts} account={account} useBalances={useBalances} setBalance={setBalance}/>
+                    <code>Balance: {balance} Tik</code>
                   </div>
                 </div>
                 <Link to={`/user/${account}`} className='text-secondary'><CgProfile size="3em"/></Link>

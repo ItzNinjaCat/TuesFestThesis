@@ -109,11 +109,11 @@ function TicketInfo({
                     onChange={setTicketPrice}
                     value={ticketInputFields.price}
                     required
-                    min="0.1"
+                    min="0.001"
                     max="100"
                 />
                 <Form.Control.Feedback type="invalid">
-                    Please provide a ticket price bigger than 0.1 Tik.
+                    Please provide a ticket price bigger than 0.001 Tik.
                 </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group controlId="ticketQuantity"  as={Col}>

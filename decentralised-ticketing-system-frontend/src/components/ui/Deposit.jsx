@@ -2,13 +2,58 @@ import { ethers } from 'ethers';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import React, { useState, useEffect } from 'react';
+import Form from 'react-bootstrap/Form';
+import { formatEther } from 'ethers/lib/utils';
+import { getContract } from '../../utils/getContract';
+import { TICKET_ADDRESS, TICKET_ABI } from '../../constants/contracts';
 
-
-function Deposit() {
+function Deposit({provider, accounts, tokenContract, account, useBalances, setBalance}) {
+  const [validated, setValidated] = useState(false);
   const [show, setShow] = useState(false);
+  const [depositAmount, setDepositAmount] = useState(0);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
+    setDepositAmount(0);
+  };
+  const handleShowSuccess = () => setShowSuccess(true);
+    const validateDepositAmount = (e) => {
+        const value = Number(e.target.value);
+        if (value < 0 && value > -100) {
+            e.target.value = -Number(e.target.value);
+        }
+        else if (value < -100 || value > 100) {
+            e.target.value = 100;
+        }
+        setDepositAmount(e.target.value);
+    }
 
+  const handleSubmit = async (e) => {
+      const form = e.currentTarget;
+      if (form.checkValidity() === false) {
+          e.preventDefault();
+          e.stopPropagation();
+          setValidated(true);
+      }
+      else {
+          e.preventDefault();
+          setValidated(true);
+          const ticketContract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+          console.log(ticketContract);
+          const amount = ethers.utils.parseEther(depositAmount);
+          const tx = await ticketContract.deposit({value: amount});
+          handleClose();
+          await tx.wait();
+          setBalance(String(Number(balances) + Number(depositAmount)));
+          balances[0] = String(Number(balances) + Number(depositAmount));
+          setValidated(false);
+          handleShowSuccess();
+        }
+      }
+      
+      const balances = useBalances(provider, accounts, tokenContract);
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
@@ -24,22 +69,31 @@ function Deposit() {
           <Modal.Title>Deposit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>
-          <form >
-            <input
-              type="number"
-              step="0.1"
-              placeholder="Deposit Amount"
-              // value = {}
-              // onChange={this.updateDeposit}
-              style = {{
-                borderRadius : "8px",
-                margin : "8px"
-              }}
-              min="0"
-              />
-            <Button children = "Deposit" type="submit"/>
-          </form>
+            <Form
+                noValidate
+                validated={validated}
+                onSubmit={handleSubmit}
+            >
+            <Form.Group controlId="ticketPrice">
+                <Form.Label>Ticket price (in TIK)</Form.Label>
+                <Form.Control 
+                    type="number"
+                    step="0.001"
+                    placeholder="Ticket price"
+                    onChange={validateDepositAmount}
+                    value={depositAmount}
+                    required
+                    min="0.001"
+                    max="100"
+                />
+                <Form.Control.Feedback type="invalid">
+                    Minimum deposit is 0.001 Tik.
+                </Form.Control.Feedback>
+                </Form.Group>
+                <Button variant="primary" type="submit">
+                    Deposit
+                </Button>
+            </Form>
           <p
           style ={{
             fontSize: "16px",
@@ -47,10 +101,30 @@ function Deposit() {
             fontWeight: "bold"
           }}
           >
-            Balance after deposit : {} TIK (ETH:TIK - 1:1)
+            Balance after deposit : {(Number(balances) + Number(depositAmount))} TIK (ETH:TIK - 1:1)
           </p>
-          </div>
         </Modal.Body>
+        </Modal>
+
+        <Modal
+          show={showSuccess}
+          onHide={handleCloseSuccess}
+          centered
+          keyboard={false}
+        >
+        <Modal.Header closeButton>
+          <Modal.Title>Sucessfull deposit</Modal.Title>
+        </Modal.Header>
+          <Modal.Body>
+            <div className="d-flex flex-column align-items-center">
+              <p>
+                You have successfully deposited {depositAmount} TIK.
+              </p>
+              <Button variant="primary" onClick={() => handleCloseSuccess()}>
+                  Continue
+              </Button>
+            </div>
+          </Modal.Body>
         </Modal>
       </>
     )

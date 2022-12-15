@@ -108,9 +108,9 @@ function  Header() {
               </Form>
               {isActive ?
                 <div className="d-flex align-items-center">
-                <div className='d-flex flex-column align-items-end mx-2'>
+                <div className="d-flex flex-column align-items-end mx-2">
                   <code>{account}</code>
-                  <div>
+                  <div className="d-flex align-items-center justify-content-between w-100">
                     <Deposit tokenContract={contract} provider={provider} accounts={accounts} account={account} useBalances={useBalances} setBalance={setBalance}/>
                     <code>Balance: {balance} Tik</code>
                   </div>

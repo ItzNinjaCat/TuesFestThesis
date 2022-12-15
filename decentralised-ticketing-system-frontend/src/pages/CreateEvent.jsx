@@ -26,6 +26,10 @@ function CreateEvent() {
             souvenir: ''
         }
     ]);
+
+    const getTypeIndex = (ticket) => {
+        return ticketTypes.indexOf(ticket);
+    }
     function readFiles(files) {
         return Promise.all([].map.call(files, function (file) {
             return new Promise(function (resolve, reject) {
@@ -207,7 +211,7 @@ function CreateEvent() {
                                 key={ticket}
                                 ticketInputFields={ticketInputFields}
                                 setTicketInputFields={setTicketInputFields}
-                                index={ticket}
+                                index={getTypeIndex(ticket)}
                                 ticketTypes={ticketTypes}
                                 setTicketTypes={setTicketTypes}
                                 

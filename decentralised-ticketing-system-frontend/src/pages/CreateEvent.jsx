@@ -9,6 +9,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { uploadMutableData, uploadImmutableData } from '../utils/web3.storageEndpints'
 // import { v5 as uuidv5 } from 'uuid
+import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
+import { getContract } from '../utils/getContract';
+import { useWeb3React } from '@web3-react/core';
+import { connectorHooks, getName } from '../utils/connectors';
 
 function CreateEvent() {
     const navigate = useNavigate();
@@ -26,22 +30,13 @@ function CreateEvent() {
             souvenir: ''
         }
     ]);
-
+    const { connector } = useWeb3React();
+    const hooks = connectorHooks[getName(connector)];
+    const { useProvider, useAccount } = hooks;
+    const provider = useProvider();
+    const account = useAccount();
     const getTypeIndex = (ticket) => {
         return ticketTypes.indexOf(ticket);
-    }
-    function readFiles(files) {
-        return Promise.all([].map.call(files, function (file) {
-            return new Promise(function (resolve, reject) {
-                var reader = new FileReader();
-                reader.onloadend = function () {
-                    resolve(reader.result);
-                };
-                reader.readAsDataURL(file);
-            });
-        })).then(function (results) {
-            return results;
-        });
     }
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
@@ -54,9 +49,13 @@ function CreateEvent() {
             e.preventDefault();
             setValidated(true);
             const creationTime = new Date().getTime();
-            const eventId = "fsdfsdfsfsf";
+            const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+            console.log(contract);
+            // contract.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), account);
+            const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name]));
+            console.log(eventId);
+            const ticketCids = [];
             const ticketPromises = ticketInputFields.map(async ticket => {
-                console.log(ticket.name);
                 const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir])
                 const ticketMetadata = {
                     name: ticket.name,
@@ -69,28 +68,56 @@ function CreateEvent() {
                         createdAt: creationTime,
                     }]
                 }
-                const blob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
-                return uploadMutableData([new File([blob], `${ticket.name}.json`)]);
+                ticketCids.push(ticketImagesCid);
+                const souvenirMetadata = {
+                    name: `${ticket.name} Souvenir`,
+                    description: `This is a ${ticket.name} souvenir for ${name}`,
+                    image: `${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`,
+                    external_url: `https://localhost:3000/events/${eventId}`,
+                    attributes: [{
+                        ticketPrice: ticket.price,
+                        quantity: ticket.quantity,
+                        createdAt: creationTime,
+                    }]
+                }
+                const ticketBlob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
+                const souvenirBlob = new Blob([JSON.stringify(souvenirMetadata)], { type: 'application/json' });
+                return uploadMutableData([new File([ticketBlob], `${ticket.name}.json`), new File([souvenirBlob], `${ticket.name}_souvenir.json`)]);
 
             })
             Promise.all(ticketPromises).then(async (responses) => {
-                console.log(responses[0].key);
+                console.log(responses[0].key.bytes);
+                console.log(responses);
+                const keysBytes = responses.map(response => response.key.bytes);
                 const imagesCids = await uploadImmutableData(images);
                 const event = {
                     name: name,
                     description: desc,
                     images: imagesCids,
-                    tickets: responses,
+                    tickets: keysBytes,
                     creationTime: creationTime
                 }
                 uploadMutableData([new File([JSON.stringify(event)], `${name}.json`)]).then(
-                    (cid) => {
+                    async (cid) => {
                         console.log(cid);
-                        navigate(`/events/${cid}`);
+                        const tx = await contract.createEvent(eventId);
+                        tx.wait().then(() => {
+
+                            ticketInputFields.forEach(async (ticket, index) => {
+                                await contract.createTicketType(
+                                    eventId,
+                                    ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
+                                    `${process.env.REACT_APP_W3LINK_URL}/${ticketCids[index]}/${ticket.image.name}`,
+                                    `${process.env.REACT_APP_W3LINK_URL}/${ticketCids[index]}/${ticket.souvenir.name}`,
+                                    ticket.price,
+                                    ticket.quantity
+                                )
+                            });
+                        });
                     }
-                );
-            });
-        } 
+                    );
+                }).then(navigate(`/events/${eventId}`));
+            } 
         // TODO : Connect to the smart contract and create the event
     }
         

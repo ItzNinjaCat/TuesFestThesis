@@ -100,7 +100,8 @@ function CreateEvent() {
                 uploadMutableData([new File([JSON.stringify(event)], `${name}.json`)]).then(
                     async (cid) => {
                         console.log(cid);
-                        const tx = await contract.createEvent(eventId);
+                        await contract.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), account);
+                        const tx = await contract.createEvent(eventId, cid.key.bytes);
                         tx.wait().then(() => {
 
                             ticketInputFields.forEach(async (ticket, index) => {

@@ -7,14 +7,42 @@ import Col from 'react-bootstrap/Col';
 import TicketInfo from '../components/ui/TicketInfo';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { uploadMutableData, uploadImmutableData } from '../utils/web3.storageEndpints'
+import { uploadMutableData, uploadImmutableData } from '../utils/web3.storageEndpoints'
 // import { v5 as uuidv5 } from 'uuid
+import { keys } from 'libp2p-crypto'
 import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
 import { getContract } from '../utils/getContract';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from '../utils/connectors';
-
+import * as Name from 'w3name';
+import { CID } from 'multiformats/cid'
+import * as Digest from 'multiformats/hashes/digest'
+import { Web3Storage } from 'web3.storage';
+const storage = new Web3Storage({ token: process.env.REACT_APP_WEB3_STORAGE_API_KEY });
 function CreateEvent() {
+    const bytes = {"0":1,"1":114,"2":0,"3":36,"4":8,"5":1,"6":18,"7":32,"8":6,"9":158,"10":123,"11":57,"12":97,"13":101,"14":124,"15":48,"16":219,"17":28,"18":67,"19":207,"20":75,"21":8,"22":48,"23":111,"24":241,"25":1,"26":51,"27":226,"28":210,"29":0,"30":213,"31":123,"32":145,"33":216,"34":47,"35":119,"36":166,"37":210,"38":218,"39":139}
+    var values = Object.keys(bytes).map(function(key){
+    return bytes[key];
+    });
+
+    // const keyCid = CID.decode(new Uint8Array(values))
+    // const pubKey = keys.unmarshalPublicKey(Digest.decode(keyCid.multihash.bytes).bytes)
+    // Name.resolve(new Name.Name(pubKey)).then((revision) => {
+    //     storage.get(revision._value).then((cid) => {
+    //         cid.files().then((files) => {
+    //             for (const file of files) {
+    //                     const read = new FileReader();
+    //                     read.readAsBinaryString(file);
+    //                     read.onloadend = function(){
+    //                         console.log(read.result);
+    //                     }
+    //             }
+    //         })
+    //     });
+    //     console.log(revision._value);
+    // });    
+    // const test = new keys.supportedKeys.ed25519.Ed25519PublicKey(new Uint8Array(values));
+    // console.log(test);
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [name = '', setName] = useState();
@@ -88,7 +116,7 @@ function CreateEvent() {
             Promise.all(ticketPromises).then(async (responses) => {
                 console.log(responses[0].key.bytes);
                 console.log(responses);
-                const keysBytes = responses.map(response => response.key.bytes);
+                const keysBytes = responses.map(response => response.bytes);
                 const imagesCids = await uploadImmutableData(images);
                 const event = {
                     name: name,

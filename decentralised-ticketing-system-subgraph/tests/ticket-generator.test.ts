@@ -8,7 +8,7 @@ import {
 } from "matchstick-as/assembly/index"
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts"
 import { Approval } from "../generated/schema"
-import { Approval as ApprovalEvent } from "../generated/ticketGenerator/ticketGenerator"
+import { Approval as ApprovalEvent } from "../generated/TicketGenerator/TicketGenerator"
 import { handleApproval } from "../src/ticket-generator"
 import { createApprovalEvent } from "./ticket-generator-utils"
 

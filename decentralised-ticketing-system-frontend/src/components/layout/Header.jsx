@@ -10,7 +10,7 @@ import Nav from 'react-bootstrap/Nav';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import { GOERLI } from '../../constants/abis/chainIds';
+import { GOERLI } from '../../constants/chainIds';
 import { connectorHooks, connectors, getName } from '../../utils/connectors';
 import { CgProfile } from 'react-icons/cg';
 import { getContract } from '../../utils/getContract';

@@ -15,7 +15,7 @@ import {
   Transfer,
   TransferTicket,
   Withdraw
-} from "../generated/ticketGenerator/ticketGenerator"
+} from "../generated/TicketGenerator/TicketGenerator"
 
 export function createApprovalEvent(
   owner: Address,
@@ -67,6 +67,8 @@ export function createApprovalForAllEvent(
 export function createCreateEventEvent(
   creator: Address,
   eventId: Bytes,
+  name: string,
+  description: string,
   eventStorage: Bytes
 ): CreateEvent {
   let createEventEvent = changetype<CreateEvent>(newMockEvent())
@@ -78,6 +80,15 @@ export function createCreateEventEvent(
   )
   createEventEvent.parameters.push(
     new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
+  )
+  createEventEvent.parameters.push(
+    new ethereum.EventParam("name", ethereum.Value.fromString(name))
+  )
+  createEventEvent.parameters.push(
+    new ethereum.EventParam(
+      "description",
+      ethereum.Value.fromString(description)
+    )
   )
   createEventEvent.parameters.push(
     new ethereum.EventParam(

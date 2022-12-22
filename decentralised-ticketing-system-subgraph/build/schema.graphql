@@ -22,6 +22,8 @@ type CreateEvent @entity(immutable: true) {
   id: Bytes!
   creator: Bytes! # address
   eventId: Bytes! # bytes32
+  name: String! # string
+  description: String! # string
   eventStorage: Bytes! # bytes
   blockNumber: BigInt!
   blockTimestamp: BigInt!

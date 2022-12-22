@@ -14,7 +14,13 @@ import "hardhat/console.sol";
 contract TicketGenerator is AccessControl, ERC721URIStorage {
     event Deposit(address indexed sender, uint256 amount);
     event Withdraw(address indexed receiver, uint256 amount);
-    event CreateEvent(address indexed creator, bytes32 eventId, bytes eventStorage);
+    event CreateEvent(
+        address indexed creator,
+        bytes32 eventId,
+        string name,
+        string description,
+        bytes eventStorage
+    );
     event CreateTicketType(
         address indexed creator,
         bytes32 eventId,
@@ -106,12 +112,23 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         return tokenURI(_tokenId);
     }
 
-    function createEvent(bytes32 _eventId, bytes memory eventStorage) external onlyOrganizer {
+    function createEvent(
+        bytes32 _eventId,
+        string memory _name,
+        string memory _description,
+        bytes memory eventStorage
+    ) external onlyOrganizer {
         require(events[_eventId].id == 0, "Event already exists");
         eventIds.push(_eventId);
         events[_eventId].id = _eventId;
         events[_eventId].organizers[msg.sender] = true;
-        emit CreateEvent(msg.sender, _eventId, eventStorage);
+        emit CreateEvent(
+            msg.sender,
+            _eventId,
+            _name,
+            _description,
+            eventStorage
+        );
     }
 
     function deleteEvent(

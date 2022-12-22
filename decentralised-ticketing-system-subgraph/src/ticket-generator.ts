@@ -13,7 +13,7 @@ import {
   Transfer as TransferEvent,
   TransferTicket as TransferTicketEvent,
   Withdraw as WithdrawEvent
-} from "../generated/ticketGenerator/ticketGenerator"
+} from "../generated/TicketGenerator/TicketGenerator"
 import {
   Approval,
   ApprovalForAll,
@@ -67,6 +67,8 @@ export function handleCreateEvent(event: CreateEventEvent): void {
   )
   entity.creator = event.params.creator
   entity.eventId = event.params.eventId
+  entity.name = event.params.name
+  entity.description = event.params.description
   entity.eventStorage = event.params.eventStorage
 
   entity.blockNumber = event.block.number

@@ -236,6 +236,24 @@ export class CreateEvent extends Entity {
     this.set("eventId", Value.fromBytes(value));
   }
 
+  get name(): string {
+    let value = this.get("name");
+    return value!.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get description(): string {
+    let value = this.get("description");
+    return value!.toString();
+  }
+
+  set description(value: string) {
+    this.set("description", Value.fromString(value));
+  }
+
   get eventStorage(): Bytes {
     let value = this.get("eventStorage");
     return value!.toBytes();

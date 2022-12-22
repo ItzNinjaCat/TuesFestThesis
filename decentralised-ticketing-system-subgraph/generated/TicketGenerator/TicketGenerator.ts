@@ -83,8 +83,16 @@ export class CreateEvent__Params {
     return this._event.parameters[1].value.toBytes();
   }
 
+  get name(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
+  get description(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
   get eventStorage(): Bytes {
-    return this._event.parameters[2].value.toBytes();
+    return this._event.parameters[4].value.toBytes();
   }
 }
 
@@ -394,7 +402,7 @@ export class Withdraw__Params {
   }
 }
 
-export class ticketGenerator__getTicketResultValue0Struct extends ethereum.Tuple {
+export class TicketGenerator__getTicketResultValue0Struct extends ethereum.Tuple {
   get id(): BigInt {
     return this[0].toBigInt();
   }
@@ -420,7 +428,7 @@ export class ticketGenerator__getTicketResultValue0Struct extends ethereum.Tuple
   }
 }
 
-export class ticketGenerator__getTicketTypeResultValue0Struct extends ethereum.Tuple {
+export class TicketGenerator__getTicketTypeResultValue0Struct extends ethereum.Tuple {
   get id(): Bytes {
     return this[0].toBytes();
   }
@@ -446,9 +454,9 @@ export class ticketGenerator__getTicketTypeResultValue0Struct extends ethereum.T
   }
 }
 
-export class ticketGenerator extends ethereum.SmartContract {
-  static bind(address: Address): ticketGenerator {
-    return new ticketGenerator("ticketGenerator", address);
+export class TicketGenerator extends ethereum.SmartContract {
+  static bind(address: Address): TicketGenerator {
+    return new TicketGenerator("TicketGenerator", address);
   }
 
   DEFAULT_ADMIN_ROLE(): Bytes {
@@ -724,21 +732,21 @@ export class ticketGenerator extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getTicket(_ticketId: BigInt): ticketGenerator__getTicketResultValue0Struct {
+  getTicket(_ticketId: BigInt): TicketGenerator__getTicketResultValue0Struct {
     let result = super.call(
       "getTicket",
       "getTicket(uint256):((uint256,bytes32,bytes32,uint256,address,bool))",
       [ethereum.Value.fromUnsignedBigInt(_ticketId)]
     );
 
-    return changetype<ticketGenerator__getTicketResultValue0Struct>(
+    return changetype<TicketGenerator__getTicketResultValue0Struct>(
       result[0].toTuple()
     );
   }
 
   try_getTicket(
     _ticketId: BigInt
-  ): ethereum.CallResult<ticketGenerator__getTicketResultValue0Struct> {
+  ): ethereum.CallResult<TicketGenerator__getTicketResultValue0Struct> {
     let result = super.tryCall(
       "getTicket",
       "getTicket(uint256):((uint256,bytes32,bytes32,uint256,address,bool))",
@@ -749,7 +757,7 @@ export class ticketGenerator extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<ticketGenerator__getTicketResultValue0Struct>(
+      changetype<TicketGenerator__getTicketResultValue0Struct>(
         value[0].toTuple()
       )
     );
@@ -758,7 +766,7 @@ export class ticketGenerator extends ethereum.SmartContract {
   getTicketType(
     _eventId: Bytes,
     _ticketTypeId: Bytes
-  ): ticketGenerator__getTicketTypeResultValue0Struct {
+  ): TicketGenerator__getTicketTypeResultValue0Struct {
     let result = super.call(
       "getTicketType",
       "getTicketType(bytes32,bytes32):((bytes32,uint256,uint256,uint256,string,string))",
@@ -768,7 +776,7 @@ export class ticketGenerator extends ethereum.SmartContract {
       ]
     );
 
-    return changetype<ticketGenerator__getTicketTypeResultValue0Struct>(
+    return changetype<TicketGenerator__getTicketTypeResultValue0Struct>(
       result[0].toTuple()
     );
   }
@@ -776,7 +784,7 @@ export class ticketGenerator extends ethereum.SmartContract {
   try_getTicketType(
     _eventId: Bytes,
     _ticketTypeId: Bytes
-  ): ethereum.CallResult<ticketGenerator__getTicketTypeResultValue0Struct> {
+  ): ethereum.CallResult<TicketGenerator__getTicketTypeResultValue0Struct> {
     let result = super.tryCall(
       "getTicketType",
       "getTicketType(bytes32,bytes32):((bytes32,uint256,uint256,uint256,string,string))",
@@ -790,7 +798,7 @@ export class ticketGenerator extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<ticketGenerator__getTicketTypeResultValue0Struct>(
+      changetype<TicketGenerator__getTicketTypeResultValue0Struct>(
         value[0].toTuple()
       )
     );
@@ -1082,8 +1090,16 @@ export class CreateEventCall__Inputs {
     return this._call.inputValues[0].value.toBytes();
   }
 
+  get _name(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _description(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+
   get eventStorage(): Bytes {
-    return this._call.inputValues[1].value.toBytes();
+    return this._call.inputValues[3].value.toBytes();
   }
 }
 

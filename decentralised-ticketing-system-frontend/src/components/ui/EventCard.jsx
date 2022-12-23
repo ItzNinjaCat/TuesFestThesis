@@ -1,5 +1,5 @@
 import React from 'react';
-import ImageScroller from './ImageScroller';
+
 import * as Name from 'w3name';
 import { CID } from 'multiformats/cid';
 import * as Digest from 'multiformats/hashes/digest';
@@ -22,7 +22,7 @@ async function fetchImageCid(storageBytes) {
     return imageFiles[0];
 }
 
-async function fetchImageUrls(storageBytes) {
+async function fetchImageUrls(storageBytes, setImageUrls) {
     const imageFiles = await Promise.resolve(fetchImageCid(storageBytes));
     const read = new FileReader();
     let urls;
@@ -32,11 +32,9 @@ async function fetchImageUrls(storageBytes) {
         const imageURLs = imageFiles.map((file) => {
             return `${process.env.REACT_APP_W3LINK_URL}/${JSON.parse(read.result).images}/${file.name}`;
         })
-        urls =  imageURLs;
+        setImageUrls(imageURLs);
     }
-    read.readAsBinaryString(imageFiles).then(console.log(urls));
-    
-    // return await read.onloadend();
+    read.readAsBinaryString(imageFiles);
 }
 
 function EventCard({
@@ -46,21 +44,22 @@ function EventCard({
     id,
     creator
 }) {
-    Promise.resolve(fetchImageUrls(storageBytes)).then((imageURLs) => {
-        console.log(imageURLs);
-    })
+    const [imageUrls, setImageUrls] = React.useState([]);
 
-    return (
+    Promise.resolve(fetchImageUrls(storageBytes, setImageUrls));
+
+    if (imageUrls.length > 0) {
+        return (
             <>
-            <h1>Event Card</h1>
-            <p>Name: {name}</p>
-            <p>Desc: {description}</p>
-            <p>Id: {id}</p>
+                <h1>Event Card</h1>
+                <p>Name: {name}</p>
+                <p>Desc: {description}</p>
+                <p>Id: {id}</p>
                 <p>Creator: {creator}</p>
-                {/* <ImageScroller images={imageURLs} /> */}
+                {/* <ImageScroller images={imageUrls} /> */}
             </>
         )
-
+    }
 }
 
 export default EventCard;

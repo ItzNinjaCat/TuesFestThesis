@@ -125,23 +125,23 @@ describe("NFT generator", function () {
       it("Should create an event", async function () {
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
         expect(await ticketGenerator.getEvent(eventId)).equal(eventId);
       });
       it("Should revert because user is not an organizer and cannot an event", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes)).to.be.revertedWith("Only event organizers can call this function");
+        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes])).to.be.revertedWith("Only event organizers can call this function");
       });
       it("Should revert because event already exists", async function () {
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
-        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes)).to.be.revertedWith("Event already exists");
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
+        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes])).to.be.revertedWith("Event already exists");
       });
       it("Should delete an event", async function () {
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
         expect(await ticketGenerator.getEvent(eventId)).equal(eventId);
         await ticketGenerator.connect(addr1).deleteEvent(eventId);
         await expect(ticketGenerator.getEvent(eventId)).to.be.revertedWith("Event does not exist");
@@ -151,11 +151,7 @@ describe("NFT generator", function () {
       it("Should create a ticket type", async function () {
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        const tx = await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
-        const result = await tx.wait();
-        console.log(result.events[0].args.eventStorage);
-        console.log(hexToBytes(result.events[0].args.eventStorage));
-        
+        const tx = await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
@@ -184,7 +180,7 @@ describe("NFT generator", function () {
 
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, [testBytes]);
         await expect(ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
@@ -199,7 +195,7 @@ describe("NFT generator", function () {
         
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, [testBytes]);
         await expect(ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
@@ -213,7 +209,7 @@ describe("NFT generator", function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
@@ -232,7 +228,7 @@ describe("NFT generator", function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
@@ -258,7 +254,7 @@ describe("NFT generator", function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
@@ -287,7 +283,7 @@ describe("NFT generator", function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
@@ -327,7 +323,7 @@ describe("NFT generator", function () {
 const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, [testBytes]);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
@@ -366,7 +362,7 @@ const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
 
 
-        await ticketGenerator.connect(owner).createEvent(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId')), testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).createEvent(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId')), testName, testDescription, [testBytes]);
         await ticketGenerator.connect(owner).createTicketType(
           eventId,
           ticketTypeId,

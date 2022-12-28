@@ -12,12 +12,14 @@ function Events() {
     }
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
+    console.log(data);
     return (
         <div>
             <h1>Events</h1>
-            <ul>
+            <div className='row'>
                 {
                     data.createEvents.map((event) =>
+                        <div key={event.id} className='w-25 col-4 d-flex flex-wrap text-wrap'>
                         <EventCard
                             key={event.id}
                             name={event.name}
@@ -25,10 +27,11 @@ function Events() {
                             storageBytes={event.eventStorage}
                             id={event.eventId}
                             creator={event.creator}
-                        />
+                            />
+                        </div>
                     )
                 }
-            </ul>
+            </div>
       </div>
   );
 }

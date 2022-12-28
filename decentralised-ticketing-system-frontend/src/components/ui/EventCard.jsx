@@ -1,5 +1,5 @@
 import React from 'react';
-import ImageGallery from 'react-image-gallery';
+
 import * as Name from 'w3name';
 import { CID } from 'multiformats/cid';
 import * as Digest from 'multiformats/hashes/digest';
@@ -27,13 +27,11 @@ async function fetchImageUrls(storageBytes, setImageUrls) {
     const read = new FileReader();
     let urls;
     read.onloadend = async function () {
-        console.log(JSON.parse(read.result).images)
         const tmp = await storage.get(JSON.parse(read.result).images);
         const imageFiles = await tmp.files();
         const imageURLs = imageFiles.map((file) => {
-            return { original: `${process.env.REACT_APP_W3LINK_URL}/${JSON.parse(read.result).images}/${file.name}` };
+            return `${process.env.REACT_APP_W3LINK_URL}/${JSON.parse(read.result).images}/${file.name}`;
         })
-
         setImageUrls(imageURLs);
     }
     read.readAsBinaryString(imageFiles);
@@ -47,19 +45,21 @@ function EventCard({
     creator
 }) {
     const [imageUrls, setImageUrls] = React.useState([]);
-    Promise.resolve(fetchImageUrls(storageBytes, setImageUrls));
-    
 
+    Promise.resolve(fetchImageUrls(storageBytes, setImageUrls));
+
+    if (imageUrls.length > 0) {
         return (
             <>
                 <h1>Event Card</h1>
-                <p className='text-break'>Name: {name}</p>
-                <p className='text-break'>Desc: {description}</p>
-                <p className='text-break'>Id: {id}</p>
-                <p className='text-break'>Creator: {creator}</p>
-                {imageUrls.length > 0 ? <ImageGallery items={imageUrls} showPlayButton={false} /> : <></>};
+                <p>Name: {name}</p>
+                <p>Desc: {description}</p>
+                <p>Id: {id}</p>
+                <p>Creator: {creator}</p>
+                {/* <ImageScroller images={imageUrls} /> */}
             </>
         )
+    }
 }
 
 export default EventCard;

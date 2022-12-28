@@ -19,7 +19,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         bytes32 eventId,
         string name,
         string description,
-        bytes[] eventImages
+        bytes eventStorage
     );
     event CreateTicketType(
         address indexed creator,
@@ -116,7 +116,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         bytes32 _eventId,
         string memory _name,
         string memory _description,
-        bytes[] memory eventImages
+        bytes memory eventStorage
     ) external onlyOrganizer {
         require(events[_eventId].id == 0, "Event already exists");
         eventIds.push(_eventId);
@@ -127,7 +127,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             _eventId,
             _name,
             _description,
-            eventImages
+            eventStorage
         );
     }
 

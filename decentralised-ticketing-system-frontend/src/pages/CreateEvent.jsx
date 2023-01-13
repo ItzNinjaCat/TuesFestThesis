@@ -7,50 +7,26 @@ import Col from 'react-bootstrap/Col';
 import TicketInfo from '../components/ui/TicketInfo';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { uploadMutableData, uploadImmutableData } from '../utils/web3.storageEndpoints'
-// import { v5 as uuidv5 } from 'uuid
-import { keys } from 'libp2p-crypto'
+import { uploadImmutableData } from '../utils/web3.storageEndpoints'
 import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
-import { getContract } from '../utils/getContract';
+import { getContract } from '../utils/contractUtils';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from '../utils/connectors';
-import * as Name from 'w3name';
-import { CID } from 'multiformats/cid'
-import * as Digest from 'multiformats/hashes/digest'
-import { Web3Storage } from 'web3.storage';
-const storage = new Web3Storage({ token: process.env.REACT_APP_WEB3_STORAGE_API_KEY });
+
 function CreateEvent() {
-    const bytes = {"0":1,"1":114,"2":0,"3":36,"4":8,"5":1,"6":18,"7":32,"8":6,"9":158,"10":123,"11":57,"12":97,"13":101,"14":124,"15":48,"16":219,"17":28,"18":67,"19":207,"20":75,"21":8,"22":48,"23":111,"24":241,"25":1,"26":51,"27":226,"28":210,"29":0,"30":213,"31":123,"32":145,"33":216,"34":47,"35":119,"36":166,"37":210,"38":218,"39":139}
-    var values = Object.keys(bytes).map(function(key){
-    return bytes[key];
-    });
-    // console.log(values)
-    // console.log(values);
-    // ethers.utils.defaultAbiCoder.decode(['bytes'], '0x080112400a882e6cb359bfc4868a0fb75256ef8cdb5d14b51d3b4a30aba157648304b341fde1b4c4b4ba13f17060e6419876c48ed1dd0d06ed2d8ef10fcdb7313eefb51f');
-    // const keyCid = CID.decode(new Uint8Array(values))
-    // const pubKey = keys.unmarshalPublicKey(Digest.decode(keyCid.multihash.bytes).bytes)
-    // Name.resolve(new Name.Name(pubKey)).then((revision) => {
-    //     storage.get(revision._value).then((cid) => {
-    //         cid.files().then((files) => {
-    //             for (const file of files) {
-    //                     const read = new FileReader();
-    //                     read.readAsBinaryString(file);
-    //                     read.onloadend = function(){
-    //                         console.log(read.result);
-    //                     }
-    //             }
-    //         })
-    //     });
-    //     console.log(revision._value);
-    // });    
-    // const test = new keys.supportedKeys.ed25519.Ed25519PublicKey(new Uint8Array(values));
-    // console.log(test);
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
-    const [name = '', setName] = useState();
-    const [desc = '', setDesc] = useState();
-    const [images = [], setImages] = useState();
-    const [ticketTypes = [0], setTicketTypes] = useState();
+    const [name, setName] = useState('');
+    const [desc, setDesc] = useState('');
+    const [images, setImages] = useState([]);
+    const [startTime, setStartTime] = useState(new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+    }));
+    const [endTime, setEndTime] = useState(0);
+    const [startDate, setStartDate] = useState(new Date().toJSON().slice(0,10).replace(/-/g,'-'));
+    const [endDate, setEndDate] = useState(0);
+    const [ticketTypes, setTicketTypes] = useState([0]);
     const [ticketInputFields, setTicketInputFields] = useState([
         { 
             name: '', 
@@ -78,10 +54,32 @@ function CreateEvent() {
         else {
             e.preventDefault();
             setValidated(true);
-            const creationTime = new Date().getTime();
+            const creationTime = new Date().getTime() / 1000;
+            const startTimeSplit = startTime.split(':');
+            let startDateUNIX = new Date(`${startDate}T00:00`)
+            startDateUNIX.setHours(startTimeSplit[0]);
+            startDateUNIX.setMinutes(startTimeSplit[1]);
+            startDateUNIX = startDateUNIX.getTime() / 1000;
+            let endDateUNIX = 0;
+            if (endDate !== 0 && endTime !== 0) {
+                const endTimeSplit = endTime.split(':');
+                endDateUNIX = new Date(`${endDate}T00:00`)
+                endDateUNIX.setHours(endTimeSplit[0]);
+                endDateUNIX.setMinutes(endTimeSplit[1]);
+                endDateUNIX = endDateUNIX.getTime() / 1000;
+            }
+            else if (endTime !== 0) {
+                const endTimeSplit = endTime.split(':');
+                endDateUNIX = new Date(`${startDate}T00:00`)
+                endDateUNIX.setHours(endTimeSplit[0]);
+                endDateUNIX.setMinutes(endTimeSplit[1]);
+                endDateUNIX = endDateUNIX.getTime() / 1000;
+            }
+            else if (endDate !== 0) {
+                endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
+            }
             const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
             console.log(contract);
-            // contract.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), account);
             const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name]));
             console.log(eventId);
             const ticketCids = [];
@@ -90,70 +88,79 @@ function CreateEvent() {
                 const ticketMetadata = {
                     name: ticket.name,
                     description: `This is a ${ticket.name} ticket for ${name}`,
-                    image: `${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`,
-                    external_url: `https://localhost:3000/events/${eventId}`,
+                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`),
+                    external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
                     attributes: [{
                         price: ticket.price,
                         quantity: ticket.quantity,
-                        createdAt: creationTime,
+                        createdAt: creationTime
                     }]
                 }
                 ticketCids.push(ticketImagesCid);
                 const souvenirMetadata = {
                     name: `${ticket.name} Souvenir`,
                     description: `This is a ${ticket.name} souvenir for ${name}`,
-                    image: `${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`,
-                    external_url: `https://localhost:3000/events/${eventId}`,
+                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`),
+                    external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
                     attributes: [{
                         ticketPrice: ticket.price,
                         quantity: ticket.quantity,
-                        createdAt: creationTime,
+                        createdAt: creationTime
                     }]
                 }
                 const ticketBlob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
                 const souvenirBlob = new Blob([JSON.stringify(souvenirMetadata)], { type: 'application/json' });
-                return uploadMutableData([new File([ticketBlob], `${ticket.name}.json`), new File([souvenirBlob], `${ticket.name}_souvenir.json`)]);
+                return uploadImmutableData([
+                    new File([ticketBlob], `${ticket.name}_metadata.json`),
+                    new File([souvenirBlob], `${ticket.name}_souvenir_metadate.json`)
+                ]);
 
             })
             Promise.all(ticketPromises).then(async (responses) => {
-                console.log(responses[0].bytes);
                 console.log(responses);
-                const keysBytes = responses.map(response => response.bytes);
-                const imagesCids = await uploadImmutableData(images);
-                const event = {
-                    images: imagesCids,
-                    tickets: keysBytes,
-                    creationTime: creationTime
-                }
-                uploadMutableData([new File([JSON.stringify(event)], `${name}.json`)]).then(
-                    async (cid) => {
-                        console.log(cid);
-                        await contract.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), account);
-                        const tx = await contract.createEvent(eventId, name, desc, cid.bytes);
-                        tx.wait().then(() => {
-
-                            ticketInputFields.forEach(async (ticket, index) => {
-                                await contract.createTicketType(
-                                    eventId,
-                                    ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
-                                    `${process.env.REACT_APP_W3LINK_URL}/${ticketCids[index]}/${ticket.image.name}`,
-                                    `${process.env.REACT_APP_W3LINK_URL}/${ticketCids[index]}/${ticket.souvenir.name}`,
-                                    ticket.price,
-                                    ticket.quantity
-                                )
-                            });
-                        });
-                    }
-                    );
-                }).then(navigate(`/events/${eventId}`));
-            } 
-        // TODO : Connect to the smart contract and create the event
+                const eventImagesCid = await uploadImmutableData(images);
+                console.log(eventImagesCid);
+                const tx = await contract.createEvent(eventId, name, desc, eventImagesCid, startDateUNIX, endDateUNIX);
+                tx.wait().then(() => {
+                    const ticketTypes = ticketInputFields.map(async (ticket, index) => {
+                        return await contract.createTicketType(
+                            eventId,
+                            ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
+                            ticket.name,
+                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_metadata.json`),
+                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_souvenir_metadate.json`),
+                            ethers.utils.parseEther(String(ticket.price)),
+                            ticket.quantity
+                        );
+                    });
+                    Promise.all(ticketTypes).then(() => {
+                        navigate(`/events/${eventId}`);
+                    });
+                })
+            });
+        } 
     }
         
     const changeName = (e) => {
         setName(e.target.value);
     }
+    const changeStartDate = (e) => {
+        setStartDate(e.target.value);
+        if(new Date(`${startDate}T00:00`).getTime() > new Date(`${endDate}T00:00`).getTime()) {
+            setEndDate(0);
+        }
+    }
+    const changeEndDate = (e) => {
+        setEndDate(e.target.value);
+    }
+
+    const changeStartTime = (e) => {
+        setStartTime(e.target.value);
+    }
         
+    const changeEndTime = (e) => {
+        setEndTime(e.target.value);
+    }
     const changeDesc = (e) => {
         setDesc(e.target.value);
     }
@@ -242,9 +249,58 @@ function CreateEvent() {
                             onChange={uploadEventImages}
                             required
                         />
+                        <Form.Text className="text-muted">
+                            The first image will be used as a thumbnail
+                        </Form.Text>
                         <Form.Control.Feedback type="invalid">
                             Please provide atleast one event image.
                         </Form.Control.Feedback>
+                    </Form.Group>
+                </Row>
+                <Row className="mb-3">
+                    <Form.Group as={Col} controlId="eventStartDate">
+                        <Form.Label>Event start date</Form.Label>
+                        <Form.Control
+                            type='date'
+                            required
+                            min={new Date().toJSON().slice(0,10).replace(/-/g,'-')}
+                            value={startDate}
+                            onChange={changeStartDate}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="eventEndDate">
+                        <Form.Label>Event end date</Form.Label>
+                        <Form.Control
+                            type='date'
+                            value={endDate}
+                            min={startDate}
+                            onChange={changeEndDate}
+                        />
+                        <Form.Text className="text-muted">
+                            Only required for multi-day events
+                        </Form.Text>
+                    </Form.Group>
+                </Row>
+                <Row className="mb-3">
+                    <Form.Group as={Col} controlId="eventStartTime">
+                        <Form.Label>Event starting time</Form.Label>
+                        <Form.Control
+                            type='time'
+                            required
+                            value={startTime}
+                            onChange={changeStartTime}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="eventEndTime">
+                        <Form.Label>Event end time</Form.Label>
+                        <Form.Control
+                            type='time'
+                            value={endTime}
+                            onChange={changeEndTime}
+                        />
+                        <Form.Text className="text-muted">
+                            Only required if you want your event to have a set end hour
+                        </Form.Text>
                     </Form.Group>
                 </Row>
                     <Form.Group as={Col} controlId="eventDescription">

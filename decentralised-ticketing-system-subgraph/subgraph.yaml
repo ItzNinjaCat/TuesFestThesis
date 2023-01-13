@@ -6,7 +6,7 @@ dataSources:
     name: TicketGenerator
     network: goerli
     source:
-      address: "0xC48011Ed28332253161Ab0aDe67B4D4398A8294a"
+      address: "0x5485e9e587b1BE7A6f124123DE7C565F9Cd84f07"
       abi: TicketGenerator
     mapping:
       kind: ethereum/events
@@ -15,6 +15,7 @@ dataSources:
       entities:
         - Approval
         - ApprovalForAll
+        - BuyTicket
         - CreateEvent
         - CreateTicketType
         - DeleteEvent
@@ -26,6 +27,8 @@ dataSources:
         - RoleRevoked
         - Transfer
         - TransferTicket
+        - UpdateEvent
+        - UpdateTicketType
         - Withdraw
       abis:
         - name: TicketGenerator
@@ -35,9 +38,11 @@ dataSources:
           handler: handleApproval
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
-        - event: CreateEvent(indexed address,bytes32,string,string,bytes)
+        - event: BuyTicket(indexed address,indexed address,bytes32,bytes32,uint256,string,uint256)
+          handler: handleBuyTicket
+        - event: CreateEvent(indexed address,bytes32,string,string,string,uint256,uint256)
           handler: handleCreateEvent
-        - event: CreateTicketType(indexed address,bytes32,(bytes32,uint256,uint256,uint256,string,string))
+        - event: CreateTicketType(indexed address,bytes32,(bytes32,string,uint256,uint256,uint256,string,string))
           handler: handleCreateTicketType
         - event: DeleteEvent(indexed address,bytes32)
           handler: handleDeleteEvent
@@ -57,6 +62,10 @@ dataSources:
           handler: handleTransfer
         - event: TransferTicket(indexed address,indexed address,uint256)
           handler: handleTransferTicket
+        - event: UpdateEvent(indexed address,bytes32,string,string,string,uint256,uint256)
+          handler: handleUpdateEvent
+        - event: UpdateTicketType(indexed address,bytes32,(bytes32,string,uint256,uint256,uint256,string,string))
+          handler: handleUpdateTicketType
         - event: Withdraw(indexed address,uint256)
           handler: handleWithdraw
       file: ./src/ticket-generator.ts

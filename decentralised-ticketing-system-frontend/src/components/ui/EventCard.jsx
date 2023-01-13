@@ -1,65 +1,41 @@
 import React from 'react';
-
-import * as Name from 'w3name';
-import { CID } from 'multiformats/cid';
-import * as Digest from 'multiformats/hashes/digest';
-import { Web3Storage } from 'web3.storage';
-import { keys } from 'libp2p-crypto';
-const storage = new Web3Storage({ token: process.env.REACT_APP_WEB3_STORAGE_API_KEY });
-
-function hexToBytes(hex) {
-    for (var bytes = [], c = 2; c < hex.length; c += 2)
-        bytes.push(parseInt(hex.substr(c, 2), 16));
-    return bytes;
-}
-
-async function fetchImageCid(storageBytes) {
-    const keyCid = CID.decode(new Uint8Array(hexToBytes(storageBytes)))
-    const pubKey = keys.unmarshalPublicKey(Digest.decode(keyCid.multihash.bytes).bytes)
-    const revision = await Name.resolve(new Name.Name(pubKey))
-    const results = await storage.get(revision._value)
-    const imageFiles = await results.files();
-    return imageFiles[0];
-}
+import { useNavigate } from 'react-router-dom';
+import Image from 'react-bootstrap/Image'
+import { getData } from '../../utils/web3.storageEndpoints';
 
 async function fetchImageUrls(storageBytes, setImageUrls) {
-    const imageFiles = await Promise.resolve(fetchImageCid(storageBytes));
-    const read = new FileReader();
-    let urls;
-    read.onloadend = async function () {
-        const tmp = await storage.get(JSON.parse(read.result).images);
-        const imageFiles = await tmp.files();
-        const imageURLs = imageFiles.map((file) => {
-            return `${process.env.REACT_APP_W3LINK_URL}/${JSON.parse(read.result).images}/${file.name}`;
-        })
-        setImageUrls(imageURLs);
-    }
-    read.readAsBinaryString(imageFiles);
+    const tmp = await getData(storageBytes);
+    const imageFiles = await tmp.files();
+    const imageURLs = imageFiles.map((file) => {
+        return `${process.env.REACT_APP_W3LINK_URL}/${storageBytes}/${file.name}`;
+    });
+    setImageUrls(imageURLs);
 }
 
 function EventCard({
     name,
     description,
-    storageBytes,
+    imagesCid,
     id,
     creator
 }) {
+    const navigate = useNavigate();
     const [imageUrls, setImageUrls] = React.useState([]);
-
-    Promise.resolve(fetchImageUrls(storageBytes, setImageUrls));
-
-    if (imageUrls.length > 0) {
-        return (
-            <>
-                <h1>Event Card</h1>
-                <p>Name: {name}</p>
-                <p>Desc: {description}</p>
-                <p>Id: {id}</p>
-                <p>Creator: {creator}</p>
-                {/* <ImageScroller images={imageUrls} /> */}
+    Promise.resolve(fetchImageUrls(imagesCid, setImageUrls));
+    
+    function openEventPage() {
+        navigate(`/events/${id}`);
+    }
+    return (
+        <>
+            <div role="button" onClick={openEventPage}>
+                {imageUrls.length > 0 ? <Image src={imageUrls[0]} className="mt-2" fluid rounded/> : null}
+                <h3 className='text-break'>{name}</h3>
+                <p className='text-break'>{description}</p>
+                <p className='text-break'>{creator}</p>
+            </div>
             </>
         )
-    }
 }
 
 export default EventCard;

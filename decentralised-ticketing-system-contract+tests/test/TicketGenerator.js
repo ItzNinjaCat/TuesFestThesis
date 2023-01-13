@@ -4,21 +4,13 @@ const {
 } = require("@nomicfoundation/hardhat-network-helpers");
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
-
-function hexToBytes(hex) {
-    for (var bytes = [], c = 2; c < hex.length; c += 2)
-        bytes.push(parseInt(hex.substr(c, 2), 16));
-    return bytes;
-}
 
 describe("NFT generator", function () {
-  const testBytes = ethers.utils.randomBytes(40);
+  const testCid = "EXAMPLE CID";
   const testName = "Test";
   const testDescription = "Test Description";
-  // 1, 114, 0, 36, 8, 1, 18, 32, 72, 194, 143, 42, 102, 204, 142, 95, 228, 97, 214, 3, 140, 44, 248, 39, 87, 173, 36, 151, 177, 8, 191, 225, 174, 226, 234, 47, 230, 186, 122, 209
-  console.log(hexToBytes('0x080112400a882e6cb359bfc4868a0fb75256ef8cdb5d14b51d3b4a30aba157648304b341fde1b4c4b4ba13f17060e6419876c48ed1dd0d06ed2d8ef10fcdb7313eefb51f'))
-  console.log(testBytes);
   let TicketGenerator;
   let ticketGenerator;
   let SouvenirGenerator;
@@ -110,70 +102,70 @@ describe("NFT generator", function () {
 
   describe("TicketGenerator tests", function () {
   
-    describe("Acess Control", function () {
+    describe("Access Control", function () {
 
       it("Should set the right owner", async function () {
         expect(await ticketGenerator.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('OWNER_ROLE')), owner.address)).to.equal(true);
       });
 
       it("Should grant the right role", async function () {
-        await ticketGenerator.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        expect(await ticketGenerator.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address)).to.equal(true);
+        await ticketGenerator.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        expect(await ticketGenerator.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address)).to.equal(true);
       });
     });
     describe("Events", function () {
       it("Should create an event", async function () {
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
-        expect(await ticketGenerator.getEvent(eventId)).equal(eventId);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
+        expect((await ticketGenerator.getEvent(eventId))[0]).equal(addr1.address);
       });
       it("Should revert because user is not an organizer and cannot an event", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes)).to.be.revertedWith("Only event organizers can call this function");
+        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0)).to.be.revertedWith("Only event organizers can call this function");
       });
       it("Should revert because event already exists", async function () {
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
-        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes)).to.be.revertedWith("Event already exists");
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
+        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0)).to.be.revertedWith("Event already exists");
       });
       it("Should delete an event", async function () {
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
-        expect(await ticketGenerator.getEvent(eventId)).equal(eventId);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
+        expect((await ticketGenerator.getEvent(eventId))[0]).equal(addr1.address);
         await ticketGenerator.connect(addr1).deleteEvent(eventId);
         await expect(ticketGenerator.getEvent(eventId)).to.be.revertedWith("Event does not exist");
       });
     });
     describe("Ticket Types", function () {
       it("Should create a ticket type", async function () {
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        const tx = await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        const tx = await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
         const result = await tx.wait();
-        console.log(result.events[0].args.eventStorage);
-        console.log(hexToBytes(result.events[0].args.eventStorage));
         
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
-          1,
+          ethers.utils.parseEther("0.001"),
           100,
         );
         expect((await ticketGenerator.getTicketType(eventId, ticketTypeId)).id).to.equal(ticketTypeId);
       });
       it("Should revert because event does not exist", async function () {
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await expect(ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           1,
@@ -184,10 +176,11 @@ describe("NFT generator", function () {
 
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, 0, 0);
         await expect(ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           1,
@@ -195,28 +188,30 @@ describe("NFT generator", function () {
         )).to.be.revertedWith("Only event organizers can call this function");
       });
       it("Should revert because user is not an organizer and cannot create a ticket type", async function () {
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
         
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, 0, 0);
         await expect(ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           1,
           100,
-        )).to.be.revertedWith("Only organizers of this event can create ticket type");
+        )).to.be.revertedWith("Only the organizer of this event can create ticket type");
       });
       it("Should delete a ticket type", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           1,
@@ -231,11 +226,12 @@ describe("NFT generator", function () {
       it("Should buy a ticket", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           ethers.utils.parseEther("1"),
@@ -257,11 +253,12 @@ describe("NFT generator", function () {
       it("Should transfer a ticket", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           ethers.utils.parseEther("1"),
@@ -286,11 +283,12 @@ describe("NFT generator", function () {
       it("Should fetch ticket metadata", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           ethers.utils.parseEther("1"),
@@ -313,7 +311,7 @@ describe("NFT generator", function () {
     });
 
 
-    describe("utils tests", function () {
+    describe("Utils tests", function () {
       it("Interface is supported", async function () {
         expect(await ticketGenerator.supportsInterface("0x01ffc9a7")).to.equal(true);
       });
@@ -326,11 +324,12 @@ describe("NFT generator", function () {
       it("Should mint a souvenir", async function () {
 const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('EVENT_ORGANIZER')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testBytes);
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
         await ticketGenerator.connect(addr1).createTicketType(
           eventId,
           ticketTypeId,
+          testName,
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           ethers.utils.parseEther("1"),
@@ -362,37 +361,14 @@ const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
       });
 
       it("Should withdraw from the contract", async function () {
-        const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-
-
-        await ticketGenerator.connect(owner).createEvent(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId')), testName, testDescription, testBytes);
-        await ticketGenerator.connect(owner).createTicketType(
-          eventId,
-          ticketTypeId,
-          "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
-          "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
-          ethers.utils.parseEther("1"),
-          100,
-        );
 
         await ticketGenerator.connect(addr1).deposit({ value: ethers.utils.parseEther("4.0") });
-        preparedSignatureAddr1 = await generateSignature(addr1.address, "1");
-        
-        await ticketGenerator.connect(addr1).buyTicket(
-          eventId,
-          ticketTypeId,
-          addr1.address,
-          preparedSignatureAddr1.deadline,
-          preparedSignatureAddr1.v,
-          preparedSignatureAddr1.r,
-          preparedSignatureAddr1.s
-        );
+        await ticketGenerator.connect(addr1).becomeOrganizer();
 
         const balanceBefore = await ethers.provider.getBalance(ticketGenerator.address);
-        await ticketGenerator.connect(owner).withdraw();
+        await ticketGenerator.connect(owner).ownerWithdraw();
         const balanceAfterWithdraw = await ethers.provider.getBalance(ticketGenerator.address);
-        expect(balanceBefore.sub(balanceAfterWithdraw)).to.equal(ethers.utils.parseEther("1.0"));
+        expect(balanceBefore.sub(balanceAfterWithdraw)).to.equal(ethers.utils.parseEther("0.001"));
       });
     });
   });

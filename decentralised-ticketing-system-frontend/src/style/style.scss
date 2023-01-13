@@ -3,3 +3,22 @@
 @import 'bootstrap.scss';
 @import 'typography.scss';
 @import 'layout.scss';
+@import "~react-image-gallery/styles/scss/image-gallery.scss";
+
+.event-card{
+    border-radius: 4%;
+}
+
+.event-card:hover{
+    transform: scale(1.05);
+    transition-duration: 0.5s;
+    background-color: rgba(98, 99, 98, 0.1);
+}
+
+.loader-div{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}

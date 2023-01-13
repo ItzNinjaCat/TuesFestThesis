@@ -71,6 +71,55 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "eventId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "ticketTypeId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "tokenURI",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "eventStartTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "BuyTicket",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "creator",
         "type": "address"
       },
@@ -94,9 +143,21 @@
       },
       {
         "indexed": false,
-        "internalType": "bytes",
+        "internalType": "string",
         "name": "eventStorage",
-        "type": "bytes"
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "endTime",
+        "type": "uint256"
       }
     ],
     "name": "CreateEvent",
@@ -123,6 +184,11 @@
             "internalType": "bytes32",
             "name": "id",
             "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
           },
           {
             "internalType": "uint256",
@@ -384,6 +450,117 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "eventId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "eventStorage",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "endTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateEvent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "eventId",
+        "type": "bytes32"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "currentSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "tokenURI",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "souvenirTokenURI",
+            "type": "string"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Structs.TicketType",
+        "name": "ticketType",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpdateTicketType",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "receiver",
         "type": "address"
       },
@@ -412,7 +589,7 @@
   },
   {
     "inputs": [],
-    "name": "EVENT_ORGANIZER",
+    "name": "MINTER_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -425,7 +602,7 @@
   },
   {
     "inputs": [],
-    "name": "MINTER_ROLE",
+    "name": "ORGANIZER_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -487,6 +664,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "becomeOrganizer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -500,7 +684,7 @@
       },
       {
         "internalType": "address",
-        "name": "_recepient",
+        "name": "_recipient",
         "type": "address"
       },
       {
@@ -553,9 +737,19 @@
         "type": "string"
       },
       {
-        "internalType": "bytes",
+        "internalType": "string",
         "name": "eventStorage",
-        "type": "bytes"
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "endTime",
+        "type": "uint256"
       }
     ],
     "name": "createEvent",
@@ -574,6 +768,11 @@
         "internalType": "bytes32",
         "name": "_ticketTypeId",
         "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_ticketName",
+        "type": "string"
       },
       {
         "internalType": "string",
@@ -651,9 +850,29 @@
     "name": "getEvent",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "address",
         "name": "",
-        "type": "bytes32"
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
       }
     ],
     "stateMutability": "view",
@@ -716,7 +935,7 @@
       },
       {
         "internalType": "address",
-        "name": "_recepient",
+        "name": "_recipient",
         "type": "address"
       }
     ],
@@ -803,6 +1022,11 @@
             "internalType": "bytes32",
             "name": "id",
             "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
           },
           {
             "internalType": "uint256",
@@ -937,6 +1161,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "ownerWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -1062,6 +1293,45 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_organizerDeposit",
+        "type": "uint256"
+      }
+    ],
+    "name": "setOrganizerDeposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_souvenirGeneratorAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setSouvenirGeneratorContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setTIKContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "interfaceId",
         "type": "bytes4"
@@ -1137,7 +1407,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_recepient",
+        "name": "_recipient",
         "type": "address"
       },
       {
@@ -1152,8 +1422,95 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "withdraw",
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_eventId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_description",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "eventStorage",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "endTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateEvent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_eventId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_ticketTypeId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_ticketName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_tokenURI",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_souvenirTokenURI",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxSupply",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateTicketType",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "userWithdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

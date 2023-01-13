@@ -18,13 +18,29 @@ type ApprovalForAll @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
+type BuyTicket @entity(immutable: true) {
+  id: Bytes!
+  buyer: Bytes! # address
+  owner: Bytes! # address
+  eventId: Bytes! # bytes32
+  ticketTypeId: Bytes! # bytes32
+  tokenId: BigInt! # uint256
+  tokenURI: String! # string
+  eventStartTime: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
 type CreateEvent @entity(immutable: true) {
   id: Bytes!
   creator: Bytes! # address
   eventId: Bytes! # bytes32
   name: String! # string
   description: String! # string
-  eventStorage: Bytes! # bytes
+  eventStorage: String! # string
+  startTime: BigInt! # uint256
+  endTime: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
@@ -35,6 +51,7 @@ type CreateTicketType @entity(immutable: true) {
   creator: Bytes! # address
   eventId: Bytes! # bytes32
   ticketType_id: Bytes! # bytes32
+  ticketType_name: String! # string
   ticketType_price: BigInt! # uint256
   ticketType_maxSupply: BigInt! # uint256
   ticketType_currentSupply: BigInt! # uint256
@@ -129,6 +146,36 @@ type TransferTicket @entity(immutable: true) {
   sender: Bytes! # address
   receiver: Bytes! # address
   tokenId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type UpdateEvent @entity(immutable: true) {
+  id: Bytes!
+  creator: Bytes! # address
+  eventId: Bytes! # bytes32
+  name: String! # string
+  description: String! # string
+  eventStorage: String! # string
+  startTime: BigInt! # uint256
+  endTime: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type UpdateTicketType @entity(immutable: true) {
+  id: Bytes!
+  creator: Bytes! # address
+  eventId: Bytes! # bytes32
+  ticketType_id: Bytes! # bytes32
+  ticketType_name: String! # string
+  ticketType_price: BigInt! # uint256
+  ticketType_maxSupply: BigInt! # uint256
+  ticketType_currentSupply: BigInt! # uint256
+  ticketType_tokenURI: String! # string
+  ticketType_souvenirTokenURI: String! # string
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

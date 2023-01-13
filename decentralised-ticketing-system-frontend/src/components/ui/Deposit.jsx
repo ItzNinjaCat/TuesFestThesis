@@ -1,13 +1,13 @@
 import { ethers } from 'ethers';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
-import { formatEther } from 'ethers/lib/utils';
-import { getContract } from '../../utils/getContract';
+import { getContract } from '../../utils/contractUtils';
 import { TICKET_ADDRESS, TICKET_ABI } from '../../constants/contracts';
+import useBalances from '../../hooks/useBalance';
 
-function Deposit({provider, accounts, tokenContract, account, useBalances, setBalance}) {
+function Deposit({provider, accounts, tokenContract, account, setBalance}) {
   const [validated, setValidated] = useState(false);
   const [show, setShow] = useState(false);
   const [depositAmount, setDepositAmount] = useState(0);
@@ -19,16 +19,16 @@ function Deposit({provider, accounts, tokenContract, account, useBalances, setBa
     setDepositAmount(0);
   };
   const handleShowSuccess = () => setShowSuccess(true);
-    const validateDepositAmount = (e) => {
-        const value = Number(e.target.value);
-        if (value < 0 && value > -100) {
-            e.target.value = -Number(e.target.value);
-        }
-        else if (value < -100 || value > 100) {
-            e.target.value = 100;
-        }
-        setDepositAmount(e.target.value);
-    }
+  const validateDepositAmount = (e) => {
+      const value = Number(e.target.value);
+      if (value < 0 && value > -100) {
+          e.target.value = -Number(e.target.value);
+      }
+      else if (value < -100 || value > 100) {
+          e.target.value = 100;
+      }
+      setDepositAmount(e.target.value);
+  }
 
   const handleSubmit = async (e) => {
       const form = e.currentTarget;
@@ -99,7 +99,7 @@ function Deposit({provider, accounts, tokenContract, account, useBalances, setBa
             fontSize: "16px",
             fontFamily: "monospace",
             fontWeight: "bold"
-          }}
+          }}a
           >
             Balance after deposit : {(Number(balances) + Number(depositAmount))} TIK (ETH:TIK - 1:1)
           </p>
@@ -120,7 +120,7 @@ function Deposit({provider, accounts, tokenContract, account, useBalances, setBa
               <p>
                 You have successfully deposited {depositAmount} TIK.
               </p>
-              <Button variant="primary" onClick={() => handleCloseSuccess()}>
+              <Button variant="primary" onClick={handleCloseSuccess}>
                   Continue
               </Button>
             </div>

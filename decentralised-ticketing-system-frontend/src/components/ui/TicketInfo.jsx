@@ -162,7 +162,7 @@ function TicketInfo({
             </Row>
             {index !== 0 ? <div>
                 <Button variant="light" onClick={removeTicketInfo}>Remove ticket</Button>
-                </div> : <></>}
+                </div> : null}
             </div>
         
     );

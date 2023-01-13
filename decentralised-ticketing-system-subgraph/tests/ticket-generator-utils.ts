@@ -3,6 +3,7 @@ import { ethereum, Address, BigInt, Bytes } from "@graphprotocol/graph-ts"
 import {
   Approval,
   ApprovalForAll,
+  BuyTicket,
   CreateEvent,
   CreateTicketType,
   DeleteEvent,
@@ -14,6 +15,8 @@ import {
   RoleRevoked,
   Transfer,
   TransferTicket,
+  UpdateEvent,
+  UpdateTicketType,
   Withdraw
 } from "../generated/TicketGenerator/TicketGenerator"
 
@@ -64,12 +67,61 @@ export function createApprovalForAllEvent(
   return approvalForAllEvent
 }
 
+export function createBuyTicketEvent(
+  buyer: Address,
+  owner: Address,
+  eventId: Bytes,
+  ticketTypeId: Bytes,
+  tokenId: BigInt,
+  tokenURI: string,
+  eventStartTime: BigInt
+): BuyTicket {
+  let buyTicketEvent = changetype<BuyTicket>(newMockEvent())
+
+  buyTicketEvent.parameters = new Array()
+
+  buyTicketEvent.parameters.push(
+    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer))
+  )
+  buyTicketEvent.parameters.push(
+    new ethereum.EventParam("owner", ethereum.Value.fromAddress(owner))
+  )
+  buyTicketEvent.parameters.push(
+    new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
+  )
+  buyTicketEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketTypeId",
+      ethereum.Value.fromFixedBytes(ticketTypeId)
+    )
+  )
+  buyTicketEvent.parameters.push(
+    new ethereum.EventParam(
+      "tokenId",
+      ethereum.Value.fromUnsignedBigInt(tokenId)
+    )
+  )
+  buyTicketEvent.parameters.push(
+    new ethereum.EventParam("tokenURI", ethereum.Value.fromString(tokenURI))
+  )
+  buyTicketEvent.parameters.push(
+    new ethereum.EventParam(
+      "eventStartTime",
+      ethereum.Value.fromUnsignedBigInt(eventStartTime)
+    )
+  )
+
+  return buyTicketEvent
+}
+
 export function createCreateEventEvent(
   creator: Address,
   eventId: Bytes,
   name: string,
   description: string,
-  eventStorage: Bytes
+  eventStorage: string,
+  startTime: BigInt,
+  endTime: BigInt
 ): CreateEvent {
   let createEventEvent = changetype<CreateEvent>(newMockEvent())
 
@@ -93,7 +145,19 @@ export function createCreateEventEvent(
   createEventEvent.parameters.push(
     new ethereum.EventParam(
       "eventStorage",
-      ethereum.Value.fromBytes(eventStorage)
+      ethereum.Value.fromString(eventStorage)
+    )
+  )
+  createEventEvent.parameters.push(
+    new ethereum.EventParam(
+      "startTime",
+      ethereum.Value.fromUnsignedBigInt(startTime)
+    )
+  )
+  createEventEvent.parameters.push(
+    new ethereum.EventParam(
+      "endTime",
+      ethereum.Value.fromUnsignedBigInt(endTime)
     )
   )
 
@@ -329,6 +393,78 @@ export function createTransferTicketEvent(
   )
 
   return transferTicketEvent
+}
+
+export function createUpdateEventEvent(
+  creator: Address,
+  eventId: Bytes,
+  name: string,
+  description: string,
+  eventStorage: string,
+  startTime: BigInt,
+  endTime: BigInt
+): UpdateEvent {
+  let updateEventEvent = changetype<UpdateEvent>(newMockEvent())
+
+  updateEventEvent.parameters = new Array()
+
+  updateEventEvent.parameters.push(
+    new ethereum.EventParam("creator", ethereum.Value.fromAddress(creator))
+  )
+  updateEventEvent.parameters.push(
+    new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
+  )
+  updateEventEvent.parameters.push(
+    new ethereum.EventParam("name", ethereum.Value.fromString(name))
+  )
+  updateEventEvent.parameters.push(
+    new ethereum.EventParam(
+      "description",
+      ethereum.Value.fromString(description)
+    )
+  )
+  updateEventEvent.parameters.push(
+    new ethereum.EventParam(
+      "eventStorage",
+      ethereum.Value.fromString(eventStorage)
+    )
+  )
+  updateEventEvent.parameters.push(
+    new ethereum.EventParam(
+      "startTime",
+      ethereum.Value.fromUnsignedBigInt(startTime)
+    )
+  )
+  updateEventEvent.parameters.push(
+    new ethereum.EventParam(
+      "endTime",
+      ethereum.Value.fromUnsignedBigInt(endTime)
+    )
+  )
+
+  return updateEventEvent
+}
+
+export function createUpdateTicketTypeEvent(
+  creator: Address,
+  eventId: Bytes,
+  ticketType: ethereum.Tuple
+): UpdateTicketType {
+  let updateTicketTypeEvent = changetype<UpdateTicketType>(newMockEvent())
+
+  updateTicketTypeEvent.parameters = new Array()
+
+  updateTicketTypeEvent.parameters.push(
+    new ethereum.EventParam("creator", ethereum.Value.fromAddress(creator))
+  )
+  updateTicketTypeEvent.parameters.push(
+    new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
+  )
+  updateTicketTypeEvent.parameters.push(
+    new ethereum.EventParam("ticketType", ethereum.Value.fromTuple(ticketType))
+  )
+
+  return updateTicketTypeEvent
 }
 
 export function createWithdrawEvent(

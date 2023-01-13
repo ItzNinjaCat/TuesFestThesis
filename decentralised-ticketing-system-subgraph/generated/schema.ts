@@ -185,6 +185,130 @@ export class ApprovalForAll extends Entity {
   }
 }
 
+export class BuyTicket extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save BuyTicket entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BuyTicket must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("BuyTicket", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static load(id: Bytes): BuyTicket | null {
+    return changetype<BuyTicket | null>(
+      store.get("BuyTicket", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    return value!.toBytes();
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get buyer(): Bytes {
+    let value = this.get("buyer");
+    return value!.toBytes();
+  }
+
+  set buyer(value: Bytes) {
+    this.set("buyer", Value.fromBytes(value));
+  }
+
+  get owner(): Bytes {
+    let value = this.get("owner");
+    return value!.toBytes();
+  }
+
+  set owner(value: Bytes) {
+    this.set("owner", Value.fromBytes(value));
+  }
+
+  get eventId(): Bytes {
+    let value = this.get("eventId");
+    return value!.toBytes();
+  }
+
+  set eventId(value: Bytes) {
+    this.set("eventId", Value.fromBytes(value));
+  }
+
+  get ticketTypeId(): Bytes {
+    let value = this.get("ticketTypeId");
+    return value!.toBytes();
+  }
+
+  set ticketTypeId(value: Bytes) {
+    this.set("ticketTypeId", Value.fromBytes(value));
+  }
+
+  get tokenId(): BigInt {
+    let value = this.get("tokenId");
+    return value!.toBigInt();
+  }
+
+  set tokenId(value: BigInt) {
+    this.set("tokenId", Value.fromBigInt(value));
+  }
+
+  get tokenURI(): string {
+    let value = this.get("tokenURI");
+    return value!.toString();
+  }
+
+  set tokenURI(value: string) {
+    this.set("tokenURI", Value.fromString(value));
+  }
+
+  get eventStartTime(): BigInt {
+    let value = this.get("eventStartTime");
+    return value!.toBigInt();
+  }
+
+  set eventStartTime(value: BigInt) {
+    this.set("eventStartTime", Value.fromBigInt(value));
+  }
+
+  get blockNumber(): BigInt {
+    let value = this.get("blockNumber");
+    return value!.toBigInt();
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    let value = this.get("blockTimestamp");
+    return value!.toBigInt();
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get transactionHash(): Bytes {
+    let value = this.get("transactionHash");
+    return value!.toBytes();
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
 export class CreateEvent extends Entity {
   constructor(id: Bytes) {
     super();
@@ -254,13 +378,31 @@ export class CreateEvent extends Entity {
     this.set("description", Value.fromString(value));
   }
 
-  get eventStorage(): Bytes {
+  get eventStorage(): string {
     let value = this.get("eventStorage");
-    return value!.toBytes();
+    return value!.toString();
   }
 
-  set eventStorage(value: Bytes) {
-    this.set("eventStorage", Value.fromBytes(value));
+  set eventStorage(value: string) {
+    this.set("eventStorage", Value.fromString(value));
+  }
+
+  get startTime(): BigInt {
+    let value = this.get("startTime");
+    return value!.toBigInt();
+  }
+
+  set startTime(value: BigInt) {
+    this.set("startTime", Value.fromBigInt(value));
+  }
+
+  get endTime(): BigInt {
+    let value = this.get("endTime");
+    return value!.toBigInt();
+  }
+
+  set endTime(value: BigInt) {
+    this.set("endTime", Value.fromBigInt(value));
   }
 
   get blockNumber(): BigInt {
@@ -349,6 +491,15 @@ export class CreateTicketType extends Entity {
 
   set ticketType_id(value: Bytes) {
     this.set("ticketType_id", Value.fromBytes(value));
+  }
+
+  get ticketType_name(): string {
+    let value = this.get("ticketType_name");
+    return value!.toString();
+  }
+
+  set ticketType_name(value: string) {
+    this.set("ticketType_name", Value.fromString(value));
   }
 
   get ticketType_price(): BigInt {
@@ -1173,6 +1324,272 @@ export class TransferTicket extends Entity {
 
   set tokenId(value: BigInt) {
     this.set("tokenId", Value.fromBigInt(value));
+  }
+
+  get blockNumber(): BigInt {
+    let value = this.get("blockNumber");
+    return value!.toBigInt();
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    let value = this.get("blockTimestamp");
+    return value!.toBigInt();
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get transactionHash(): Bytes {
+    let value = this.get("transactionHash");
+    return value!.toBytes();
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class UpdateEvent extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save UpdateEvent entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type UpdateEvent must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("UpdateEvent", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static load(id: Bytes): UpdateEvent | null {
+    return changetype<UpdateEvent | null>(
+      store.get("UpdateEvent", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    return value!.toBytes();
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get creator(): Bytes {
+    let value = this.get("creator");
+    return value!.toBytes();
+  }
+
+  set creator(value: Bytes) {
+    this.set("creator", Value.fromBytes(value));
+  }
+
+  get eventId(): Bytes {
+    let value = this.get("eventId");
+    return value!.toBytes();
+  }
+
+  set eventId(value: Bytes) {
+    this.set("eventId", Value.fromBytes(value));
+  }
+
+  get name(): string {
+    let value = this.get("name");
+    return value!.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get description(): string {
+    let value = this.get("description");
+    return value!.toString();
+  }
+
+  set description(value: string) {
+    this.set("description", Value.fromString(value));
+  }
+
+  get eventStorage(): string {
+    let value = this.get("eventStorage");
+    return value!.toString();
+  }
+
+  set eventStorage(value: string) {
+    this.set("eventStorage", Value.fromString(value));
+  }
+
+  get startTime(): BigInt {
+    let value = this.get("startTime");
+    return value!.toBigInt();
+  }
+
+  set startTime(value: BigInt) {
+    this.set("startTime", Value.fromBigInt(value));
+  }
+
+  get endTime(): BigInt {
+    let value = this.get("endTime");
+    return value!.toBigInt();
+  }
+
+  set endTime(value: BigInt) {
+    this.set("endTime", Value.fromBigInt(value));
+  }
+
+  get blockNumber(): BigInt {
+    let value = this.get("blockNumber");
+    return value!.toBigInt();
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    let value = this.get("blockTimestamp");
+    return value!.toBigInt();
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get transactionHash(): Bytes {
+    let value = this.get("transactionHash");
+    return value!.toBytes();
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class UpdateTicketType extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save UpdateTicketType entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type UpdateTicketType must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("UpdateTicketType", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static load(id: Bytes): UpdateTicketType | null {
+    return changetype<UpdateTicketType | null>(
+      store.get("UpdateTicketType", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    return value!.toBytes();
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get creator(): Bytes {
+    let value = this.get("creator");
+    return value!.toBytes();
+  }
+
+  set creator(value: Bytes) {
+    this.set("creator", Value.fromBytes(value));
+  }
+
+  get eventId(): Bytes {
+    let value = this.get("eventId");
+    return value!.toBytes();
+  }
+
+  set eventId(value: Bytes) {
+    this.set("eventId", Value.fromBytes(value));
+  }
+
+  get ticketType_id(): Bytes {
+    let value = this.get("ticketType_id");
+    return value!.toBytes();
+  }
+
+  set ticketType_id(value: Bytes) {
+    this.set("ticketType_id", Value.fromBytes(value));
+  }
+
+  get ticketType_name(): string {
+    let value = this.get("ticketType_name");
+    return value!.toString();
+  }
+
+  set ticketType_name(value: string) {
+    this.set("ticketType_name", Value.fromString(value));
+  }
+
+  get ticketType_price(): BigInt {
+    let value = this.get("ticketType_price");
+    return value!.toBigInt();
+  }
+
+  set ticketType_price(value: BigInt) {
+    this.set("ticketType_price", Value.fromBigInt(value));
+  }
+
+  get ticketType_maxSupply(): BigInt {
+    let value = this.get("ticketType_maxSupply");
+    return value!.toBigInt();
+  }
+
+  set ticketType_maxSupply(value: BigInt) {
+    this.set("ticketType_maxSupply", Value.fromBigInt(value));
+  }
+
+  get ticketType_currentSupply(): BigInt {
+    let value = this.get("ticketType_currentSupply");
+    return value!.toBigInt();
+  }
+
+  set ticketType_currentSupply(value: BigInt) {
+    this.set("ticketType_currentSupply", Value.fromBigInt(value));
+  }
+
+  get ticketType_tokenURI(): string {
+    let value = this.get("ticketType_tokenURI");
+    return value!.toString();
+  }
+
+  set ticketType_tokenURI(value: string) {
+    this.set("ticketType_tokenURI", Value.fromString(value));
+  }
+
+  get ticketType_souvenirTokenURI(): string {
+    let value = this.get("ticketType_souvenirTokenURI");
+    return value!.toString();
+  }
+
+  set ticketType_souvenirTokenURI(value: string) {
+    this.set("ticketType_souvenirTokenURI", Value.fromString(value));
   }
 
   get blockNumber(): BigInt {

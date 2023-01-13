@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import SelectWalletModal from '../ui/ConnectModal';
 import Deposit from '../ui/Deposit';
 import Button from 'react-bootstrap/Button';
@@ -8,69 +8,63 @@ import { useWeb3React } from '@web3-react/core';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import { GOERLI } from '../../constants/chainIds';
-import { connectorHooks, connectors, getName } from '../../utils/connectors';
+import { connectorHooks, getName } from '../../utils/connectors';
 import { CgProfile } from 'react-icons/cg';
-import { getContract } from '../../utils/getContract';
-import { parseEther , formatEther} from 'ethers/lib/utils';
+import { getContract } from '../../utils/contractUtils';
+import { ethers } from 'ethers';
 import { TICKET_ADDRESS, TICKET_ABI } from '../../constants/contracts';
 import { TIK_ADDRESS, TIK_ABI } from '../../constants/contracts';
-import { SOUVENIR_ADDRESS, SOUVENIR_ABI } from '../../constants/contracts';
-
-function useBalances(
-  provider,
-  accounts,
-  contract
-){
-  const [balances, setBalances] = useState();
-  useEffect(() => {
-    if (provider && accounts?.length) {
-      let stale = false
-      void Promise.all(accounts.map((account) => contract.balanceOf(account))).then((balances) => {
-        if (stale) return
-        setBalances(balances.map((balance) => formatEther(balance)));
-      });
-
-      return () => {
-        stale = true
-        setBalances(undefined)
-      }
-    }
-  }, [provider, accounts])
-  return balances
-}
+import { useNavigate } from 'react-router-dom';
+import useBalances from '../../hooks/useBalance';
+function Header() {
+  const navigate = useNavigate();
+  function createEvent() {
+    navigate('/create-event');
+  }
 
 
-function  Header() {
+
+  function becomeOrganizer() {
+    ticketContract.becomeOrganizer();
+  }
+
+
   const { connector } = useWeb3React();
   const [balance, setBalance] = React.useState(undefined);
+  const [isOrganizer, setIsOrganizer] = React.useState(false);
   const hooks = connectorHooks[getName(connector)];
-  const { useAccount, useAccounts, useIsActivating, useIsActive, useProvider, useENSNames } = hooks;
+  const { useAccount, useAccounts, useIsActive, useProvider } = hooks;
   const accounts = useAccounts();
-  const isActivating = useIsActivating();
   const account = useAccount();
   const isActive = useIsActive();
 
   const provider = useProvider();
-  const ENSNames = useENSNames(provider);
-
-  const [error, setError] = useState(undefined);
-  const contract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
-  // setBalances(useBalances(provider, accounts, contract));
-  const balances = useBalances(provider, accounts, contract);
-
+  const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
+  const ticketContract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+  const balances = useBalances(provider, accounts, tokenContract);
+  useEffect(() => {
+    if (provider && account && ticketContract) {
+      ticketContract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
+        (status) => {
+          setIsOrganizer(status)
+        })
+    }
+  }, [provider, account, ticketContract])
   useEffect(() => {
     if (provider && account && balances?.length) {
       setBalance(balances[0]);
     }
-  }, [balances])
+  }, [balances, account, provider])
   useEffect(() => {
     connector.connectEagerly().catch(() => {
       console.debug('Failed to connect eagerly')
     });
-  }, [])
+  }, [connector])
+
+  function organizerProfile() {
+    navigate(`/organizer/${account}`);
+  }
 
   return (
     <Navbar bg="light" expand="xl" sticky="top">
@@ -97,21 +91,21 @@ function  Header() {
                 <Nav.Link href="/organizers">Organizers</Nav.Link>
                 <Nav.Link href="/marketplace">Marketplace</Nav.Link>
               </Nav>
-              <Form className="d-flex">
-                <Form.Control 
-                  type="search"
-                  placeholder="Search"
-                  className="me-2"
-                  aria-label="Search"
-                />
-                {/* <Button variant="outline-success">Search</Button> */}
-              </Form>
+            {
+              isOrganizer ? 
+                <div>
+                  <Button onClick={createEvent}>Create event</Button>
+                  <Button onClick={organizerProfile}>Your events</Button>
+                </div>
+              : 
+              <Button onClick={becomeOrganizer}>Become an organizer</Button>
+              }
               {isActive ?
                 <div className="d-flex align-items-center">
                 <div className="d-flex flex-column align-items-end mx-2">
                   <code>{account}</code>
                   <div className="d-flex align-items-center justify-content-between w-100">
-                    <Deposit tokenContract={contract} provider={provider} accounts={accounts} account={account} useBalances={useBalances} setBalance={setBalance}/>
+                    <Deposit tokenContract={tokenContract} provider={provider} accounts={accounts} account={account} setBalance={setBalance}/>
                     <code>Balance: {balance} Tik</code>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 import {
   Approval as ApprovalEvent,
   ApprovalForAll as ApprovalForAllEvent,
+  BuyTicket as BuyTicketEvent,
   CreateEvent as CreateEventEvent,
   CreateTicketType as CreateTicketTypeEvent,
   DeleteEvent as DeleteEventEvent,
@@ -12,11 +13,14 @@ import {
   RoleRevoked as RoleRevokedEvent,
   Transfer as TransferEvent,
   TransferTicket as TransferTicketEvent,
+  UpdateEvent as UpdateEventEvent,
+  UpdateTicketType as UpdateTicketTypeEvent,
   Withdraw as WithdrawEvent
 } from "../generated/TicketGenerator/TicketGenerator"
 import {
   Approval,
   ApprovalForAll,
+  BuyTicket,
   CreateEvent,
   CreateTicketType,
   DeleteEvent,
@@ -28,6 +32,8 @@ import {
   RoleRevoked,
   Transfer,
   TransferTicket,
+  UpdateEvent,
+  UpdateTicketType,
   Withdraw
 } from "../generated/schema"
 
@@ -61,6 +67,25 @@ export function handleApprovalForAll(event: ApprovalForAllEvent): void {
   entity.save()
 }
 
+export function handleBuyTicket(event: BuyTicketEvent): void {
+  let entity = new BuyTicket(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.buyer = event.params.buyer
+  entity.owner = event.params.owner
+  entity.eventId = event.params.eventId
+  entity.ticketTypeId = event.params.ticketTypeId
+  entity.tokenId = event.params.tokenId
+  entity.tokenURI = event.params.tokenURI
+  entity.eventStartTime = event.params.eventStartTime
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
 export function handleCreateEvent(event: CreateEventEvent): void {
   let entity = new CreateEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32())
@@ -70,6 +95,8 @@ export function handleCreateEvent(event: CreateEventEvent): void {
   entity.name = event.params.name
   entity.description = event.params.description
   entity.eventStorage = event.params.eventStorage
+  entity.startTime = event.params.startTime
+  entity.endTime = event.params.endTime
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -85,6 +112,7 @@ export function handleCreateTicketType(event: CreateTicketTypeEvent): void {
   entity.creator = event.params.creator
   entity.eventId = event.params.eventId
   entity.ticketType_id = event.params.ticketType.id
+  entity.ticketType_name = event.params.ticketType.name
   entity.ticketType_price = event.params.ticketType.price
   entity.ticketType_maxSupply = event.params.ticketType.maxSupply
   entity.ticketType_currentSupply = event.params.ticketType.currentSupply
@@ -224,6 +252,46 @@ export function handleTransferTicket(event: TransferTicketEvent): void {
   entity.sender = event.params.sender
   entity.receiver = event.params.receiver
   entity.tokenId = event.params.tokenId
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleUpdateEvent(event: UpdateEventEvent): void {
+  let entity = new UpdateEvent(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.creator = event.params.creator
+  entity.eventId = event.params.eventId
+  entity.name = event.params.name
+  entity.description = event.params.description
+  entity.eventStorage = event.params.eventStorage
+  entity.startTime = event.params.startTime
+  entity.endTime = event.params.endTime
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleUpdateTicketType(event: UpdateTicketTypeEvent): void {
+  let entity = new UpdateTicketType(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.creator = event.params.creator
+  entity.eventId = event.params.eventId
+  entity.ticketType_id = event.params.ticketType.id
+  entity.ticketType_name = event.params.ticketType.name
+  entity.ticketType_price = event.params.ticketType.price
+  entity.ticketType_maxSupply = event.params.ticketType.maxSupply
+  entity.ticketType_currentSupply = event.params.ticketType.currentSupply
+  entity.ticketType_tokenURI = event.params.ticketType.tokenURI
+  entity.ticketType_souvenirTokenURI = event.params.ticketType.souvenirTokenURI
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp

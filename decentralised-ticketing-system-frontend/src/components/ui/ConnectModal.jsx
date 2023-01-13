@@ -2,11 +2,9 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Stack from 'react-bootstrap/Stack';
-import React, { useState, useEffect } from 'react';
-// import { useWeb3React } from '@web3-react/core'
-// import { useWeb3React } from "@web3-react/core";
+import React, { useState } from 'react';
 import { GOERLI } from '../../constants/chainIds';
-import { connectorHooks, connectors } from '../../utils/connectors';
+import { connectors } from '../../utils/connectors';
 
 const connect = async (connector, chainId) => {
   await connector

@@ -35,3 +35,35 @@ export const CURRENT_EVENTS_BY_ORGANIZER_QUERY = gql`
         }
     }
 `;
+
+export const BUY_TICKETS_EVENT_QUERY = gql`
+    query Events {
+        createEvents {
+            id
+            eventId
+            name
+        }
+    }
+`;
+
+export const SELL_TICKETS_QUERY = gql`
+    query Tickets($owner: String!) {
+        buyTickets(where: { owner: $owner }) {
+            id
+            eventId
+            ticketTypeId
+            tokenId
+        }
+    }
+`;
+
+export const AVAILABLE_TICKETS_FOR_EVENT = gql`
+    query Tickets($eventId: String!) {
+        createTicketTypes(where: { eventId: $eventId }) {
+            id
+            eventId
+            ticketType_id
+            ticketType_name
+        }
+    }
+`;

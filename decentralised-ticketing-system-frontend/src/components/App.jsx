@@ -8,7 +8,6 @@ import Events from '../pages/Events';
 import Event from '../pages/Event';
 import CreateEvent from '../pages/CreateEvent';
 import Header from './layout/Header';
-import Footer from './layout/Footer';
 import Marketplace from '../pages/Marketplace';
 import useScrollDirection from '../hooks/useScrollDirection';
 function App() {
@@ -28,7 +27,6 @@ function App() {
             <Route path="marketplace" element={<Marketplace />} />
           </Routes>
         </div>
-        <Footer />
       </div>
     </BrowserRouter>
   );

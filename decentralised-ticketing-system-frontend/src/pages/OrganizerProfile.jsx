@@ -12,7 +12,7 @@ import EventCard from '../components/ui/EventCard';
 function OrganizerProfile() {
     const deadline = +new Date() + 60 * 60;
     console.log(deadline)
-    const [timestamp, setTimestamp] = useState((new Date().getTime()));
+    const timestamp = ((new Date().getTime()));
     const [ events, setEvents ] = useState(undefined);
     const { connector } = useWeb3React();
     const hooks = connectorHooks[getName(connector)];

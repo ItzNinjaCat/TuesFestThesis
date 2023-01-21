@@ -8,8 +8,12 @@ import { connectorHooks, getName } from '../utils/connectors';
 import { getContract } from '../utils/contractUtils';
 import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
 import EventCard from '../components/ui/EventCard';
+
 function OrganizerProfile() {
-    const [events, setEvents] = useState(undefined);
+    const deadline = +new Date() + 60 * 60;
+    console.log(deadline)
+    const timestamp = ((new Date().getTime()));
+    const [ events, setEvents ] = useState(undefined);
     const { connector } = useWeb3React();
     const hooks = connectorHooks[getName(connector)];
     const { useProvider, useAccount } = hooks;
@@ -18,13 +22,13 @@ function OrganizerProfile() {
     const { address } = useParams();
     const { loading, error, data } = useQuery(CURRENT_EVENTS_BY_ORGANIZER_QUERY, {
         variables: {
-            creator: String(address)
+            creator: String(address),
+            timestamp: String(timestamp)
         }
     });
     const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
 
     useEffect(() => {
-        console.log(error);
         if (!loading) {
             const eventsPromises = data.createEvents.map(async (event) => {
                 return await contract.getEvent(event.eventId).then((result) => {
@@ -57,7 +61,7 @@ function OrganizerProfile() {
                                 name={event.name}
                                 description={event.description}
                                 imagesCid={event.eventStorage}
-                                url={`/events/${event.eventId}/dashboard`}
+                                id={event.eventId}
                                 creator={event.organizer}
                             />
                         </div>

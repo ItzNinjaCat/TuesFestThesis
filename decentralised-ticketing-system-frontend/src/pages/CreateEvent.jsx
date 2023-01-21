@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {ethers} from 'ethers';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -41,29 +41,11 @@ function CreateEvent() {
     const { useProvider, useAccount } = hooks;
     const provider = useProvider();
     const account = useAccount();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
     const getTypeIndex = (ticket) => {
         return ticketTypes.indexOf(ticket);
     }
-    useEffect(() => {
-        if(validated === true){
-            return;
-        }
-        if (!provider || !account || !contract) {
-            navigate('/');
-        }
-        else if (provider && account && contract) {
-        contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
-            (status) => {
-                if (!status) {
-                    navigate('/');
-                }
-            })
-        }
-    }, [provider, account, contract])
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
-        console.log(form.checkValidity());
         if (form.checkValidity() === false) {
             e.preventDefault();
             e.stopPropagation();
@@ -71,7 +53,6 @@ function CreateEvent() {
         }
         else {
             e.preventDefault();
-            e.stopPropagation();
             setValidated(true);
             const creationTime = new Date().getTime() / 1000;
             const startTimeSplit = startTime.split(':');
@@ -97,6 +78,8 @@ function CreateEvent() {
             else if (endDate !== 0) {
                 endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
             }
+            const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+            console.log(contract);
             const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name]));
             console.log(eventId);
             const ticketCids = [];

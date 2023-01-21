@@ -250,6 +250,35 @@ describe("NFT generator", function () {
         );
         expect((await ticketGenerator.getTicket(1)).owner).to.equal(owner.address);
       });
+      it("Should transfer a ticket", async function () {
+        const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
+        const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
+        await ticketGenerator.connect(addr1).createTicketType(
+          eventId,
+          ticketTypeId,
+          testName,
+          "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
+          "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
+          ethers.utils.parseEther("1"),
+          100,
+        )
+        await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("4.0") });
+        preparedSignatureOwner = await generateSignature(owner.address, "1");
+        await ticketGenerator.buyTicket(
+          eventId,
+          ticketTypeId,
+          owner.address,
+          preparedSignatureOwner.deadline,
+          preparedSignatureOwner.v,
+          preparedSignatureOwner.r,
+          preparedSignatureOwner.s
+        );
+        expect((await ticketGenerator.getTicket(1)).owner).to.equal(owner.address);
+        await ticketGenerator.connect(owner).transferTicket(addr1.address, 1);
+        expect((await ticketGenerator.getTicket(1)).owner).to.equal(addr1.address);
+      });
 
       it("Should fetch ticket metadata", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));

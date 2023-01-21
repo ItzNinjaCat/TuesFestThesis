@@ -53,7 +53,7 @@ function Deposit({provider, accounts, tokenContract, account, setBalance}) {
         }
       }
       
-  const balances = useBalances(provider, accounts, tokenContract);
+      const balances = useBalances(provider, accounts, tokenContract);
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
@@ -99,7 +99,7 @@ function Deposit({provider, accounts, tokenContract, account, setBalance}) {
             fontSize: "16px",
             fontFamily: "monospace",
             fontWeight: "bold"
-          }}
+          }}a
           >
             Balance after deposit : {(Number(balances) + Number(depositAmount))} TIK (ETH:TIK - 1:1)
           </p>

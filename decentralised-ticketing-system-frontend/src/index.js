@@ -7,7 +7,6 @@ import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 import { coinbaseWallet, hooks as coinbaseWalletHooks } from './utils/coinbaseWalletConnector';
 import { hooks as metaMaskHooks, metaMask } from './utils/metaMaskConnector';
 import { hooks as walletConnectHooks, walletConnect } from './utils/walletConnectConnector';
-import { SUBGRAPH_URL } from './constants/contracts';
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -18,7 +17,7 @@ const connectors = [
 ];
 const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: SUBGRAPH_URL,
+    uri: process.env.REACT_APP_SUBGRAPH_URL,
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

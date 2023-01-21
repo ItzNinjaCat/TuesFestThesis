@@ -76,46 +76,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         uint256 tokenId
     );
 
-    event CreateBuyOffer(
-        bytes32 offerId,
-        address indexed buyer,
-        bytes32 eventId,
-        bytes32 ticketTypeId,
-        uint256 price,
-        uint256 deadline
-    );
-
-    event AcceptBuyOffer(
-        bytes32 indexed offerId,
-        address indexed buyer,
-        address indexed seller,
-        bytes32 eventId,
-        bytes32 ticketTypeId,
-        uint256 ticketId,
-        uint256 price
-    );
-
-    event CreateSellOffer(
-        bytes32 indexed offerId,
-        address indexed seller,
-        bytes32 eventId,
-        bytes32 ticketTypeId,
-        uint256 ticketId,
-        uint256 price
-    );
-
-    event AcceptSellOffer(
-        bytes32 indexed offerId,
-        address indexed buyer,
-        address indexed seller,
-        bytes32 eventId,
-        bytes32 ticketTypeId,
-        uint256 ticketId,
-        uint256 price
-    );
-
-    event CancelOffer(bytes32 indexed offerId, address indexed sender);
-
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     SouvenirGenerator private souvenirGenerator;
@@ -126,7 +86,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
 
     uint256[] private ticketIds;
     mapping(uint256 => Structs.Ticket) private tickets;
-    mapping(bytes32 => Structs.Offer) private offers;
 
     bytes32 public constant ORGANIZER_ROLE = keccak256("ORGANIZER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -366,20 +325,14 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         return newItemId;
     }
 
-    function ticketPurchasePermit(
-        uint256 amount,
+    function buyTicket(
+        bytes32 _eventId,
+        bytes32 _ticketTypeId,
+        address _recipient,
         uint256 deadline,
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) external {
-        token.permit(msg.sender, address(this), amount, deadline, v, r, s);
-    }
-
-    function buyTicket(
-        bytes32 _eventId,
-        bytes32 _ticketTypeId,
-        address _recipient
     )
         external
         eventExists(_eventId)
@@ -393,6 +346,15 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         require(
             ticketType.currentSupply > 0,
             "Tickets from this type sold out"
+        );
+        token.permit(
+            msg.sender,
+            address(this),
+            ticketType.price,
+            deadline,
+            v,
+            r,
+            s
         );
         require(
             token.allowance(msg.sender, address(this)) >= ticketType.price,
@@ -411,7 +373,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         ticket.eventId = _eventId;
         ticket.ticketTypeId = _ticketTypeId;
         ticket.owner = _recipient;
-        ticket.usable = true;
         tickets[tokenId] = ticket;
         ticketIds.push(tokenId);
         emit BuyTicket(
@@ -491,14 +452,14 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         balance -= amount;
     }
 
-    function transferTicket(
-        address _sender,
-        address _recipient,
-        uint256 _tokenId
-    ) private {
-        _transfer(_sender, _recipient, _tokenId);
+    function transferTicket(address _recipient, uint256 _tokenId) external {
+        require(
+            _isApprovedOrOwner(msg.sender, _tokenId),
+            "ERC721: transfer caller is not owner nor approved"
+        );
+        _transfer(msg.sender, _recipient, _tokenId);
         tickets[_tokenId].owner = _recipient;
-        emit TransferTicket(_sender, _recipient, _tokenId);
+        emit TransferTicket(msg.sender, _recipient, _tokenId);
     }
 
     function getEvent(
@@ -512,20 +473,15 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             string memory,
             string memory,
             string memory,
-            uint256,
-            uint256,
             bytes32[] memory
         )
     {
-        Structs.Event storage e = events[_eventId];
         return (
-            e.organizer,
-            e.name,
-            e.description,
-            e.eventStorage,
-            e.startTime,
-            e.endTime,
-            e.ticketTypeIds
+            events[_eventId].organizer,
+            events[_eventId].name,
+            events[_eventId].description,
+            events[_eventId].eventStorage,
+            events[_eventId].ticketTypeIds
         );
     }
 
@@ -546,135 +502,5 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         uint256 _ticketId
     ) external view ticketExists(_ticketId) returns (Structs.Ticket memory) {
         return tickets[_ticketId];
-    }
-
-    function createBuyOffer(
-        bytes32 id,
-        bytes32 eventId,
-        bytes32 ticketTypeId,
-        uint256 price,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external {
-        token.permit(msg.sender, address(this), price, deadline, v, r, s);
-        Structs.Offer memory offer;
-        offer.buyer = msg.sender;
-        offer.eventId = eventId;
-        offer.ticketTypeId = ticketTypeId;
-        offer.price = price;
-        offer.deadline = deadline;
-        offer.buyOffer = true;
-        offer.sellOffer = false;
-        offers[id] = offer;
-        emit CreateBuyOffer(
-            id,
-            msg.sender,
-            eventId,
-            ticketTypeId,
-            price,
-            deadline
-        );
-    }
-
-    function acceptBuyOffer(bytes32 id) external {
-        Structs.Offer storage offer = offers[id];
-        require(offer.buyer != msg.sender, "Cannot buy your own ticket");
-        require(
-            token.allowance(offer.buyer, address(this)) >= offer.price,
-            "Token allowance too low"
-        );
-        bool success = token.transferFrom(offer.buyer, msg.sender, offer.price);
-        require(success, "transfer failed");
-        transferTicket(msg.sender, offer.buyer, offer.ticketId);
-        offer.accepted = true;
-        offer.seller = msg.sender;
-        emit AcceptBuyOffer(
-            id,
-            offer.buyer,
-            msg.sender,
-            offer.eventId,
-            offer.ticketTypeId,
-            offer.ticketId,
-            offer.price
-        );
-        delete offers[id];
-    }
-
-    function createSellOffer(
-        bytes32 id,
-        bytes32 eventId,
-        bytes32 ticketTypeId,
-        uint256 ticketId,
-        uint256 price
-    ) external {
-        Structs.Offer memory offer;
-        offer.seller = msg.sender;
-        offer.eventId = eventId;
-        offer.ticketTypeId = ticketTypeId;
-        offer.ticketId = ticketId;
-        offer.price = price;
-        offer.deadline = 0;
-        offer.buyOffer = false;
-        offer.sellOffer = false;
-        offers[id] = offer;
-        emit CreateSellOffer(
-            id,
-            msg.sender,
-            eventId,
-            ticketTypeId,
-            ticketId,
-            price
-        );
-    }
-
-    function acceptSellOffer(
-        bytes32 id,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external {
-        Structs.Offer storage offer = offers[id];
-        require(offer.seller != msg.sender, "Cannot buy your own ticket");
-
-        token.permit(msg.sender, address(this), offer.price, deadline, v, r, s);
-
-        require(
-            token.allowance(offer.buyer, address(this)) >= offer.price,
-            "Token allowance too low"
-        );
-        bool success = token.transferFrom(
-            msg.sender,
-            offer.seller,
-            offer.price
-        );
-        require(success, "transfer failed");
-        transferTicket(offer.seller, msg.sender, offer.ticketId);
-        offer.accepted = true;
-        offer.buyer = msg.sender;
-        emit AcceptSellOffer(
-            id,
-            offer.seller,
-            msg.sender,
-            offer.eventId,
-            offer.ticketTypeId,
-            offer.ticketId,
-            offer.price
-        );
-        delete offers[id];
-    }
-
-    function cancelOffer(bytes32 id) external {
-        Structs.Offer storage offer = offers[id];
-        require(
-            (offer.buyer == msg.sender && offer.buyOffer == true) ||
-                (offer.seller == msg.sender && offer.buyOffer == true),
-            "Not the buyer or seller"
-        );
-        require(!offer.accepted, "Offer already accepted");
-        delete offers[id];
-        emit CancelOffer(id, msg.sender);
     }
 }

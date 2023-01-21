@@ -92,17 +92,13 @@ function Header() {
                 <Nav.Link href="/marketplace">Marketplace</Nav.Link>
               </Nav>
             {
-              account !== undefined ?
-                (
-                  isOrganizer ? 
-                  <div>
-                    <Button className="me-3" onClick={createEvent}>Create event</Button>
-                    <Button onClick={organizerProfile}>Your events</Button>
-                  </div>
-                  : 
-                  <Button onClick={becomeOrganizer}>Become an organizer</Button>
-              )
-              : null
+              isOrganizer ? 
+                <div>
+                  <Button onClick={createEvent}>Create event</Button>
+                  <Button onClick={organizerProfile}>Your events</Button>
+                </div>
+              : 
+              <Button onClick={becomeOrganizer}>Become an organizer</Button>
               }
               {isActive ?
                 <div className="d-flex align-items-center">

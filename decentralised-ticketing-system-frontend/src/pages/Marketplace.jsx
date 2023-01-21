@@ -12,7 +12,6 @@ import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
 import { getContract } from '../utils/contractUtils';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from '../utils/connectors';
-import { ethers } from 'hardhat';
 
 
 function Marketplace() {
@@ -192,33 +191,6 @@ function Marketplace() {
       e.stopPropagation();
       setValidated(true);
       console.log('submit');
-      if (offerType === 'buy') {
-        // bytes32 id,
-        // bytes32 eventId,
-        // bytes32 ticketTypeId,
-        // uint256 price,
-        // uint256 deadline,
-        // uint8 v,
-        // bytes32 r,
-        // bytes32 s
-        contract.createBuyOffer(selectedEvent, selectedTicketId, price, quantity).then((tx) => {
-          console.log(tx);
-        });
-      }
-      else {
-        ethers.utils.randomBytes(32).then((id) => {
-        // bytes32 id,
-        // bytes32 eventId,
-        // bytes32 ticketTypeId,
-        // uint256 ticketId,
-        // uint256 price
-          quantity.forEach((ticketId) => {
-            contract.createSellOffer(id, selectedEvent.id, selectedTicketId, price).then((tx) => {
-              console.log(tx);
-            });
-          });
-      });
-      }
     }
   }
   return (

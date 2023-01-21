@@ -21,16 +21,13 @@ function Event() {
     const { eventId } = useParams(); 
     useEffect(() => {
         contract.getEvent(eventId).then((event) => {
-            console.log(event);
             return {
                 eventId: eventId,
                 organizer: event[0],
                 name: event[1],
                 description: event[2],
                 eventStorage: event[3],
-                startTime: event[4],
-                endTime: event[5],
-                ticketTypes: event[6],
+                ticketTypes: event[4],
             };
         }).then(async (event) => {
             setEvent(event);

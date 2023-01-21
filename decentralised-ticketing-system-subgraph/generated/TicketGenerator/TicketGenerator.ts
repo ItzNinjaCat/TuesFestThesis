@@ -10,6 +10,90 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
+export class AcceptBuyOffer extends ethereum.Event {
+  get params(): AcceptBuyOffer__Params {
+    return new AcceptBuyOffer__Params(this);
+  }
+}
+
+export class AcceptBuyOffer__Params {
+  _event: AcceptBuyOffer;
+
+  constructor(event: AcceptBuyOffer) {
+    this._event = event;
+  }
+
+  get offerId(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get buyer(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get seller(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get eventId(): Bytes {
+    return this._event.parameters[3].value.toBytes();
+  }
+
+  get ticketTypeId(): Bytes {
+    return this._event.parameters[4].value.toBytes();
+  }
+
+  get ticketId(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get price(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+}
+
+export class AcceptSellOffer extends ethereum.Event {
+  get params(): AcceptSellOffer__Params {
+    return new AcceptSellOffer__Params(this);
+  }
+}
+
+export class AcceptSellOffer__Params {
+  _event: AcceptSellOffer;
+
+  constructor(event: AcceptSellOffer) {
+    this._event = event;
+  }
+
+  get offerId(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get buyer(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get seller(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get eventId(): Bytes {
+    return this._event.parameters[3].value.toBytes();
+  }
+
+  get ticketTypeId(): Bytes {
+    return this._event.parameters[4].value.toBytes();
+  }
+
+  get ticketId(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get price(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+}
+
 export class Approval extends ethereum.Event {
   get params(): Approval__Params {
     return new Approval__Params(this);
@@ -104,6 +188,66 @@ export class BuyTicket__Params {
   }
 }
 
+export class CancelOffer extends ethereum.Event {
+  get params(): CancelOffer__Params {
+    return new CancelOffer__Params(this);
+  }
+}
+
+export class CancelOffer__Params {
+  _event: CancelOffer;
+
+  constructor(event: CancelOffer) {
+    this._event = event;
+  }
+
+  get offerId(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class CreateBuyOffer extends ethereum.Event {
+  get params(): CreateBuyOffer__Params {
+    return new CreateBuyOffer__Params(this);
+  }
+}
+
+export class CreateBuyOffer__Params {
+  _event: CreateBuyOffer;
+
+  constructor(event: CreateBuyOffer) {
+    this._event = event;
+  }
+
+  get offerId(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get buyer(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get eventId(): Bytes {
+    return this._event.parameters[2].value.toBytes();
+  }
+
+  get ticketTypeId(): Bytes {
+    return this._event.parameters[3].value.toBytes();
+  }
+
+  get price(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get deadline(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+}
+
 export class CreateEvent extends ethereum.Event {
   get params(): CreateEvent__Params {
     return new CreateEvent__Params(this);
@@ -143,6 +287,44 @@ export class CreateEvent__Params {
 
   get endTime(): BigInt {
     return this._event.parameters[6].value.toBigInt();
+  }
+}
+
+export class CreateSellOffer extends ethereum.Event {
+  get params(): CreateSellOffer__Params {
+    return new CreateSellOffer__Params(this);
+  }
+}
+
+export class CreateSellOffer__Params {
+  _event: CreateSellOffer;
+
+  constructor(event: CreateSellOffer) {
+    this._event = event;
+  }
+
+  get offerId(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get seller(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get eventId(): Bytes {
+    return this._event.parameters[2].value.toBytes();
+  }
+
+  get ticketTypeId(): Bytes {
+    return this._event.parameters[3].value.toBytes();
+  }
+
+  get ticketId(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get price(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
   }
 }
 
@@ -561,20 +743,26 @@ export class TicketGenerator__getEventResult {
   value1: string;
   value2: string;
   value3: string;
-  value4: Array<Bytes>;
+  value4: BigInt;
+  value5: BigInt;
+  value6: Array<Bytes>;
 
   constructor(
     value0: Address,
     value1: string,
     value2: string,
     value3: string,
-    value4: Array<Bytes>
+    value4: BigInt,
+    value5: BigInt,
+    value6: Array<Bytes>
   ) {
     this.value0 = value0;
     this.value1 = value1;
     this.value2 = value2;
     this.value3 = value3;
     this.value4 = value4;
+    this.value5 = value5;
+    this.value6 = value6;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -583,7 +771,9 @@ export class TicketGenerator__getEventResult {
     map.set("value1", ethereum.Value.fromString(this.value1));
     map.set("value2", ethereum.Value.fromString(this.value2));
     map.set("value3", ethereum.Value.fromString(this.value3));
-    map.set("value4", ethereum.Value.fromFixedBytesArray(this.value4));
+    map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
+    map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
+    map.set("value6", ethereum.Value.fromFixedBytesArray(this.value6));
     return map;
   }
 
@@ -603,8 +793,16 @@ export class TicketGenerator__getEventResult {
     return this.value3;
   }
 
-  getValue4(): Array<Bytes> {
+  getValue4(): BigInt {
     return this.value4;
+  }
+
+  getValue5(): BigInt {
+    return this.value5;
+  }
+
+  getValue6(): Array<Bytes> {
+    return this.value6;
   }
 }
 
@@ -631,6 +829,10 @@ export class TicketGenerator__getTicketResultValue0Struct extends ethereum.Tuple
 
   get souvenirMinted(): boolean {
     return this[5].toBoolean();
+  }
+
+  get usable(): boolean {
+    return this[6].toBoolean();
   }
 }
 
@@ -839,7 +1041,7 @@ export class TicketGenerator extends ethereum.SmartContract {
   getEvent(_eventId: Bytes): TicketGenerator__getEventResult {
     let result = super.call(
       "getEvent",
-      "getEvent(bytes32):(address,string,string,string,bytes32[])",
+      "getEvent(bytes32):(address,string,string,string,uint256,uint256,bytes32[])",
       [ethereum.Value.fromFixedBytes(_eventId)]
     );
 
@@ -848,7 +1050,9 @@ export class TicketGenerator extends ethereum.SmartContract {
       result[1].toString(),
       result[2].toString(),
       result[3].toString(),
-      result[4].toBytesArray()
+      result[4].toBigInt(),
+      result[5].toBigInt(),
+      result[6].toBytesArray()
     );
   }
 
@@ -857,7 +1061,7 @@ export class TicketGenerator extends ethereum.SmartContract {
   ): ethereum.CallResult<TicketGenerator__getEventResult> {
     let result = super.tryCall(
       "getEvent",
-      "getEvent(bytes32):(address,string,string,string,bytes32[])",
+      "getEvent(bytes32):(address,string,string,string,uint256,uint256,bytes32[])",
       [ethereum.Value.fromFixedBytes(_eventId)]
     );
     if (result.reverted) {
@@ -870,7 +1074,9 @@ export class TicketGenerator extends ethereum.SmartContract {
         value[1].toString(),
         value[2].toString(),
         value[3].toString(),
-        value[4].toBytesArray()
+        value[4].toBigInt(),
+        value[5].toBigInt(),
+        value[6].toBytesArray()
       )
     );
   }
@@ -961,7 +1167,7 @@ export class TicketGenerator extends ethereum.SmartContract {
   getTicket(_ticketId: BigInt): TicketGenerator__getTicketResultValue0Struct {
     let result = super.call(
       "getTicket",
-      "getTicket(uint256):((uint256,bytes32,bytes32,uint256,address,bool))",
+      "getTicket(uint256):((uint256,bytes32,bytes32,uint256,address,bool,bool))",
       [ethereum.Value.fromUnsignedBigInt(_ticketId)]
     );
 
@@ -975,7 +1181,7 @@ export class TicketGenerator extends ethereum.SmartContract {
   ): ethereum.CallResult<TicketGenerator__getTicketResultValue0Struct> {
     let result = super.tryCall(
       "getTicket",
-      "getTicket(uint256):((uint256,bytes32,bytes32,uint256,address,bool))",
+      "getTicket(uint256):((uint256,bytes32,bytes32,uint256,address,bool,bool))",
       [ethereum.Value.fromUnsignedBigInt(_ticketId)]
     );
     if (result.reverted) {
@@ -1203,6 +1409,82 @@ export class ConstructorCall__Outputs {
   }
 }
 
+export class AcceptBuyOfferCall extends ethereum.Call {
+  get inputs(): AcceptBuyOfferCall__Inputs {
+    return new AcceptBuyOfferCall__Inputs(this);
+  }
+
+  get outputs(): AcceptBuyOfferCall__Outputs {
+    return new AcceptBuyOfferCall__Outputs(this);
+  }
+}
+
+export class AcceptBuyOfferCall__Inputs {
+  _call: AcceptBuyOfferCall;
+
+  constructor(call: AcceptBuyOfferCall) {
+    this._call = call;
+  }
+
+  get id(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+}
+
+export class AcceptBuyOfferCall__Outputs {
+  _call: AcceptBuyOfferCall;
+
+  constructor(call: AcceptBuyOfferCall) {
+    this._call = call;
+  }
+}
+
+export class AcceptSellOfferCall extends ethereum.Call {
+  get inputs(): AcceptSellOfferCall__Inputs {
+    return new AcceptSellOfferCall__Inputs(this);
+  }
+
+  get outputs(): AcceptSellOfferCall__Outputs {
+    return new AcceptSellOfferCall__Outputs(this);
+  }
+}
+
+export class AcceptSellOfferCall__Inputs {
+  _call: AcceptSellOfferCall;
+
+  constructor(call: AcceptSellOfferCall) {
+    this._call = call;
+  }
+
+  get id(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get deadline(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get v(): i32 {
+    return this._call.inputValues[2].value.toI32();
+  }
+
+  get r(): Bytes {
+    return this._call.inputValues[3].value.toBytes();
+  }
+
+  get s(): Bytes {
+    return this._call.inputValues[4].value.toBytes();
+  }
+}
+
+export class AcceptSellOfferCall__Outputs {
+  _call: AcceptSellOfferCall;
+
+  constructor(call: AcceptSellOfferCall) {
+    this._call = call;
+  }
+}
+
 export class ApproveCall extends ethereum.Call {
   get inputs(): ApproveCall__Inputs {
     return new ApproveCall__Inputs(this);
@@ -1321,6 +1603,94 @@ export class BuyTicketCall__Outputs {
   }
 }
 
+export class CancelOfferCall extends ethereum.Call {
+  get inputs(): CancelOfferCall__Inputs {
+    return new CancelOfferCall__Inputs(this);
+  }
+
+  get outputs(): CancelOfferCall__Outputs {
+    return new CancelOfferCall__Outputs(this);
+  }
+}
+
+export class CancelOfferCall__Inputs {
+  _call: CancelOfferCall;
+
+  constructor(call: CancelOfferCall) {
+    this._call = call;
+  }
+
+  get id(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+}
+
+export class CancelOfferCall__Outputs {
+  _call: CancelOfferCall;
+
+  constructor(call: CancelOfferCall) {
+    this._call = call;
+  }
+}
+
+export class CreateBuyOfferCall extends ethereum.Call {
+  get inputs(): CreateBuyOfferCall__Inputs {
+    return new CreateBuyOfferCall__Inputs(this);
+  }
+
+  get outputs(): CreateBuyOfferCall__Outputs {
+    return new CreateBuyOfferCall__Outputs(this);
+  }
+}
+
+export class CreateBuyOfferCall__Inputs {
+  _call: CreateBuyOfferCall;
+
+  constructor(call: CreateBuyOfferCall) {
+    this._call = call;
+  }
+
+  get id(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get eventId(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+
+  get ticketTypeId(): Bytes {
+    return this._call.inputValues[2].value.toBytes();
+  }
+
+  get price(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get deadline(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+
+  get v(): i32 {
+    return this._call.inputValues[5].value.toI32();
+  }
+
+  get r(): Bytes {
+    return this._call.inputValues[6].value.toBytes();
+  }
+
+  get s(): Bytes {
+    return this._call.inputValues[7].value.toBytes();
+  }
+}
+
+export class CreateBuyOfferCall__Outputs {
+  _call: CreateBuyOfferCall;
+
+  constructor(call: CreateBuyOfferCall) {
+    this._call = call;
+  }
+}
+
 export class CreateEventCall extends ethereum.Call {
   get inputs(): CreateEventCall__Inputs {
     return new CreateEventCall__Inputs(this);
@@ -1367,6 +1737,52 @@ export class CreateEventCall__Outputs {
   _call: CreateEventCall;
 
   constructor(call: CreateEventCall) {
+    this._call = call;
+  }
+}
+
+export class CreateSellOfferCall extends ethereum.Call {
+  get inputs(): CreateSellOfferCall__Inputs {
+    return new CreateSellOfferCall__Inputs(this);
+  }
+
+  get outputs(): CreateSellOfferCall__Outputs {
+    return new CreateSellOfferCall__Outputs(this);
+  }
+}
+
+export class CreateSellOfferCall__Inputs {
+  _call: CreateSellOfferCall;
+
+  constructor(call: CreateSellOfferCall) {
+    this._call = call;
+  }
+
+  get id(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get eventId(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+
+  get ticketTypeId(): Bytes {
+    return this._call.inputValues[2].value.toBytes();
+  }
+
+  get ticketId(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get price(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+}
+
+export class CreateSellOfferCall__Outputs {
+  _call: CreateSellOfferCall;
+
+  constructor(call: CreateSellOfferCall) {
     this._call = call;
   }
 }
@@ -1927,40 +2343,6 @@ export class TransferFromCall__Outputs {
   _call: TransferFromCall;
 
   constructor(call: TransferFromCall) {
-    this._call = call;
-  }
-}
-
-export class TransferTicketCall extends ethereum.Call {
-  get inputs(): TransferTicketCall__Inputs {
-    return new TransferTicketCall__Inputs(this);
-  }
-
-  get outputs(): TransferTicketCall__Outputs {
-    return new TransferTicketCall__Outputs(this);
-  }
-}
-
-export class TransferTicketCall__Inputs {
-  _call: TransferTicketCall;
-
-  constructor(call: TransferTicketCall) {
-    this._call = call;
-  }
-
-  get _recipient(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _tokenId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class TransferTicketCall__Outputs {
-  _call: TransferTicketCall;
-
-  constructor(call: TransferTicketCall) {
     this._call = call;
   }
 }

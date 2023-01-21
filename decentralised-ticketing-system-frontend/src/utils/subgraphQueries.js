@@ -28,8 +28,8 @@ export const EVENTS_BY_ORGANIZER_QUERY = gql`
 `;
 
 export const CURRENT_EVENTS_BY_ORGANIZER_QUERY = gql`
-    query Events($creator: String!, $timestamp: String!) {
-        createEvents(where: { creator: $creator, startTime_lte: $timestamp }) {
+    query Events($creator: String!) {
+        createEvents(where: { creator: $creator }) {
             id
             eventId
         }
@@ -64,6 +64,45 @@ export const AVAILABLE_TICKETS_FOR_EVENT = gql`
             eventId
             ticketType_id
             ticketType_name
+        }
+    }
+`;
+
+export const CURRENT_EVENT_BY_ID_QUERY = gql`
+    query Event($eventId: String!) {
+        createEvents(where: { eventId: $eventId }) {
+            id
+            eventId
+            name
+            description
+            eventStorage
+            startTime
+            endTime
+            blockTimestamp
+        }
+    }
+`;
+
+export const TICKEY_TYPES_BY_EVENTID_QUERY = gql`
+    query TicketTypes($eventId: String!) {
+        createTicketTypes(where: { eventId: $eventId }) {
+            eventId
+            ticketType_id
+            ticketType_name
+            ticketType_price
+            ticketType_maxSupply
+            ticketType_currentSupply
+            blockTimestamp
+        }
+    }
+`;
+
+export const TICKET_SALES_QUERY = gql`
+    query TicketSales($eventId: String!) {
+        buyTickets(where: { eventId: $eventId }) {
+            ticketTypeId
+            tokenId
+            blockTimestamp
         }
     }
 `;

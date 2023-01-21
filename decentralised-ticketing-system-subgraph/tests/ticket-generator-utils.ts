@@ -1,10 +1,15 @@
 import { newMockEvent } from "matchstick-as"
-import { ethereum, Address, BigInt, Bytes } from "@graphprotocol/graph-ts"
+import { ethereum, Bytes, Address, BigInt } from "@graphprotocol/graph-ts"
 import {
+  AcceptBuyOffer,
+  AcceptSellOffer,
   Approval,
   ApprovalForAll,
   BuyTicket,
+  CancelOffer,
+  CreateBuyOffer,
   CreateEvent,
+  CreateSellOffer,
   CreateTicketType,
   DeleteEvent,
   DeleteTickeyType,
@@ -19,6 +24,94 @@ import {
   UpdateTicketType,
   Withdraw
 } from "../generated/TicketGenerator/TicketGenerator"
+
+export function createAcceptBuyOfferEvent(
+  offerId: Bytes,
+  buyer: Address,
+  seller: Address,
+  eventId: Bytes,
+  ticketTypeId: Bytes,
+  ticketId: BigInt,
+  price: BigInt
+): AcceptBuyOffer {
+  let acceptBuyOfferEvent = changetype<AcceptBuyOffer>(newMockEvent())
+
+  acceptBuyOfferEvent.parameters = new Array()
+
+  acceptBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("offerId", ethereum.Value.fromFixedBytes(offerId))
+  )
+  acceptBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer))
+  )
+  acceptBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("seller", ethereum.Value.fromAddress(seller))
+  )
+  acceptBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
+  )
+  acceptBuyOfferEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketTypeId",
+      ethereum.Value.fromFixedBytes(ticketTypeId)
+    )
+  )
+  acceptBuyOfferEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketId",
+      ethereum.Value.fromUnsignedBigInt(ticketId)
+    )
+  )
+  acceptBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
+  )
+
+  return acceptBuyOfferEvent
+}
+
+export function createAcceptSellOfferEvent(
+  offerId: Bytes,
+  buyer: Address,
+  seller: Address,
+  eventId: Bytes,
+  ticketTypeId: Bytes,
+  ticketId: BigInt,
+  price: BigInt
+): AcceptSellOffer {
+  let acceptSellOfferEvent = changetype<AcceptSellOffer>(newMockEvent())
+
+  acceptSellOfferEvent.parameters = new Array()
+
+  acceptSellOfferEvent.parameters.push(
+    new ethereum.EventParam("offerId", ethereum.Value.fromFixedBytes(offerId))
+  )
+  acceptSellOfferEvent.parameters.push(
+    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer))
+  )
+  acceptSellOfferEvent.parameters.push(
+    new ethereum.EventParam("seller", ethereum.Value.fromAddress(seller))
+  )
+  acceptSellOfferEvent.parameters.push(
+    new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
+  )
+  acceptSellOfferEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketTypeId",
+      ethereum.Value.fromFixedBytes(ticketTypeId)
+    )
+  )
+  acceptSellOfferEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketId",
+      ethereum.Value.fromUnsignedBigInt(ticketId)
+    )
+  )
+  acceptSellOfferEvent.parameters.push(
+    new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
+  )
+
+  return acceptSellOfferEvent
+}
 
 export function createApprovalEvent(
   owner: Address,
@@ -114,6 +207,64 @@ export function createBuyTicketEvent(
   return buyTicketEvent
 }
 
+export function createCancelOfferEvent(
+  offerId: Bytes,
+  sender: Address
+): CancelOffer {
+  let cancelOfferEvent = changetype<CancelOffer>(newMockEvent())
+
+  cancelOfferEvent.parameters = new Array()
+
+  cancelOfferEvent.parameters.push(
+    new ethereum.EventParam("offerId", ethereum.Value.fromFixedBytes(offerId))
+  )
+  cancelOfferEvent.parameters.push(
+    new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender))
+  )
+
+  return cancelOfferEvent
+}
+
+export function createCreateBuyOfferEvent(
+  offerId: Bytes,
+  buyer: Address,
+  eventId: Bytes,
+  ticketTypeId: Bytes,
+  price: BigInt,
+  deadline: BigInt
+): CreateBuyOffer {
+  let createBuyOfferEvent = changetype<CreateBuyOffer>(newMockEvent())
+
+  createBuyOfferEvent.parameters = new Array()
+
+  createBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("offerId", ethereum.Value.fromFixedBytes(offerId))
+  )
+  createBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer))
+  )
+  createBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
+  )
+  createBuyOfferEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketTypeId",
+      ethereum.Value.fromFixedBytes(ticketTypeId)
+    )
+  )
+  createBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
+  )
+  createBuyOfferEvent.parameters.push(
+    new ethereum.EventParam(
+      "deadline",
+      ethereum.Value.fromUnsignedBigInt(deadline)
+    )
+  )
+
+  return createBuyOfferEvent
+}
+
 export function createCreateEventEvent(
   creator: Address,
   eventId: Bytes,
@@ -162,6 +313,46 @@ export function createCreateEventEvent(
   )
 
   return createEventEvent
+}
+
+export function createCreateSellOfferEvent(
+  offerId: Bytes,
+  seller: Address,
+  eventId: Bytes,
+  ticketTypeId: Bytes,
+  ticketId: BigInt,
+  price: BigInt
+): CreateSellOffer {
+  let createSellOfferEvent = changetype<CreateSellOffer>(newMockEvent())
+
+  createSellOfferEvent.parameters = new Array()
+
+  createSellOfferEvent.parameters.push(
+    new ethereum.EventParam("offerId", ethereum.Value.fromFixedBytes(offerId))
+  )
+  createSellOfferEvent.parameters.push(
+    new ethereum.EventParam("seller", ethereum.Value.fromAddress(seller))
+  )
+  createSellOfferEvent.parameters.push(
+    new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
+  )
+  createSellOfferEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketTypeId",
+      ethereum.Value.fromFixedBytes(ticketTypeId)
+    )
+  )
+  createSellOfferEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketId",
+      ethereum.Value.fromUnsignedBigInt(ticketId)
+    )
+  )
+  createSellOfferEvent.parameters.push(
+    new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
+  )
+
+  return createSellOfferEvent
 }
 
 export function createCreateTicketTypeEvent(

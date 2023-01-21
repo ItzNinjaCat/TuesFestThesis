@@ -16,23 +16,43 @@ function EventCard({
     name,
     description,
     imagesCid,
-    id,
-    creator
+    creator,
+    url,
+    startTime,
+    endTime
 }) {
     const navigate = useNavigate();
     const [imageUrls, setImageUrls] = React.useState([]);
-    Promise.resolve(fetchImageUrls(imagesCid, setImageUrls));
-    
+    React.useEffect(() => {
+        console.log();
+        Promise.resolve(fetchImageUrls(imagesCid, setImageUrls));
+    }, [imagesCid]);
     function openEventPage() {
-        navigate(`/events/${id}`);
+        navigate(url);
     }
+    if( imageUrls?.length === 0 ) return null;
     return (
         <>
             <div role="button" onClick={openEventPage}>
                 {imageUrls.length > 0 ? <Image src={imageUrls[0]} className="mt-2" fluid rounded/> : null}
-                <h3 className='text-break'>{name}</h3>
-                <p className='text-break'>{description}</p>
-                <p className='text-break'>{creator}</p>
+                <h4 className='text-break'>{name}</h4>
+                <p className='text-break desc-text'>
+                    {
+                        `
+                        ${(new Date(startTime * 1000)).toLocaleDateString()} 
+                        ${(new Date(startTime * 1000)).toLocaleTimeString().slice(0, -3)} 
+                        ${`
+                            ${
+                            ((endTime * 1000 === 0) ? '' : 
+                                ` - ${(new Date(endTime * 1000)).toLocaleDateString()}  
+                                ${(new Date(endTime * 1000)).toLocaleTimeString().slice(0,-3)}
+                            `)
+                            }
+                        `}
+                            
+                        `
+                    }
+                            </p>
             </div>
             </>
         )

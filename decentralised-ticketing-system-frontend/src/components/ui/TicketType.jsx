@@ -117,7 +117,7 @@ const TicketType = (({
             setValidatedPersonal(false);
         }
 
-        setTicketAmountGift(1);
+        setTicketAmountPersonal(1);
     });     
     const [ticketImage, setTicketImage] = useState(undefined);
     const [souvenirImage, setSouvenirImage] = useState(undefined);

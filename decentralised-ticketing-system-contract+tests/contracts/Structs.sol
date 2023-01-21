@@ -27,8 +27,23 @@ library Structs {
         uint256 id;
         bytes32 eventId;
         bytes32 ticketTypeId;
-        uint256 souvenirId; 
+        uint256 souvenirId;
         address owner;
         bool souvenirMinted;
+        bool usable;
+    }
+
+    struct Offer {
+        bytes32 id;
+        bytes32 eventId;
+        bytes32 ticketTypeId;
+        uint256 ticketId;
+        uint256 price;
+        address seller;
+        address buyer;
+        bool accepted;
+        uint256 deadline;
+        bool buyOffer;
+        bool sellOffer;
     }
 }

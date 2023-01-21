@@ -1,0 +1,205 @@
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { useParams } from 'react-router-dom';
+import { CURRENT_EVENT_BY_ID_QUERY, TICKET_SALES_QUERY } from '../utils/subgraphQueries';
+import Loader from '../components/ui/Loader';
+import { formatEther } from 'ethers/lib/utils';
+import { useWeb3React } from '@web3-react/core';
+import { connectorHooks, getName } from '../utils/connectors';
+import { getContract } from '../utils/contractUtils';
+import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
+import {
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar
+} from "recharts";
+function EventDashboard() {
+    const { id } = useParams();
+    const [event, setEvent] = useState(undefined);
+    const [ticketTypes, setTicketTypes] = useState(undefined);
+    const [ticketSales, setTicketSales] = useState(undefined);
+    const [chartData, setchartData] = useState([]);
+    const [chartColors, setChartColors] = useState([]);
+    const [dates, setDates] = useState([]);
+    const [salesInfo, setSalesInfo] = useState([]);
+    const [totalSales, setTotalSales] = useState(0);
+    const [totalProfit, setTotalProfit] = useState(0);
+    const { connector } = useWeb3React();
+    const hooks = connectorHooks[getName(connector)];
+    const { useProvider, useAccount } = hooks;
+    const provider = useProvider();
+    const account = useAccount();
+    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+    const { loading: loadingEvent, error: errorEvent, data : dataEvent } = useQuery(CURRENT_EVENT_BY_ID_QUERY, {
+        variables: {
+            eventId: String(id)
+        }
+    });
+    const { loading: loadingTicketSales, error: errorTicketSales, data: dataTicketSales } = useQuery(TICKET_SALES_QUERY, {
+        variables: {
+            eventId: String(id)
+        }
+    });
+    useEffect(() => {
+        if (!loadingEvent) {
+            contract.getEvent(id).then((res) => {
+                setEvent({
+                    creator: res[0],
+                    name: res[1],
+                    description: res[2],
+                    imageCid: res[3],
+                    ticketTypes: res[4],
+                    createdAt: dataEvent.createEvents[0].blockTimestamp,
+                    startTime: dataEvent.createEvents[0].startTime,
+                    endTime: dataEvent.createEvents[0].endTime,
+                });
+                const results = res[4].map(async (ticketType) => {
+                    return await contract.getTicketType(id, ticketType);
+                });
+                Promise.all(results).then((res) => {
+                    const tmpColors = [];
+                    res.forEach((ticketType) => {
+                        tmpColors.push("#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase());
+                    });
+                    setChartColors(tmpColors);
+                    setTicketTypes(res);
+                });
+            });
+            let current = new Date(dataEvent.createEvents[0].blockTimestamp * 1000);
+            current.setHours(0, 0, 0, 0);
+            const end = new Date();
+            const tmpDates = [];
+            const tmpChartData = [];
+            while (current.getTime() <= end.getTime()) {
+                tmpDates.push(current);
+                current = new Date(current.setDate(current.getDate() + 1));
+                tmpChartData.push({
+                    name : current.getDate()  + "." + (current.getMonth()+1) + "." + current.getFullYear().toString().substr(-2)
+                })
+            }
+            setDates(tmpDates);
+            setchartData(tmpChartData);
+        }
+    }, [dataEvent, loadingEvent]);
+    useEffect(() => {
+        if (!loadingTicketSales) {
+            setTicketSales(dataTicketSales.buyTickets);
+        }
+    }, [dataTicketSales, loadingTicketSales]);
+
+    useEffect(() => {
+        if (ticketTypes !== undefined && ticketSales !== undefined && dates?.length > 0) {
+            const sales = [];
+            let tmpTotalSales = 0;
+            let tmpTotalProfit = 0;
+            ticketTypes.forEach((ticketType) => {
+                sales.push({
+                    ticketType: ticketType.name,
+                    sales: 0,
+                    price: ticketType.price
+                })
+            });
+            const tmpChartData = [...chartData];
+            ticketTypes.forEach((ticketType) => {
+                tmpChartData.forEach((data) => {
+                    data[ticketType.name] = 0;
+                });
+                ticketSales.forEach((ticketSale) => {
+                    if (ticketSale.ticketTypeId === ticketType.id) {
+                        dates.forEach((date) => {
+                            const dateEnd = new Date(date);
+                            dateEnd.setHours(24, 0, 0, 0);
+                            const dateSale = new Date(ticketSale.blockTimestamp * 1000);
+                            if (dateSale.getTime() >= date.getTime() && dateSale.getTime() < dateEnd.getTime()) {
+                                tmpChartData.forEach((data) => {
+                                    if (data.name === date.getDate()  + "." + (date.getMonth()+1) + "." + date.getFullYear().toString().substr(-2)) {
+                                        data[ticketType.name] += 1;
+                                        tmpTotalSales += 1;
+                                        tmpTotalProfit += Number(formatEther(ticketType.price));
+                                        sales.forEach((sale) => {
+                                            if (sale.ticketType === ticketType.name) {
+                                                sale.sales += 1;
+                                            }
+                                        }
+                                        );
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+            setSalesInfo(sales);
+            setchartData(tmpChartData);
+            setTotalSales(tmpTotalSales);
+            setTotalProfit(tmpTotalProfit);
+        }
+    }, [ticketSales, ticketTypes, dates]);
+    if (loadingEvent || event === undefined || chartData?.length === 0) return <Loader />;
+    if (errorEvent) return <p>Error: {errorEvent.message}</p>;
+    return (
+        <>
+            <div className="d-flex mt-8 justify-content-around">
+                <div className="d-flex justify-content-center align-items-center flex-column">
+                    <h1>{event.name}</h1>
+                    <BarChart
+                    width={800}
+                    height={300}
+                    data={chartData}
+                    margin={{
+                        top: 5,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
+                    }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis allowDecimals={false} />
+                        <Tooltip />
+                        <Legend />
+                        {
+                            ticketTypes !== undefined && ticketTypes.map((ticketType, index) => {
+                                return <Bar key={ticketType.id} type="monotone" dataKey={ticketType.name} fill={chartColors[index]} />
+                            })
+                        }
+                    </BarChart>
+                </div>
+                    <div className="d-flex justify-content-center align-items-center flex-column me-10">
+                        <h2>Sales Details</h2>
+                    <div className="d-flex justify-content-center align-items-start flex-column">
+                        <div>
+                            <p>Total sales : {totalSales}</p>
+                            <p>Total profit : {totalProfit}</p>
+                        </div>
+                            {salesInfo.map(sale => {
+                                return (
+                                    <div key={sale.ticketType}>
+                                        <p>{sale.ticketType} : {sale.sales}</p>
+                                        <p>Profit: {Number(sale.sales * formatEther(sale.price))}</p>
+                                    </div>
+                                )
+                            })}
+                    </div>
+                </div> 
+            </div> 
+            <div className="d-flex justify-content-center align-items-center flex-column mt-10">
+                <h2>Event details</h2>
+                <div className="d-flex justify-content-center align-items-start flex-column">
+                    <p>Start time: {new Date(event.startTime * 1000).toLocaleString()}</p>
+                    <p>End time: {new Date(event.endTime * 1000).toLocaleString()}</p>
+                    <p>Location: {event.location}</p>
+                    <p>Organizer: {event.creator}</p>
+                    <p>Event description: {event.description}</p>
+                </div>
+            </div>
+        </>
+    )
+}
+
+export default EventDashboard;

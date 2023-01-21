@@ -10,6 +10,7 @@ module.exports = function override(config, env) {
         assert: require.resolve('assert/'),
         path: require.resolve('path-browserify'),
         os: require.resolve('os-browserify/browser'),
+        console: require.resolve('console-browserify'),
     };
     config.resolve.extensions = [...config.resolve.extensions, '.ts', '.js'];
     config.plugins = [

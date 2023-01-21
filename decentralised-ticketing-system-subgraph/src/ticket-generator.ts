@@ -1,8 +1,13 @@
 import {
+  AcceptBuyOffer as AcceptBuyOfferEvent,
+  AcceptSellOffer as AcceptSellOfferEvent,
   Approval as ApprovalEvent,
   ApprovalForAll as ApprovalForAllEvent,
   BuyTicket as BuyTicketEvent,
+  CancelOffer as CancelOfferEvent,
+  CreateBuyOffer as CreateBuyOfferEvent,
   CreateEvent as CreateEventEvent,
+  CreateSellOffer as CreateSellOfferEvent,
   CreateTicketType as CreateTicketTypeEvent,
   DeleteEvent as DeleteEventEvent,
   DeleteTickeyType as DeleteTickeyTypeEvent,
@@ -18,10 +23,15 @@ import {
   Withdraw as WithdrawEvent
 } from "../generated/TicketGenerator/TicketGenerator"
 import {
+  AcceptBuyOffer,
+  AcceptSellOffer,
   Approval,
   ApprovalForAll,
   BuyTicket,
+  CancelOffer,
+  CreateBuyOffer,
   CreateEvent,
+  CreateSellOffer,
   CreateTicketType,
   DeleteEvent,
   DeleteTickeyType,
@@ -36,6 +46,44 @@ import {
   UpdateTicketType,
   Withdraw
 } from "../generated/schema"
+
+export function handleAcceptBuyOffer(event: AcceptBuyOfferEvent): void {
+  let entity = new AcceptBuyOffer(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.offerId = event.params.offerId
+  entity.buyer = event.params.buyer
+  entity.seller = event.params.seller
+  entity.eventId = event.params.eventId
+  entity.ticketTypeId = event.params.ticketTypeId
+  entity.ticketId = event.params.ticketId
+  entity.price = event.params.price
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleAcceptSellOffer(event: AcceptSellOfferEvent): void {
+  let entity = new AcceptSellOffer(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.offerId = event.params.offerId
+  entity.buyer = event.params.buyer
+  entity.seller = event.params.seller
+  entity.eventId = event.params.eventId
+  entity.ticketTypeId = event.params.ticketTypeId
+  entity.ticketId = event.params.ticketId
+  entity.price = event.params.price
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
 
 export function handleApproval(event: ApprovalEvent): void {
   let entity = new Approval(
@@ -86,6 +134,38 @@ export function handleBuyTicket(event: BuyTicketEvent): void {
   entity.save()
 }
 
+export function handleCancelOffer(event: CancelOfferEvent): void {
+  let entity = new CancelOffer(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.offerId = event.params.offerId
+  entity.sender = event.params.sender
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleCreateBuyOffer(event: CreateBuyOfferEvent): void {
+  let entity = new CreateBuyOffer(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.offerId = event.params.offerId
+  entity.buyer = event.params.buyer
+  entity.eventId = event.params.eventId
+  entity.ticketTypeId = event.params.ticketTypeId
+  entity.price = event.params.price
+  entity.deadline = event.params.deadline
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
 export function handleCreateEvent(event: CreateEventEvent): void {
   let entity = new CreateEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32())
@@ -97,6 +177,24 @@ export function handleCreateEvent(event: CreateEventEvent): void {
   entity.eventStorage = event.params.eventStorage
   entity.startTime = event.params.startTime
   entity.endTime = event.params.endTime
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleCreateSellOffer(event: CreateSellOfferEvent): void {
+  let entity = new CreateSellOffer(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.offerId = event.params.offerId
+  entity.seller = event.params.seller
+  entity.eventId = event.params.eventId
+  entity.ticketTypeId = event.params.ticketTypeId
+  entity.ticketId = event.params.ticketId
+  entity.price = event.params.price
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp

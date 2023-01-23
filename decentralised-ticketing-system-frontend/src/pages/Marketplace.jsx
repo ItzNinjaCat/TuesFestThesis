@@ -7,25 +7,45 @@ import { useQuery } from '@apollo/client';
 import { BUY_OFFERS_QUERY, SELL_OFFERS_QUERY } from '../utils/subgraphQueries';
 import Offer from '../components/ui/Offer';
 import Loader from '../components/ui/Loader';
+import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
+import { getContract } from '../utils/contractUtils';
+import { useWeb3React } from '@web3-react/core';
+import { connectorHooks, getName } from '../utils/connectors';
+
 function Marketplace() {
   const [offerType, setOfferType] = React.useState('buy');
   const [buyOffers, setBuyOffers] = React.useState([]);
   const [sellOffers, setSellOffers] = React.useState([]);
 
+  const { connector } = useWeb3React();
+  const hooks = connectorHooks[getName(connector)];
+  const { useProvider, useAccount } = hooks;
+  const provider = useProvider();
+  const account = useAccount();
+  const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
   const { data : buyData, loading : buyLoading, error: buyError } = useQuery(BUY_OFFERS_QUERY);
   const { data : sellData, loading : sellLoading, error: sellError } = useQuery(SELL_OFFERS_QUERY);
   useEffect(() => {
-    if (!buyLoading) {
-      setBuyOffers(buyData.createBuyOffers);
+    if (!buyLoading) {  
+      const offerPromises = buyData.createBuyOffers.map(async (offer) => {
+        return await contract.getOffer(offer.offerId).catch((err) => { console.log(offer) });
+      });
+      Promise.all(offerPromises).then((results) => {
+        setBuyOffers(results);
+      });
     }
   }, [buyData, buyLoading]);
 
-  useEffect(() => {
-    if (!sellLoading) {
-      console.log(sellData);
-      setSellOffers(sellData.createSellOffers);
-    }
-  }, [sellData, sellLoading]);
+  // useEffect(() => {
+  //   if (!sellLoading) {
+  //     const offerPromises = sellData.createSellOffers.map(async (offer) => {
+  //       return await contract.getOffer(offer.offerId);
+  //     });
+  //     Promise.all(offerPromises).then((results) => {
+  //       setSellOffers(results);
+  //     });
+  //   }
+  // }, [sellData, sellLoading]);
 
   return (
     <div className="container my-5">
@@ -59,12 +79,12 @@ function Marketplace() {
             <div className='d-flex justify-content-center mt-10'>
               <div className='row w-75 d-flex justify-content-around'>
                 {offerType === 'buy' ? buyOffers?.map((offer) =>
-                  <div className='w-25 col-4 d-flex flex-wrap text-wrap event-card'>
-                    <Offer key={offer.id} offer={offer} />
+                  <div key={offer.id} className='w-25 col-4 d-flex flex-wrap text-wrap event-card'>
+                    <Offer key={offer.id} offer={offer}  contract={contract}/>
                   </div>
                 ) : sellOffers?.map((offer) =>
-                  <div className='w-25 col-4 d-flex flex-wrap text-wrap event-card'>
-                    <Offer key={offer.id} offer={offer} />
+                  <div key={offer.id} className='w-25 col-4 d-flex flex-wrap text-wrap event-card'>
+                    <Offer key={offer.id} offer={offer} contract={contract}/>
                   </div>
                 )}
               </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { TICKET_ADDRESS, TICKET_ABI } from "../constants/contracts";
 import { connectorHooks, getName } from "../utils/connectors";
 import { getContract } from "../utils/contractUtils";
@@ -14,6 +14,7 @@ function Tickets() {
     const [event, setEvent] = useState(undefined);
     const [ticketTypes, setTicketTypes] = useState(undefined);
     const [validated, setValidated] = useState(false);
+    const navigate = useNavigate();
     const [selectedTicket, setSelectedTicket] = useState({
         name: "",
         price: "",
@@ -32,6 +33,7 @@ function Tickets() {
         if (!provider || !account) return;
         if(!contract) return;
         contract.getEvent(id).then((event) => {
+            if(event[0] !== account) navigate("/");
             return {
                 eventId: id,
                 organizer: event[0],
@@ -55,10 +57,12 @@ function Tickets() {
                         souvenirURI: ticketType.souvenirTokenURI,
                         tokenURI: ticketType.tokenURI
                      };
+                }).catch((err) => {
+                    console.log(err);
                 });
             })
             Promise.all(ticketTypesPromises).then((types) => {
-                setTicketTypes(types);
+                setTicketTypes(types.filter((type) => type !== undefined));
             });
         });
 

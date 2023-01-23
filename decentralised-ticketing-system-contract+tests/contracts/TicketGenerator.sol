@@ -456,8 +456,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     }
 
     function getSouvenir(
-        uint256 _ticketId,
-        address _recipient
+        uint256 _ticketId
     )
         external
         ticketExists(_ticketId)
@@ -468,7 +467,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         require(!ticket.souvenirMinted, "Souvenir already minted");
         require(!ticket.usable, "Ticket still hasn't been used");
         uint256 souvenirId = souvenirGenerator.generateSouvenir(
-            _recipient,
+            msg.sender,
             events[ticket.eventId]
                 .ticketTypes[ticket.ticketTypeId]
                 .souvenirTokenURI
@@ -589,6 +588,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     ) external {
         token.permit(msg.sender, address(this), price, deadline, v, r, s);
         Structs.Offer memory offer;
+        offer.id = id;
         offer.buyer = msg.sender;
         offer.eventId = eventId;
         offer.ticketTypeId = ticketTypeId;
@@ -639,6 +639,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         uint256 price
     ) external onlyTicketOwner(ticketId) {
         Structs.Offer memory offer;
+        offer.id = id;
         offer.seller = msg.sender;
         offer.eventId = eventId;
         offer.ticketTypeId = ticketTypeId;

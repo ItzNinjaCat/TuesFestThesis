@@ -49,7 +49,7 @@ function CreateEvent() {
         if(validated === true){
             return;
         }
-        if (!provider || !account || !contract) {
+        if (!provider && !account && !contract.provider) {
             navigate('/');
         }
         else if (provider && account && contract) {
@@ -140,6 +140,14 @@ function CreateEvent() {
                 const tx = await contract.createEvent(eventId, name, desc, eventImagesCid, startDateUNIX, endDateUNIX);
                 tx.wait().then(() => {
                     const ticketTypes = ticketInputFields.map(async (ticket, index) => {
+                        console.log(                            eventId,
+                            ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
+                            ticket.name,
+                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_metadata.json`),
+                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_souvenir_metadate.json`),
+                            ethers.utils.parseEther(String(ticket.price)),
+                            ticket.quantity
+                        )
                         return await contract.createTicketType(
                             eventId,
                             ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
@@ -147,11 +155,13 @@ function CreateEvent() {
                             encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_metadata.json`),
                             encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_souvenir_metadate.json`),
                             ethers.utils.parseEther(String(ticket.price)),
-                            ticket.quantity
-                        );
+                            ticket.quantity, {
+                                 gasLimit: 500000
+                        });
                     });
-                    Promise.all(ticketTypes).then(() => {
-                        navigate(`/events/${eventId}`);
+                    Promise.all(ticketTypes).then((types) => {
+                        console.log(types);
+                        // navigate(`/events/${eventId}`);
                     });
                 })
             });

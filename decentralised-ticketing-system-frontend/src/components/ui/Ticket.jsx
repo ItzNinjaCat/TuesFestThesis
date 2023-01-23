@@ -15,8 +15,16 @@ function Ticket({
     const [ticketType, setTicketType] = useState(undefined);
     const [event, setEvent] = useState(undefined);
     const [show, setShow] = useState(false);
-
     const navigate = useNavigate();
+
+    function getSouvenir() {
+        contract.getSouvenir(ticket.id).then((res) => {
+            console.log(res)
+        }).catch((e) => {
+            alert(e.reason);
+        });
+    }
+
     useEffect(() => {
         fetch((tokenURI)).then(res => {
             res.json().then(metadata => {
@@ -28,7 +36,7 @@ function Ticket({
     useEffect(() => {
         contract.getTicketType(ticket.eventId, ticket.ticketTypeId).then((ticketType) => {
             setTicketType(ticketType);
-        });
+        }).catch((e) => {});
         contract.getEvent(ticket.eventId).then((res) => {
             setEvent({
                 creator: res[0],
@@ -38,7 +46,7 @@ function Ticket({
                 startTime: res[4],
                 endTime: res[5],
             });
-        });
+        }).catch((e) => {});
     }, []);
     return (
         <>
@@ -92,7 +100,7 @@ function Ticket({
                 </Modal.Body>
                 <Modal.Footer className='d-flex justify-content-between'>
                                 <Button onClick={() => navigate(`/events/${ticket?.eventId}`)}>Go to event's page</Button>
-                                <Button>
+                                <Button onClick={getSouvenir}>
                                     Get souvenir
                                 </Button>
                 </Modal.Footer>

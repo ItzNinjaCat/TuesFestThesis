@@ -66,12 +66,17 @@ function EventDashboard() {
                     ticketTypes: res[6],
                     createdAt: dataEvent.createEvents[0].blockTimestamp,
                 });
-                const results = res[6].map(async (ticketType) => {
-                    return await contract.getTicketType(id, ticketType);
+                const results = res[6].map((ticketType) => {
+                    return contract.getTicketType(id, ticketType).then((result) => {
+                        return result;
+                    }).catch((err) => {
+                        console.log(err);
+                    });
                 });
                 Promise.all(results).then((res) => {
                     const tmpColors = [];
                     let biggestSupply = 0;
+                    res = res.filter((ticketType) => ticketType !== undefined);
                     res.forEach((ticketType) => {
                         if (Number(ticketType.maxSupply) > biggestSupply) {
                             biggestSupply = Number(ticketType.maxSupply);
@@ -82,7 +87,10 @@ function EventDashboard() {
                     setTicketTypes(res);
                     setMaxSupply(biggestSupply);
                 });
-            })
+            }).catch((err) => {
+                console.log(err);
+                navigate('/');
+            });
         }
     }, [dataEvent, loadingEvent]);
 

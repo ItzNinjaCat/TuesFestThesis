@@ -156,6 +156,16 @@ describe("NFT generator", function () {
           ethers.utils.parseEther("0.001"),
           100,
         );
+        const ticketTypeId2 = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId2'));
+        await ticketGenerator.connect(addr1).createTicketType(
+          eventId,
+          ticketTypeId2,
+          testName,
+          "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
+          "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
+          ethers.utils.parseEther("0.002"),
+          10,
+        );
         expect((await ticketGenerator.getTicketType(eventId, ticketTypeId)).id).to.equal(ticketTypeId);
       });
       it("Should revert because event does not exist", async function () {
@@ -328,7 +338,7 @@ const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         );
         expect((await ticketGenerator.getTicket(1)).owner).to.equal(owner.address);
         await ticketGenerator.connect(owner).useTicket(1);
-        await ticketGenerator.connect(owner).getSouvenir(1, owner.address);
+        await ticketGenerator.connect(owner).getSouvenir(1);
         expect((await ticketGenerator.connect(owner).getTicket(1)).souvenirId).to.equal(0);
       });
     });

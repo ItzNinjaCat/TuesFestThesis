@@ -6,7 +6,7 @@ import { getContract } from '../utils/contractUtils';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from '../utils/connectors';
 import Ticket from '../components/ui/Ticket';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import "../style/style.scss";
 import Loader from '../components/ui/Loader';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
@@ -26,7 +26,10 @@ function UserProfile() {
             owner: String(address)
         }
     });
+    const navigate = useNavigate(); 
     useEffect(() => {
+        if (account === undefined && provider === undefined) return;
+        if(account !== address) navigate("/");
         if (!loading) {
             Promise.all(data.buyTickets.map(async (ticket) => {
                 return {
@@ -37,7 +40,7 @@ function UserProfile() {
                    setTickets(results);
                 })
         }
-    }, [provider, account, contract, address, data, loading]);
+    }, [provider, account, address, data, loading]);
     if (loading) return <Loader />;
     if (error) return <p>Error: {error.message}</p>;
     if (tickets === undefined) return <Loader/>;
@@ -47,7 +50,8 @@ function UserProfile() {
                 <ToggleButton
                 type="radio"
                 variant="secondary"
-                onClick={() => {
+                    onClick={() => {
+                    console.log('tickets');
                     setTab('tickets');
                 }
             }
@@ -56,7 +60,8 @@ function UserProfile() {
                 <ToggleButton
                 type="radio"
                 variant="secondary"
-                onClick={() => {
+                    onClick={() => {
+                    console.log('souvenirs');
                     setTab('souvenirs');
                 }
                 }
@@ -65,6 +70,7 @@ function UserProfile() {
             </ButtonGroup>
             <div className='d-flex justify-content-center flex-wrap mt-10'>
                 {
+                    tab === 'tickets' ?
                     tickets.map((ticket, index) => {
                         if (index % 4 === 0) {
                         return (
@@ -83,6 +89,8 @@ function UserProfile() {
                     }
                     return null;
                     })
+                        
+                    : null
                 }
                 </div>
                 </>

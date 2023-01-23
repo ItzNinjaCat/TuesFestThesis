@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { onAttemptToApprove } from '../../utils/contractUtils';
 import { ethers } from 'ethers';
 import useBalances from '../../hooks/useBalance';
+import { formatEther, parseEther } from 'ethers/lib/utils';
 const TicketType = (({
     eventId,
     ticketTypeId,
@@ -43,20 +44,25 @@ const TicketType = (({
     const handleShowGift = () => setShowGift(true);
     const handleCloseGift = () => setShowGift(false);
     const buyTickets = (async (recipient, amount) => {
-        const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount));
-        const ticketSale = Array(amount).fill(0).map(async () => {
-            return await contract.buyTicket(
-                eventId,
-                ticketTypeId,
-                recipient,
-                signature.deadline,
-                signature.v,
-                signature.r,
-                signature.s
-            )
-        });
-        Promise.all(ticketSale).then(() => {
-            console.log('done');
+        const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount), new Date() + 60 * 60);
+        const tx = await contract.ticketPurchasePermit(
+            parseEther(String(price * amount)),
+            signature.deadline,
+            signature.v,
+            signature.r,
+            signature.s,
+        )
+        tx.wait().then(() => {
+            const ticketSale = Array(Number(amount)).fill(0).map(async () => {
+                return await contract.buyTicket(
+                    eventId,
+                    ticketTypeId,
+                    recipient
+                )
+            });
+            Promise.all(ticketSale).then(() => {
+                console.log('done');
+            });
         });
     });
 
@@ -256,12 +262,23 @@ const TicketType = (({
                         New balance : {(Number(balances) - Number(price * ticketAmountPersonal))} TIK
                     </p>
                 </Modal.Body>
-                </Modal>
-            <Button onClick={handleShowPersonal} className="mb-3">Buy ticket for this address</Button>
-            <Button onClick={handleShowGift}>Buy ticket for another address</Button>
-            <p>Currently available: {Number(currentSupply)}</p>
-            {ticketImage !== undefined ? <Image src={ticketImage} fluid rounded/> : null}
-            {souvenirImage !== undefined ? <Image src={souvenirImage} fluid rounded/> : null}
+            </Modal>
+            <div>
+                <div className='d-flex justify-content-center'>
+                    <h3>{name}</h3>
+                </div>
+                <p className='desc-text d-flex justify-content-between'>
+                    <span>
+                        Price: {price}
+                    </span>
+                    <span>
+                        Available: {Number(currentSupply)}
+                    </span>
+                </p>
+                <Button onClick={handleShowPersonal} className="me-6">Buy</Button>
+                <Button onClick={handleShowGift}>Gift</Button>
+            </div>
+            {ticketImage !== undefined ? <Image src={ticketImage} fluid rounded className='m-4'/> : null}
         </div>
     );
 });

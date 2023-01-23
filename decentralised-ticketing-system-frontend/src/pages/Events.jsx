@@ -20,7 +20,7 @@ function Events() {
     const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
     
     useEffect(() => {
-        if (!loading) {
+        if (!loading && !error) {
             const eventsPromises = data.createEvents.map(async (event) => {
                 return await contract.getEvent(event.eventId).then((result) => {
                     return {
@@ -34,22 +34,22 @@ function Events() {
                         endTime: result[5],
                         ticketTypes: result[6],
                     };
-                })
+                }).catch((e) => {});
             })
             Promise.all(eventsPromises).then((events) => {
-                setEvents(events);
+                setEvents(events.filter((event) => event !== null && event !== undefined));
             });
         }
-    }, [data, provider, account, loading, contract]);
+    }, [provider, account, loading, data]);
     if(loading || events === undefined) return <Loader/>;
     if (error) return <p>Error: {error.message}</p>;
     return (
         <div className='d-flex justify-content-center flex-wrap mt-5'>
                 {
-                    events.map((event, index) => {
+                    events?.map((event, index) => {
                         if (index % 4 === 0) {
                             return (
-                            <div key={event.eventId} className='row w-75 d-flex justify-content-start'>
+                            <div key={event?.eventId} className='row w-75 d-flex justify-content-start'>
                                     {
                                         events.slice(index, index + 4).map((event) => 
                                         <div key={event.id}
@@ -65,6 +65,7 @@ function Events() {
                                             creator={event.organizer}
                                         />
                                             </div>
+                                        
                                         )
                                     }
                             </div>

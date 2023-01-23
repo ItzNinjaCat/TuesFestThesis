@@ -7,12 +7,14 @@ import ToggleButton  from 'react-bootstrap/ToggleButton';
 import { BUY_TICKETS_EVENT_QUERY, SELL_TICKETS_QUERY, AVAILABLE_TICKETS_FOR_EVENT } from '../../utils/subgraphQueries';
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
-import { TICKET_ADDRESS, TICKET_ABI } from '../../constants/contracts';
+import { TICKET_ADDRESS, TICKET_ABI, TIK_ADDRESS, TIK_ABI } from '../../constants/contracts';
 import { getContract } from '../../utils/contractUtils';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from '../../utils/connectors';
 import { randomBytes } from 'ethers/lib/utils';
 import { ethers } from 'ethers';
+import { onAttemptToApprove } from "../../utils/contractUtils";
+import { parseEther } from "ethers/lib/utils";
 
 function CreateOfferModal() {
   const [show, setShow] = React.useState(false);
@@ -30,7 +32,8 @@ function CreateOfferModal() {
   const { useProvider, useAccount } = hooks;
   const provider = useProvider();
   const account = useAccount();
-  const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -69,10 +72,12 @@ function CreateOfferModal() {
                         startTime: result[4],
                         endTime: result[5],
                     };
-                })
+                }).catch((err) => {
+                    console.log(err);
+                });
             })
             Promise.all(eventsPromises).then((events) => {
-                setEvents(events);
+                setEvents(events.filter((event) => event !== undefined));
             });
       }
     }
@@ -81,12 +86,15 @@ function CreateOfferModal() {
     if(offerType === 'sell') {
       if (!eventsSellLoading) {
         const ticketPromises = eventsSellData.buyTickets.map((ticket) => {
-          return contract.getTicket(ticket.tokenId).then((ticket) => {
-            if(ticket.owner === account && ticket.usable === true)
-              return ticket;
-          });
+            return contract.getTicket(ticket.tokenId).then((ticket) => {
+                if (ticket.owner === account && ticket.usable === true)
+                    return ticket;
+            }).catch((err) => {
+                console.log(err);
+            });
         });
-        Promise.all(ticketPromises).then((tickets) => {
+          Promise.all(ticketPromises).then((tickets) => {
+        tickets = tickets.filter((ticket) => ticket !== undefined);
           setTicketObj(tickets);
           const promises = tickets.map((ticket) => {
             return {
@@ -207,9 +215,11 @@ function CreateOfferModal() {
       setValidated(true);
       console.log('submit');
       const offerId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [randomBytes(32).toLocaleString()]));
-      if (offerType === 'buy') {
+        if (offerType === 'buy') {
+            const event = events.find((event) => event.eventId === selectedEvent);
+            const signature = await onAttemptToApprove(contract, tokenContract, account, price, +new Date(event.startTime * 1000) + 60 * 60);
         contract.createBuyOffer(
-          offerId, selectedEvent, selectedTicketId, price).then((res) => {
+          offerId, selectedEvent, selectedTicketId, parseEther(price), signature.deadline, signature.v, signature.r, signature.s).then((res) => {
             console.log(res);
             handleClose();
           });

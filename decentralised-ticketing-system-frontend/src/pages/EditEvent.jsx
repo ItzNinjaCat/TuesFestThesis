@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { connectorHooks, getName } from "../utils/connectors";
 import { useWeb3React } from "@web3-react/core";
 import { TICKET_ADDRESS, TICKET_ABI } from "../constants/contracts";
@@ -9,6 +9,7 @@ import { Form, Row, Col, Button } from "react-bootstrap";
 import { uploadImmutableData } from '../utils/web3.storageEndpoints'
 function EditEvent() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { connector } = useWeb3React();
     const hooks = connectorHooks[getName(connector)];
     const { useProvider, useAccount } = hooks;
@@ -32,6 +33,9 @@ function EditEvent() {
         if (contract !== undefined && account !== undefined) {
             
             contract.getEvent(id).then((result) => {
+                if (result[0] !== account) {
+                    navigate('/');
+                }
                 const event = {
                     id: result[0],
                     name: result[1],

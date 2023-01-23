@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import SelectWalletModal from '../ui/ConnectModal';
 import Deposit from '../ui/Deposit';
+import Withdraw from '../ui/Withdraw';
 import Button from 'react-bootstrap/Button';
 import { useWeb3React } from '@web3-react/core';
 import Navbar from 'react-bootstrap/Navbar';
@@ -107,10 +108,15 @@ function Header() {
               {isActive ?
                 <div className="d-flex align-items-center">
                 <div className="d-flex flex-column align-items-end mx-2">
-                  <code>{account}</code>
+                  <code className='me-3'>{account}</code>
                   <div className="d-flex align-items-center justify-content-between w-100">
-                    <Deposit tokenContract={tokenContract} provider={provider} accounts={accounts} account={account} setBalance={setBalance}/>
-                    <code>Balance: {balance} Tik</code>
+                    <div className='me-2'>
+                      <Deposit tokenContract={tokenContract} provider={provider} accounts={accounts} account={account} setBalance={setBalance}/>
+                    </div>
+                    <div className='me-1'>
+                      <Withdraw tokenContract={tokenContract} provider={provider} accounts={accounts} account={account} setBalance={setBalance}/>
+                    </div>
+                    <code className='me-2'>Balance: {balance} Tik</code>
                   </div>
                 </div>
                 <Link to={`/user/${account}`} className='text-secondary'><CgProfile size="3em"/></Link>

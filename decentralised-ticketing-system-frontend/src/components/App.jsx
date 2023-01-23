@@ -12,7 +12,7 @@ import EventDashboard from '../pages/EventDashboard';
 import EditEvent from '../pages/EditEvent';
 import Tickets from '../pages/Tickets';
 import useScrollDirection from '../hooks/useScrollDirection';
-
+import UseTicket from '../pages/UseTicket';
 
 function App() {
   const scrollDirection = useScrollDirection();
@@ -35,6 +35,7 @@ function App() {
             <Route path="events/:id/dashboard" element={<EventDashboard />} />
             <Route path="events/:id/edit" element={<EditEvent />} />
             <Route path="events/:id/tickets/edit" element={<Tickets />} />
+            <Route path="use/:id" element={<UseTicket />} />
           </Routes>
         </div>
       </div>

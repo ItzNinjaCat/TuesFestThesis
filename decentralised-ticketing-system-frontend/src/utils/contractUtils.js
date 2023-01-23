@@ -28,10 +28,9 @@ export function getContract(address, ABI, library, account) {
     return new Contract(address, ABI, getProviderOrSigner(library, account));
 }
 
-export async function onAttemptToApprove(ticketContract, tokenContract, account, amount) {
+export async function onAttemptToApprove(ticketContract, tokenContract, account, amount, deadline) {
     console.log(amount);
     const nonce = await tokenContract.nonces(account); // Our Token Contract Nonces
-    const deadline = +new Date() + 60 * 60; // Permit with deadline which the permit is valid
     const wrapValue = parseEther(amount); // Value to approve for the spender to use
 
     const EIP712Domain = [

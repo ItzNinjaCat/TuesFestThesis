@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { EVENTS_BY_ORGANIZER_QUERY } from '../utils/subgraphQueries';
 import Loader from '../components/ui/Loader';
@@ -16,6 +16,7 @@ function OrganizerProfile() {
     const provider = useProvider();
     const account = useAccount();
     const { address } = useParams();
+    const navigate = useNavigate();
     const { loading, error, data } = useQuery(EVENTS_BY_ORGANIZER_QUERY, {
         variables: {
             creator: String(address)
@@ -24,6 +25,8 @@ function OrganizerProfile() {
     const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
 
     useEffect(() => {
+        if (account === undefined && provider === undefined) return;
+        if(account !== address) navigate("/");
         if (!loading) {
             const eventsPromises = data.createEvents.map(async (event) => {
                 return await contract.getEvent(event.eventId).then((result) => {
@@ -37,10 +40,10 @@ function OrganizerProfile() {
                         startTime: result[4],
                         endTime: result[5],
                     };
-                })
+                }).catch(() => {});
             })
             Promise.all(eventsPromises).then((events) => {
-                setEvents(events);
+                setEvents(events.filter((event) => event !== undefined));
             });
         }
     }, [data, provider, account, loading]);

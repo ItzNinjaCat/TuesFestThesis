@@ -77,6 +77,7 @@ export const BUY_OFFERS_QUERY = gql`
     query BuyOffers {
         createBuyOffers(orderBy: blockTimestamp, orderDirection: desc) {
             id
+            offerId
             eventId
             ticketTypeId
             price
@@ -90,6 +91,7 @@ export const SELL_OFFERS_QUERY = gql`
     query SellOffers {
         createSellOffers(orderBy: blockTimestamp, orderDirection: desc) {
             id
+            offerId
             eventId
             ticketTypeId
             ticketId

@@ -1,0 +1,10 @@
+{
+  "goerli": {
+    "TicketGenerator": {
+      "address": "0x1617ECdcEE81127b8A1c9734fB56E737C6dD22e7"
+    },
+    "SouvenirGenerator": {
+      "address": "0xbF7A0c556E50FA612098AF3Deb7a401718d54448"
+    }
+  }
+}

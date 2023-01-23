@@ -116,6 +116,8 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
 
     event CancelOffer(bytes32 indexed offerId, address indexed sender);
 
+    event UseTicket(address indexed sender, uint256 ticketId);
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     SouvenirGenerator private souvenirGenerator;
@@ -158,6 +160,19 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
 
     modifier ticketExists(uint256 _tokenId) {
         require(_exists(_tokenId), "Ticket does not exist");
+        _;
+    }
+
+    modifier onlyTicketOwner(uint256 _tokenId) {
+        require(
+            ownerOf(_tokenId) == msg.sender,
+            "Only ticket owner can call this function"
+        );
+        _;
+    }
+
+    modifier offerExists(bytes32 _offerId) {
+        require(offers[_offerId].id != 0, "Offer does not exist");
         _;
     }
 
@@ -306,6 +321,9 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             souvenirTokenURI: _souvenirTokenURI
         });
         events[_eventId].ticketTypes[_ticketTypeId] = ticketType;
+        events[_eventId].indexOf[_ticketTypeId] = uint8(
+            events[_eventId].ticketTypeIds.length
+        );
         events[_eventId].ticketTypeIds.push(_ticketTypeId);
         emit CreateTicketType(msg.sender, _eventId, ticketType);
     }
@@ -345,11 +363,22 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         ticketTypeExists(_eventId, _ticketTypeId)
         onlyOrganizer
     {
+        Structs.Event storage _event = events[_eventId];
         require(
-            events[_eventId].organizer == msg.sender,
+            _event.organizer == msg.sender,
             "Only organizer can remove ticket type"
         );
-        delete events[_eventId].ticketTypes[_ticketTypeId];
+        delete _event.ticketTypes[_ticketTypeId];
+
+        uint8 index = _event.indexOf[_ticketTypeId];
+        uint8 lastIndex = uint8(_event.ticketTypeIds.length) - 1;
+        bytes32 lastKey = _event.ticketTypeIds[lastIndex];
+
+        _event.indexOf[lastKey] = index;
+        delete _event.indexOf[_ticketTypeId];
+
+        _event.ticketTypeIds[index] = lastKey;
+        _event.ticketTypeIds.pop();
         emit DeleteTickeyType(msg.sender, _eventId, _ticketTypeId);
     }
 
@@ -427,22 +456,22 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     }
 
     function getSouvenir(
-        bytes32 _eventId,
-        bytes32 _ticketTypeId,
         uint256 _ticketId,
         address _recipient
     )
         external
-        eventExists(_eventId)
-        ticketTypeExists(_eventId, _ticketTypeId)
         ticketExists(_ticketId)
+        onlyTicketOwner(_ticketId)
         returns (uint256)
     {
         Structs.Ticket memory ticket = tickets[_ticketId];
         require(!ticket.souvenirMinted, "Souvenir already minted");
+        require(!ticket.usable, "Ticket still hasn't been used");
         uint256 souvenirId = souvenirGenerator.generateSouvenir(
             _recipient,
-            events[_eventId].ticketTypes[_ticketTypeId].souvenirTokenURI
+            events[ticket.eventId]
+                .ticketTypes[ticket.ticketTypeId]
+                .souvenirTokenURI
         );
         ticket.souvenirMinted = true;
         ticket.souvenirId = souvenirId;
@@ -495,7 +524,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         address _sender,
         address _recipient,
         uint256 _tokenId
-    ) private {
+    ) private onlyTicketOwner(_tokenId) {
         _transfer(_sender, _recipient, _tokenId);
         tickets[_tokenId].owner = _recipient;
         emit TransferTicket(_sender, _recipient, _tokenId);
@@ -608,7 +637,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         bytes32 ticketTypeId,
         uint256 ticketId,
         uint256 price
-    ) external {
+    ) external onlyTicketOwner(ticketId) {
         Structs.Offer memory offer;
         offer.seller = msg.sender;
         offer.eventId = eventId;
@@ -619,6 +648,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         offer.buyOffer = false;
         offer.sellOffer = false;
         offers[id] = offer;
+        tickets[ticketId].usable = false;
         emit CreateSellOffer(
             id,
             msg.sender,
@@ -654,6 +684,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         transferTicket(offer.seller, msg.sender, offer.ticketId);
         offer.accepted = true;
         offer.buyer = msg.sender;
+        tickets[offer.ticketId].usable = true;
         emit AcceptSellOffer(
             id,
             offer.seller,
@@ -676,5 +707,31 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         require(!offer.accepted, "Offer already accepted");
         delete offers[id];
         emit CancelOffer(id, msg.sender);
+    }
+
+    function getOffer(
+        bytes32 id
+    ) external view offerExists(id) returns (Structs.Offer memory) {
+        return offers[id];
+    }
+
+    function useTicket(uint256 _ticketId) external onlyOrganizer {
+        require(tickets[_ticketId].usable, "Ticket not usable");
+        require(
+            events[tickets[_ticketId].eventId].organizer == msg.sender,
+            "Not the organizer"
+        );
+        if (events[tickets[_ticketId].eventId].endTime != 0) {
+            require(
+                block.timestamp < events[tickets[_ticketId].eventId].endTime,
+                "Event has ended"
+            );
+        }
+        require(
+            block.timestamp >= events[tickets[_ticketId].eventId].startTime,
+            "Event has not started"
+        );
+        tickets[_ticketId].usable = false;
+        emit UseTicket(msg.sender, _ticketId);
     }
 }

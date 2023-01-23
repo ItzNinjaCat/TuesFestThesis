@@ -19,18 +19,8 @@ export const TICKET_QUERY = gql`
 `;
 
 export const EVENTS_BY_ORGANIZER_QUERY = gql`
-    query {
-        createEvents(where: { creator: $creator }) {
-            id
-            eventId
-        }
-    }
-`;
-
-export const CURRENT_EVENTS_BY_ORGANIZER_QUERY = gql`
     query Events($creator: String!) {
         createEvents(where: { creator: $creator }) {
-            id
             eventId
         }
     }
@@ -39,9 +29,7 @@ export const CURRENT_EVENTS_BY_ORGANIZER_QUERY = gql`
 export const BUY_TICKETS_EVENT_QUERY = gql`
     query Events {
         createEvents {
-            id
             eventId
-            name
         }
     }
 `;
@@ -49,7 +37,6 @@ export const BUY_TICKETS_EVENT_QUERY = gql`
 export const SELL_TICKETS_QUERY = gql`
     query Tickets($owner: String!) {
         buyTickets(where: { owner: $owner }) {
-            id
             eventId
             ticketTypeId
             tokenId
@@ -60,7 +47,6 @@ export const SELL_TICKETS_QUERY = gql`
 export const AVAILABLE_TICKETS_FOR_EVENT = gql`
     query Tickets($eventId: String!) {
         createTicketTypes(where: { eventId: $eventId }) {
-            id
             eventId
             ticketType_id
             ticketType_name
@@ -71,27 +57,7 @@ export const AVAILABLE_TICKETS_FOR_EVENT = gql`
 export const CURRENT_EVENT_BY_ID_QUERY = gql`
     query Event($eventId: String!) {
         createEvents(where: { eventId: $eventId }) {
-            id
             eventId
-            name
-            description
-            eventStorage
-            startTime
-            endTime
-            blockTimestamp
-        }
-    }
-`;
-
-export const TICKEY_TYPES_BY_EVENTID_QUERY = gql`
-    query TicketTypes($eventId: String!) {
-        createTicketTypes(where: { eventId: $eventId }) {
-            eventId
-            ticketType_id
-            ticketType_name
-            ticketType_price
-            ticketType_maxSupply
-            ticketType_currentSupply
             blockTimestamp
         }
     }
@@ -102,6 +68,33 @@ export const TICKET_SALES_QUERY = gql`
         buyTickets(where: { eventId: $eventId }) {
             ticketTypeId
             tokenId
+            blockTimestamp
+        }
+    }
+`;
+
+export const BUY_OFFERS_QUERY = gql`
+    query BuyOffers {
+        createBuyOffers(orderBy: blockTimestamp, orderDirection: desc) {
+            id
+            eventId
+            ticketTypeId
+            price
+            buyer
+            blockTimestamp
+        }
+    }
+`;
+
+export const SELL_OFFERS_QUERY = gql`
+    query SellOffers {
+        createSellOffers(orderBy: blockTimestamp, orderDirection: desc) {
+            id
+            eventId
+            ticketTypeId
+            ticketId
+            price
+            seller
             blockTimestamp
         }
     }

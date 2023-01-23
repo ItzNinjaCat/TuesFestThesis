@@ -32,7 +32,7 @@ function Header() {
 
   const { connector } = useWeb3React();
   const [balance, setBalance] = React.useState(undefined);
-  const [isOrganizer, setIsOrganizer] = React.useState(false);
+  const [isOrganizer, setIsOrganizer] = React.useState(undefined);
   const hooks = connectorHooks[getName(connector)];
   const { useAccount, useAccounts, useIsActive, useProvider } = hooks;
   const accounts = useAccounts();
@@ -88,11 +88,11 @@ function Header() {
                 className="d-flex align-items-center"
               >
                 <Nav.Link href="/events">Events</Nav.Link>
-                <Nav.Link href="/organizers">Organizers</Nav.Link>
                 <Nav.Link href="/marketplace">Marketplace</Nav.Link>
               </Nav>
             {
-              account !== undefined ?
+              account !== undefined && isOrganizer !== undefined ?
+                
                 (
                   isOrganizer ? 
                   <div>
@@ -101,8 +101,8 @@ function Header() {
                   </div>
                   : 
                   <Button onClick={becomeOrganizer}>Become an organizer</Button>
-              )
-              : null
+                  )
+                : null
               }
               {isActive ?
                 <div className="d-flex align-items-center">

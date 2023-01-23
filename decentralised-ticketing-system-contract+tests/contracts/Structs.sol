@@ -20,6 +20,7 @@ library Structs {
         string description;
         string eventStorage;
         bytes32[] ticketTypeIds;
+        mapping(bytes32 => uint8) indexOf;
         mapping(bytes32 => TicketType) ticketTypes;
     }
 

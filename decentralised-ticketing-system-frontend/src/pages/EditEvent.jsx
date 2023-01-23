@@ -1,24 +1,25 @@
-import React, { useEffect } from 'react';
-import {ethers} from 'ethers';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import TicketInfo from '../components/ui/TicketInfo';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useParams } from "react-router-dom";
+import { connectorHooks, getName } from "../utils/connectors";
+import { useWeb3React } from "@web3-react/core";
+import { TICKET_ADDRESS, TICKET_ABI } from "../constants/contracts";
+import { getContract } from "../utils/contractUtils";
+import { useEffect, useState } from "react";
+import { Form, Row, Col, Button } from "react-bootstrap";
 import { uploadImmutableData } from '../utils/web3.storageEndpoints'
-import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
-import { getContract } from '../utils/contractUtils';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../utils/connectors';
-
-function CreateEvent() {
-    const navigate = useNavigate();
+function EditEvent() {
+    const { id } = useParams();
+    const { connector } = useWeb3React();
+    const hooks = connectorHooks[getName(connector)];
+    const { useProvider, useAccount } = hooks;
+    const provider = useProvider();
+    const account = useAccount();
+    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
     const [validated, setValidated] = useState(false);
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
-    const [images, setImages] = useState([]);
+    const [images, setImages] = useState(undefined);
+    const [cid, setCid] = useState(undefined);
     const [startTime, setStartTime] = useState(new Date().toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
@@ -26,41 +27,38 @@ function CreateEvent() {
     const [endTime, setEndTime] = useState(0);
     const [startDate, setStartDate] = useState(new Date().toJSON().slice(0,10).replace(/-/g,'-'));
     const [endDate, setEndDate] = useState(0);
-    const [ticketTypes, setTicketTypes] = useState([0]);
-    const [ticketInputFields, setTicketInputFields] = useState([
-        { 
-            name: '', 
-            price: 0,
-            quantity: 0,
-            image: '',
-            souvenir: ''
-        }
-    ]);
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    const getTypeIndex = (ticket) => {
-        return ticketTypes.indexOf(ticket);
-    }
+
     useEffect(() => {
-        if(validated === true){
-            return;
-        }
-        if (!provider || !account || !contract) {
-            navigate('/');
-        }
-        else if (provider && account && contract) {
-        contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
-            (status) => {
-                if (!status) {
-                    navigate('/');
+        if (contract !== undefined && account !== undefined) {
+            
+            contract.getEvent(id).then((result) => {
+                const event = {
+                    id: result[0],
+                    name: result[1],
+                    description: result[2],
+                    eventStorage: result[3],
+                    startTime: result[4],
+                    endTime: result[5],
+                };
+                setCid(event.eventStorage);
+                setName(event.name);
+                setDesc(event.description);
+                setStartTime(new Date(event.startTime * 1000).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                }));
+                if (event.endTime * 1000 !== 0) {
+                    setEndTime(new Date(event.endTime * 1000).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    }));
+                    setEndDate(new Date(event.endTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
                 }
-            })
+                setStartDate(new Date(event.startTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
+            });
         }
-    }, [provider, account, contract])
+    }, [account, id]);
+
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
         console.log(form.checkValidity());
@@ -73,7 +71,6 @@ function CreateEvent() {
             e.preventDefault();
             e.stopPropagation();
             setValidated(true);
-            const creationTime = new Date().getTime() / 1000;
             const startTimeSplit = startTime.split(':');
             let startDateUNIX = new Date(`${startDate}T00:00`)
             startDateUNIX.setHours(startTimeSplit[0]);
@@ -97,64 +94,16 @@ function CreateEvent() {
             else if (endDate !== 0) {
                 endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
             }
-            const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name]));
-            console.log(eventId);
-            const ticketCids = [];
-            const ticketPromises = ticketInputFields.map(async ticket => {
-                const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir])
-                const ticketMetadata = {
-                    name: ticket.name,
-                    description: `This is a ${ticket.name} ticket for ${name}`,
-                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`),
-                    external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
-                    attributes: [{
-                        price: ticket.price,
-                        quantity: ticket.quantity,
-                        createdAt: creationTime
-                    }]
-                }
-                ticketCids.push(ticketImagesCid);
-                const souvenirMetadata = {
-                    name: `${ticket.name} Souvenir`,
-                    description: `This is a ${ticket.name} souvenir for ${name}`,
-                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`),
-                    external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
-                    attributes: [{
-                        ticketPrice: ticket.price,
-                        quantity: ticket.quantity,
-                        createdAt: creationTime
-                    }]
-                }
-                const ticketBlob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
-                const souvenirBlob = new Blob([JSON.stringify(souvenirMetadata)], { type: 'application/json' });
-                return uploadImmutableData([
-                    new File([ticketBlob], `${ticket.name}_metadata.json`),
-                    new File([souvenirBlob], `${ticket.name}_souvenir_metadate.json`)
-                ]);
+            let imagesCid;
+            if (images !== undefined) {
+                imagesCid = (await uploadImmutableData(images));
+            }
+            else {
+                imagesCid = cid;
+            }
+            const tx = await contract.updateEvent(id, name, desc, imagesCid, startDateUNIX, endDateUNIX);
+            tx.wait.then(() => console.log("Event updated"));
 
-            })
-            Promise.all(ticketPromises).then(async (responses) => {
-                console.log(responses);
-                const eventImagesCid = await uploadImmutableData(images);
-                console.log(eventImagesCid);
-                const tx = await contract.createEvent(eventId, name, desc, eventImagesCid, startDateUNIX, endDateUNIX);
-                tx.wait().then(() => {
-                    const ticketTypes = ticketInputFields.map(async (ticket, index) => {
-                        return await contract.createTicketType(
-                            eventId,
-                            ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
-                            ticket.name,
-                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_metadata.json`),
-                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_souvenir_metadate.json`),
-                            ethers.utils.parseEther(String(ticket.price)),
-                            ticket.quantity
-                        );
-                    });
-                    Promise.all(ticketTypes).then(() => {
-                        navigate(`/events/${eventId}`);
-                    });
-                })
-            });
         } 
     }
     const changeStartDate = (e) => {
@@ -198,24 +147,6 @@ function CreateEvent() {
         e.target.files = items.files;
         setImages(e.target.files);
     }
-
-    const addTicketInfo = () => {
-        console.log(ticketInputFields)
-        let newArr = [...ticketTypes];
-        newArr.push(ticketTypes[ticketTypes.length-1] + 1);
-        setTicketTypes(newArr);
-        const values = [...ticketInputFields];
-        values.push({ 
-            name: '', 
-            price: 0, 
-            quantity: 0,
-            image: '',
-            souvenir: '',
-        });
-        setTicketInputFields(values);
-    }
-
-
     return (
         <div className="my-5 d-flex flex-column align-items-center">
             <h1>Create event</h1>
@@ -246,14 +177,10 @@ function CreateEvent() {
                             accept=".jpg, .png, .jpeg, .gif"
                             multiple 
                             onChange={uploadEventImages}
-                            required
                         />
                         <Form.Text className="text-muted">
                             The first image will be used as a thumbnail
                         </Form.Text>
-                        <Form.Control.Feedback type="invalid">
-                            Please provide atleast one event image.
-                        </Form.Control.Feedback>
                     </Form.Group>
                 </Row>
                 <Row className="mb-3">
@@ -317,26 +244,14 @@ function CreateEvent() {
                             Please provide an event description.
                         </Form.Control.Feedback>
                     </Form.Group>
-                        {ticketTypes.map(ticket => 
-                            <TicketInfo 
-                                key={ticket}
-                                ticketInputFields={ticketInputFields}
-                                setTicketInputFields={setTicketInputFields}
-                                index={getTypeIndex(ticket)}
-                                ticketTypes={ticketTypes}
-                                setTicketTypes={setTicketTypes}
-                                
-                            />
-                        )}
                     <div className="d-flex justify-content-between">
-                        <Button variant="light" onClick={addTicketInfo}>Add ticket</Button>
                         <Button variant="primary" type="submit">
                             Submit
                         </Button>
                     </div>
             </Form>
-            </div>
+        </div>
     );
 }
-
-export default CreateEvent;
+    
+export default EditEvent;

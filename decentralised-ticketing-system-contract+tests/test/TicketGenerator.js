@@ -239,14 +239,17 @@ describe("NFT generator", function () {
         )
         await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("4.0") });
         preparedSignatureOwner = await generateSignature(owner.address, "1");
-        await ticketGenerator.buyTicket(
-          eventId,
-          ticketTypeId,
-          owner.address,
+        await ticketGenerator.ticketPurchasePermit(
+          ethers.utils.parseEther("1"),
           preparedSignatureOwner.deadline,
           preparedSignatureOwner.v,
           preparedSignatureOwner.r,
           preparedSignatureOwner.s
+        )
+        await ticketGenerator.buyTicket(
+          eventId,
+          ticketTypeId,
+          owner.address
         );
         expect((await ticketGenerator.getTicket(1)).owner).to.equal(owner.address);
       });
@@ -267,14 +270,17 @@ describe("NFT generator", function () {
         )
         await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("4.0") });
         preparedSignatureOwner = await generateSignature(owner.address, "1");
-        await ticketGenerator.buyTicket(
-          eventId,
-          ticketTypeId,
-          owner.address,
+        await ticketGenerator.ticketPurchasePermit(
+          ethers.utils.parseEther("1"),
           preparedSignatureOwner.deadline,
           preparedSignatureOwner.v,
           preparedSignatureOwner.r,
           preparedSignatureOwner.s
+        )
+        await ticketGenerator.buyTicket(
+          eventId,
+          ticketTypeId,
+          owner.address
         );
         expect((await ticketGenerator.getTicket(1)).owner).to.equal(owner.address);
         expect(await ticketGenerator.getMetadata(1)).to.equal("https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU");
@@ -296,8 +302,8 @@ describe("NFT generator", function () {
 const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
-        await ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, 0, 0);
-        await ticketGenerator.connect(addr1).createTicketType(
+        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, 0, 0);
+        await ticketGenerator.connect(owner).createTicketType(
           eventId,
           ticketTypeId,
           testName,
@@ -308,17 +314,21 @@ const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         )
         await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("4.0") });
         preparedSignatureOwner = await generateSignature(owner.address, "1");
-        await ticketGenerator.buyTicket(
-          eventId,
-          ticketTypeId,
-          owner.address,
+        await ticketGenerator.ticketPurchasePermit(
+          ethers.utils.parseEther("1"),
           preparedSignatureOwner.deadline,
           preparedSignatureOwner.v,
           preparedSignatureOwner.r,
           preparedSignatureOwner.s
+        )
+        await ticketGenerator.buyTicket(
+          eventId,
+          ticketTypeId,
+          owner.address
         );
         expect((await ticketGenerator.getTicket(1)).owner).to.equal(owner.address);
-        await ticketGenerator.connect(owner).getSouvenir(eventId, ticketTypeId, 1, owner.address)
+        await ticketGenerator.connect(owner).useTicket(1);
+        await ticketGenerator.connect(owner).getSouvenir(1, owner.address);
         expect((await ticketGenerator.connect(owner).getTicket(1)).souvenirId).to.equal(0);
       });
     });

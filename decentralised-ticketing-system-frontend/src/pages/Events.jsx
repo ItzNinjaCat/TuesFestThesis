@@ -44,12 +44,12 @@ function Events() {
     if(loading || events === undefined) return <Loader/>;
     if (error) return <p>Error: {error.message}</p>;
     return (
-        <div className='d-flex justify-content-center flex-wrap mt-10 h-100'>
+        <div className='d-flex justify-content-center flex-wrap mt-5'>
                 {
-                    events.map((eventsa, index) => {
+                    events.map((event, index) => {
                         if (index % 4 === 0) {
                             return (
-                            <div key={events[index].eventId} className='row w-75 d-flex justify-content-around'>
+                            <div key={event.eventId} className='row w-75 d-flex justify-content-start'>
                                     {
                                         events.slice(index, index + 4).map((event) => 
                                         <div key={event.id}
@@ -62,8 +62,7 @@ function Events() {
                                             endTime={event.endTime}
                                             imagesCid={event.eventStorage}
                                             url={`/events/${event.eventId}`}
-                                                    creator={event.organizer}
-                                                    style={{height: '200px'}}
+                                            creator={event.organizer}
                                         />
                                             </div>
                                         )

@@ -20,8 +20,8 @@ function Event() {
 
     const { eventId } = useParams(); 
     useEffect(() => {
+        if(!provider || !account) return;
         contract.getEvent(eventId).then((event) => {
-            console.log(event);
             return {
                 eventId: eventId,
                 organizer: event[0],
@@ -43,7 +43,7 @@ function Event() {
                 setTicketTypes(types);
             });
         });
-    }, [provider, account, eventId, contract]);
+    }, [provider, account, eventId]);
     if (event === undefined || ticketTypes === undefined) return <Loader/>;
     return (
         <div>
@@ -53,29 +53,38 @@ function Event() {
                 <p>{event.eventStorage}</p>
                 <p>{event.organizer}</p>
             </div>
-            <div className='row w-75 d-flex justify-content-around'>
+            <div className='d-flex justify-content-center flex-wrap mt-5'>
                 {
-                ticketTypes.map((ticketType) => 
-                    <div key={ticketType.id} className='w-25 col-4 d-flex flex-wrap text-wrap'>
-                        <TicketType
-                            eventId={eventId}
-                            ticketTypeId={ticketType.id}
-                            name={ticketType.name}
-                            price={ethers.utils.formatEther(ticketType.price)}
-                            maxSupply={Number(ticketType.maxSupply)}
-                            currentSupply={ticketType.currentSupply}
-                            tokenURI={ticketType.tokenURI}
-                            souvenirTokenURI={ticketType.souvenirTokenURI}
-                        />
-                        <p>{ticketType.id}</p>
-                        <p>{ticketType.name}</p>
-                        {/* <p>{ticketType.price}</p> */}
-                        {/* <p>{ticketType.maxSupply}</p>
-                        <p>{ticketType.currentSupply}</p> */}
-                        <p>{ticketType.tokenURI}</p>
-                        <p>{ticketType.souvenirTokenURI}</p>
-                    </div>
-                )
+                    ticketTypes.map((ticketType, index) => {
+                        if (index % 4 === 0) {
+                            return (
+                                <div key={ticketType.id} className='row w-75 d-flex justify-content-start'>
+                                    {
+                                        ticketTypes.slice(index, index + 4).map((type) => 
+                                        <div key={type.id}
+                                        className='w-25 col-3 d-flex flex-wrap text-wrap'>
+                                        <TicketType
+                                            eventId={eventId}
+                                            ticketTypeId={type.id}
+                                            name={type.name}
+                                            price={ethers.utils.formatEther(type.price)}
+                                            maxSupply={Number(type.maxSupply)}
+                                            currentSupply={type.currentSupply}
+                                            tokenURI={type.tokenURI}
+                                            souvenirTokenURI={type.souvenirTokenURI}
+                                        />
+                                        <p>{type.id}</p>
+                                        <p>{type.name}</p>
+                                        <p>{type.tokenURI}</p>
+                                        <p>{type.souvenirTokenURI}</p>
+                                        </div>
+                                        )
+                                    }
+                                </div>
+                            );
+                        }
+                            return null;
+                    })
                 }
             </div>
         </div>

@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from '../pages/Home';
 import UserProfile from '../pages/UserProfile';
 import OrganizerProfile from '../pages/OrganizerProfile';
@@ -9,19 +8,14 @@ import Event from '../pages/Event';
 import CreateEvent from '../pages/CreateEvent';
 import Header from './layout/Header';
 import Marketplace from '../pages/Marketplace';
-import useScrollDirection from '../hooks/useScrollDirection';
-import { connectorHooks, getName } from '../utils/connectors';
-import { useWeb3React } from '@web3-react/core';
 import EventDashboard from '../pages/EventDashboard';
+import EditEvent from '../pages/EditEvent';
+import Tickets from '../pages/Tickets';
+import useScrollDirection from '../hooks/useScrollDirection';
 
 
 function App() {
-  const scrollDirection = useScrollDirection();    
-  const { connector } = useWeb3React();
-  const hooks = connectorHooks[getName(connector)];
-  const { useProvider, useAccount } = hooks;
-  const provider = useProvider();
-  const account = useAccount();
+  const scrollDirection = useScrollDirection();
   
   return (
     <BrowserRouter>
@@ -39,6 +33,8 @@ function App() {
             <Route path="organizer/:address" element={<OrganizerProfile />} />
             <Route path="marketplace" element={<Marketplace />} />
             <Route path="events/:id/dashboard" element={<EventDashboard />} />
+            <Route path="events/:id/edit" element={<EditEvent />} />
+            <Route path="events/:id/tickets/edit" element={<Tickets />} />
           </Routes>
         </div>
       </div>

@@ -9,10 +9,24 @@ export const EVENTS_QUERY = gql`
     }
 `;
 
-export const TICKET_QUERY = gql`
+export const TICKETS_QUERY = gql`
     query ($owner: String!) {
         buyTickets(where: { owner: $owner }) {
             tokenId
+            tokenURI
+        }
+        acceptBuyOffers(where: { buyer: $owner }) {
+            offerId
+            eventId
+            ticketTypeId
+            ticketId
+            tokenURI
+        }
+        acceptSellOffers(where: { buyer: $owner }) {
+            offerId
+            eventId
+            ticketTypeId
+            ticketId
             tokenURI
         }
     }
@@ -41,6 +55,20 @@ export const SELL_TICKETS_QUERY = gql`
             ticketTypeId
             tokenId
         }
+        acceptBuyOffers(where: { buyer: $owner }) {
+            offerId
+            eventId
+            ticketTypeId
+            ticketId
+            tokenURI
+        }
+        acceptSellOffers(where: { buyer: $owner }) {
+            offerId
+            eventId
+            ticketTypeId
+            ticketId
+            tokenURI
+        }
     }
 `;
 
@@ -60,11 +88,6 @@ export const CURRENT_EVENT_BY_ID_QUERY = gql`
             eventId
             blockTimestamp
         }
-    }
-`;
-
-export const TICKET_SALES_QUERY = gql`
-    query TicketSales($eventId: String!) {
         buyTickets(where: { eventId: $eventId }) {
             ticketTypeId
             tokenId
@@ -72,9 +95,8 @@ export const TICKET_SALES_QUERY = gql`
         }
     }
 `;
-
-export const BUY_OFFERS_QUERY = gql`
-    query BuyOffers {
+export const OFFERS_QUERY = gql`
+    query Offers {
         createBuyOffers(orderBy: blockTimestamp, orderDirection: desc) {
             id
             offerId
@@ -84,11 +106,6 @@ export const BUY_OFFERS_QUERY = gql`
             buyer
             blockTimestamp
         }
-    }
-`;
-
-export const SELL_OFFERS_QUERY = gql`
-    query SellOffers {
         createSellOffers(orderBy: blockTimestamp, orderDirection: desc) {
             id
             offerId
@@ -98,6 +115,20 @@ export const SELL_OFFERS_QUERY = gql`
             price
             seller
             blockTimestamp
+        }
+    }
+`;
+
+export const TICKET_QUERY = gql`
+    query ($owner: String!, $eventId: String!, $ticketTypeId: String!) {
+        buyTickets(where: { owner: $owner, eventId: $eventId, ticketTypeId: $ticketTypeId }) {
+            tokenId
+        }
+        acceptBuyOffers(where: { buyer: $owner, eventId: $eventId, ticketTypeId: $ticketTypeId }) {
+            ticketId
+        }
+        acceptSellOffers(where: { buyer: $owner, eventId: $eventId, ticketTypeId: $ticketTypeId }) {
+            ticketId
         }
     }
 `;

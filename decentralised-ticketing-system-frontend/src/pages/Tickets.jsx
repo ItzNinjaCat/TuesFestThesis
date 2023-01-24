@@ -57,8 +57,8 @@ function Tickets() {
                         souvenirURI: ticketType.souvenirTokenURI,
                         tokenURI: ticketType.tokenURI
                      };
-                }).catch((err) => {
-                    console.log(err);
+                }).catch((e) => {
+                    console.log(e.reason);
                 });
             })
             Promise.all(ticketTypesPromises).then((types) => {
@@ -241,10 +241,8 @@ function Tickets() {
     }
 
     const deleteType = async () => {
-        if (selectedTicketId) {
-            const tx = await contract.removeTicketType(event.eventId, selectedTicketId);
-            await tx.wait();
-        }
+        const tx = await contract.removeTicketType(event.eventId, selectedTicketId);
+        await tx.wait();
     }
 
     return (
@@ -348,7 +346,7 @@ function Tickets() {
             </div>
             <div className="d-flex justify-content-around">
                 <Button variant="success">Add new type</Button>
-                <Button variant="danger" onClick={deleteType}>Delete this type</Button>
+                <Button variant="danger" onClick={deleteType} disabled={ticketTypes?.length <= 1 || selectedTicketId === ""}>Delete this type</Button>
             </div>
         </>
         );

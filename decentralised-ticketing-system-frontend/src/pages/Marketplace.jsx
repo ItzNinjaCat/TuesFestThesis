@@ -4,10 +4,10 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ToggleButton  from 'react-bootstrap/ToggleButton';
 import CreateOfferModal from '../components/ui/CreateOfferModal';
 import { useQuery } from '@apollo/client';
-import { BUY_OFFERS_QUERY, SELL_OFFERS_QUERY } from '../utils/subgraphQueries';
+import { OFFERS_QUERY } from '../utils/subgraphQueries';
 import Offer from '../components/ui/Offer';
 import Loader from '../components/ui/Loader';
-import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
+import { TICKET_ADDRESS, TICKET_ABI, TIK_ADDRESS, TIK_ABI } from '../constants/contracts';
 import { getContract } from '../utils/contractUtils';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from '../utils/connectors';
@@ -23,29 +23,26 @@ function Marketplace() {
   const provider = useProvider();
   const account = useAccount();
   const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-  const { data : buyData, loading : buyLoading, error: buyError } = useQuery(BUY_OFFERS_QUERY);
-  const { data : sellData, loading : sellLoading, error: sellError } = useQuery(SELL_OFFERS_QUERY);
+  const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
+  const { data, loading, error } = useQuery(OFFERS_QUERY, {
+    pollInterval: 1000
+  });
   useEffect(() => {
-    if (!buyLoading) {  
-      const offerPromises = buyData.createBuyOffers.map(async (offer) => {
-        return await contract.getOffer(offer.offerId).catch((err) => { console.log(offer) });
+    if (!loading) {  
+      const buyOfferPromises = data.createBuyOffers.map(async (offer) => {
+        return await contract.getOffer(offer.offerId).catch((e) => {});
       });
-      Promise.all(offerPromises).then((results) => {
-        setBuyOffers(results);
+      Promise.all(buyOfferPromises).then((results) => {
+        setBuyOffers(results.filter((offer) => offer !== undefined));
+      });
+      const sellOfferPromises = data.createSellOffers.map(async (offer) => {
+        return await contract.getOffer(offer.offerId);
+      });
+      Promise.all(sellOfferPromises).then((results) => {
+        setSellOffers(results.filter((offer) => offer !== undefined));
       });
     }
-  }, [buyData, buyLoading]);
-
-  // useEffect(() => {
-  //   if (!sellLoading) {
-  //     const offerPromises = sellData.createSellOffers.map(async (offer) => {
-  //       return await contract.getOffer(offer.offerId);
-  //     });
-  //     Promise.all(offerPromises).then((results) => {
-  //       setSellOffers(results);
-  //     });
-  //   }
-  // }, [sellData, sellLoading]);
+  }, [data, loading]);
 
   return (
     <div className="container my-5">
@@ -74,21 +71,46 @@ function Marketplace() {
               checked={offerType === 'sell'}
             >Sell offers</ToggleButton>
         </ButtonGroup>
-        {(buyLoading || sellLoading) ? <Loader />
+        {(loading) ? <Loader />
           : (
-            <div className='d-flex justify-content-center mt-10'>
-              <div className='row w-75 d-flex justify-content-around'>
-                {offerType === 'buy' ? buyOffers?.map((offer) =>
-                  <div key={offer.id} className='w-25 col-4 d-flex flex-wrap text-wrap event-card'>
-                    <Offer key={offer.id} offer={offer}  contract={contract}/>
-                  </div>
-                ) : sellOffers?.map((offer) =>
-                  <div key={offer.id} className='w-25 col-4 d-flex flex-wrap text-wrap event-card'>
-                    <Offer key={offer.id} offer={offer} contract={contract}/>
-                  </div>
-                )}
+            <div className='d-flex justify-content-center flex-wrap mt-5'>
+                {
+                offerType === 'buy' ? (
+                  buyOffers?.map((off, index) => {
+                  if (index % 4 === 0) {
+                    return (
+                      <div key={index} className='row w-75 d-flex justify-content-start'>
+                        {
+                          buyOffers.slice(index, index + 4).map((offer) => 
+                            <div key={offer.id} className='w-25 col-3 d-flex flex-wrap text-wrap ticket-card'>
+                              <Offer key={offer.id} offer={offer} contract={contract} account={account} tokenContract={tokenContract}/>
+                            </div>
+                          )
+                        }
+                      </div>
+                    )
+                  }
+                  return null;
+                })
+                ) : 
+                  sellOffers?.map((off, index) => {
+                  if (index % 4 === 0) {
+                    return (
+                      <div key={index} className='row w-75 d-flex justify-content-start'>
+                        {
+                          sellOffers.slice(index, index + 4).map((offer) => 
+                            <div key={offer.id} className='w-25 col-3 d-flex flex-wrap text-wrap ticket-card'>
+                              <Offer key={offer.id} offer={offer} contract={contract} account={account} tokenContract={tokenContract}/>
+                            </div>
+                          )
+                        }
+                      </div>
+                    )
+                  }
+                  return null;
+                })
+              }
               </div>
-            </div>
         )
       }
       </div>

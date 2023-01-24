@@ -33,6 +33,7 @@ export function createAcceptBuyOfferEvent(
   eventId: Bytes,
   ticketTypeId: Bytes,
   ticketId: BigInt,
+  tokenURI: string,
   price: BigInt
 ): AcceptBuyOffer {
   let acceptBuyOfferEvent = changetype<AcceptBuyOffer>(newMockEvent())
@@ -64,6 +65,9 @@ export function createAcceptBuyOfferEvent(
     )
   )
   acceptBuyOfferEvent.parameters.push(
+    new ethereum.EventParam("tokenURI", ethereum.Value.fromString(tokenURI))
+  )
+  acceptBuyOfferEvent.parameters.push(
     new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
   )
 
@@ -77,6 +81,7 @@ export function createAcceptSellOfferEvent(
   eventId: Bytes,
   ticketTypeId: Bytes,
   ticketId: BigInt,
+  tokenURI: string,
   price: BigInt
 ): AcceptSellOffer {
   let acceptSellOfferEvent = changetype<AcceptSellOffer>(newMockEvent())
@@ -106,6 +111,9 @@ export function createAcceptSellOfferEvent(
       "ticketId",
       ethereum.Value.fromUnsignedBigInt(ticketId)
     )
+  )
+  acceptSellOfferEvent.parameters.push(
+    new ethereum.EventParam("tokenURI", ethereum.Value.fromString(tokenURI))
   )
   acceptSellOfferEvent.parameters.push(
     new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))

@@ -42,8 +42,8 @@ function Event() {
             Promise.all(ticketTypesPromises).then((types) => {
                 setTicketTypes(types);
             });
-        }).catch((err) => {
-            console.log(err);
+        }).catch((e) => {
+            console.log(e.reason);
             navigate('/');
         });
     }, [provider, account, eventId]);
@@ -70,7 +70,7 @@ function Event() {
                                         ticketTypeId={type.id}
                                         name={type.name}
                                         price={ethers.utils.formatEther(type.price)}
-                                        maxSupply={Number(type.maxSupply)}
+                                        eventName={event.name}
                                         currentSupply={type.currentSupply}
                                         tokenURI={type.tokenURI}
                                         souvenirTokenURI={type.souvenirTokenURI}

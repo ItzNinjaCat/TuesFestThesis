@@ -65,7 +65,6 @@ function EditEvent() {
 
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
-        console.log(form.checkValidity());
         if (form.checkValidity() === false) {
             e.preventDefault();
             e.stopPropagation();

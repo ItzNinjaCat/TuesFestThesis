@@ -12,13 +12,13 @@ import { useState } from 'react';
 import { onAttemptToApprove } from '../../utils/contractUtils';
 import { ethers } from 'ethers';
 import useBalances from '../../hooks/useBalance';
-import { formatEther, parseEther } from 'ethers/lib/utils';
+import { parseEther } from 'ethers/lib/utils';
 const TicketType = (({
     eventId,
     ticketTypeId,
     name,
     price,
-    maxSupply,
+    eventName,
     currentSupply,
     tokenURI,
     souvenirTokenURI,
@@ -37,14 +37,20 @@ const TicketType = (({
     const [ticketAmountGift, setTicketAmountGift] = useState(1);
     const [showPersonal, setShowPersonal] = useState(false);
     const [showGift, setShowGift] = useState(false);
+    const [ showSuccessPersonal, setShowSuccessPersonal ] = useState(false);
+    const [ showSuccessGift, setShowSuccessGift ] = useState(false);
     const [validatedPersonal, setValidatedPersonal] = useState(false);
     const [validatedGift, setValidatedGift] = useState(false);
     const handleShowPersonal = () => setShowPersonal(true);
     const handleClosePersonal = () => setShowPersonal(false);
     const handleShowGift = () => setShowGift(true);
     const handleCloseGift = () => setShowGift(false);
-    const buyTickets = (async (recipient, amount) => {
-        const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount), new Date() + 60 * 60);
+    const handleShowSuccessPersonal = () => setShowSuccessPersonal(true);
+    const handleCloseSuccessPersonal = () => setShowSuccessPersonal(false);
+    const handleShowSuccessGift = () => setShowSuccessGift(true);
+    const handleCloseSuccessGift = () => setShowSuccessGift(false);
+    const buyTickets = (async (recipient, amount, handleClose, handleShowSuccess, setTickets, setAddr = undefined) => {
+        const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount), +new Date() + 60 * 60);
         const tx = await contract.ticketPurchasePermit(
             parseEther(String(price * amount)),
             signature.deadline,
@@ -52,16 +58,21 @@ const TicketType = (({
             signature.r,
             signature.s,
         )
+        handleClose();
         tx.wait().then(() => {
             const ticketSale = Array(Number(amount)).fill(0).map(async () => {
-                return await contract.buyTicket(
+                return await (await contract.buyTicket(
                     eventId,
                     ticketTypeId,
                     recipient
-                )
+                )).wait();
             });
             Promise.all(ticketSale).then(() => {
-                console.log('done');
+            setTickets(1);
+            handleShowSuccess();
+            if(setAddr !== undefined) {
+                setAddr('');
+            }
             });
         });
     });
@@ -85,7 +96,6 @@ const TicketType = (({
             !ethers.utils.isAddress(recipeintAddress) ||
             ticketAmountGift <= 0 || ticketAmountGift > currentSupply
         ) {
-            console.log('invalid');
             event.preventDefault();
             event.stopPropagation();
             setValidatedGift(true);
@@ -94,13 +104,9 @@ const TicketType = (({
             setValidatedGift(true);
             event.preventDefault();
             event.stopPropagation();
-            console.log('valid');
-            buyTickets(recipeintAddress, ticketAmountGift);
+            buyTickets(recipeintAddress, ticketAmountGift, handleCloseGift, handleShowSuccessGift, setTicketAmountGift, setRecipeintAddress);
             setValidatedGift(false);
         }
-
-        setTicketAmountGift(1);
-        setRecipeintAddress('');
     });
 
         const handleSubmitPersonal = (async (event) => {
@@ -109,7 +115,6 @@ const TicketType = (({
             form.checkValidity() === false ||
             ticketAmountGift <= 0 || ticketAmountGift > currentSupply
         ) {
-            console.log('invalid');
             event.preventDefault();
             event.stopPropagation();
             setValidatedPersonal(true);
@@ -118,12 +123,9 @@ const TicketType = (({
             setValidatedPersonal(true);
             event.preventDefault();
             event.stopPropagation();
-            console.log('valid');
-            buyTickets(account, ticketAmountPersonal);
+            buyTickets(account, ticketAmountPersonal, handleClosePersonal, handleShowSuccessPersonal, setTicketAmountPersonal);
             setValidatedPersonal(false);
         }
-
-        setTicketAmountPersonal(1);
     });     
     const [ticketImage, setTicketImage] = useState(undefined);
     const [souvenirImage, setSouvenirImage] = useState(undefined);
@@ -279,6 +281,47 @@ const TicketType = (({
                 <Button onClick={handleShowGift}>Gift</Button>
             </div>
             {ticketImage !== undefined ? <Image src={ticketImage} fluid rounded className='m-4'/> : null}
+
+        <Modal
+            show={showSuccessPersonal}
+            onHide={handleCloseSuccessPersonal}
+            centered
+        >
+            <Modal.Header closeButton>
+            <Modal.Title>Success</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p
+                style ={{
+                    fontSize: "16px",
+                    fontFamily: "monospace",
+                    fontWeight: "bold"
+                }}
+                >
+                    You have successfully purchased {ticketAmountPersonal} {name} tickets for {eventName}!
+                </p>
+            </Modal.Body>
+        </Modal>
+        <Modal
+            show={showSuccessGift}
+            onHide={handleCloseSuccessGift}
+            centered
+        >
+            <Modal.Header closeButton>
+            <Modal.Title>Success</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p
+                style ={{
+                    fontSize: "16px",
+                    fontFamily: "monospace",
+                    fontWeight: "bold"
+                }}
+                >
+                    You have successfully gifted {ticketAmountGift} {name} ticket/s for {eventName} to {recipeintAddress}!
+                </p>
+            </Modal.Body>
+        </Modal>
         </div>
     );
 });

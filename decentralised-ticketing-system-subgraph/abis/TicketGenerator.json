@@ -52,6 +52,12 @@
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "tokenURI",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "price",
         "type": "uint256"
@@ -98,6 +104,12 @@
         "internalType": "uint256",
         "name": "ticketId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "tokenURI",
+        "type": "string"
       },
       {
         "indexed": false,
@@ -781,7 +793,10 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "bytes32", "name": "id", "type": "bytes32" }],
+    "inputs": [
+      { "internalType": "bytes32", "name": "id", "type": "bytes32" },
+      { "internalType": "uint256", "name": "ticketId", "type": "uint256" }
+    ],
     "name": "acceptBuyOffer",
     "outputs": [],
     "stateMutability": "nonpayable",

@@ -59,6 +59,7 @@ export function handleAcceptBuyOffer(event: AcceptBuyOfferEvent): void {
   entity.eventId = event.params.eventId
   entity.ticketTypeId = event.params.ticketTypeId
   entity.ticketId = event.params.ticketId
+  entity.tokenURI = event.params.tokenURI
   entity.price = event.params.price
 
   entity.blockNumber = event.block.number
@@ -78,6 +79,7 @@ export function handleAcceptSellOffer(event: AcceptSellOfferEvent): void {
   entity.eventId = event.params.eventId
   entity.ticketTypeId = event.params.ticketTypeId
   entity.ticketId = event.params.ticketId
+  entity.tokenURI = event.params.tokenURI
   entity.price = event.params.price
 
   entity.blockNumber = event.block.number

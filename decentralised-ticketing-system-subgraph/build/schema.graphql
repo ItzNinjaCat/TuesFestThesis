@@ -6,6 +6,7 @@ type AcceptBuyOffer @entity(immutable: true) {
   eventId: Bytes! # bytes32
   ticketTypeId: Bytes! # bytes32
   ticketId: BigInt! # uint256
+  tokenURI: String! # string
   price: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
@@ -20,6 +21,7 @@ type AcceptSellOffer @entity(immutable: true) {
   eventId: Bytes! # bytes32
   ticketTypeId: Bytes! # bytes32
   ticketId: BigInt! # uint256
+  tokenURI: String! # string
   price: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!

@@ -92,6 +92,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         bytes32 eventId,
         bytes32 ticketTypeId,
         uint256 ticketId,
+        string tokenURI,
         uint256 price
     );
 
@@ -111,6 +112,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         bytes32 eventId,
         bytes32 ticketTypeId,
         uint256 ticketId,
+        string tokenURI,
         uint256 price
     );
 
@@ -523,7 +525,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         address _sender,
         address _recipient,
         uint256 _tokenId
-    ) private onlyTicketOwner(_tokenId) {
+    ) private {
         _transfer(_sender, _recipient, _tokenId);
         tickets[_tokenId].owner = _recipient;
         emit TransferTicket(_sender, _recipient, _tokenId);
@@ -607,13 +609,14 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         );
     }
 
-    function acceptBuyOffer(bytes32 id) external {
+    function acceptBuyOffer(bytes32 id, uint256 ticketId) external {
         Structs.Offer storage offer = offers[id];
         require(offer.buyer != msg.sender, "Cannot buy your own ticket");
         require(
             token.allowance(offer.buyer, address(this)) >= offer.price,
             "Token allowance too low"
         );
+        offer.ticketId = ticketId;
         bool success = token.transferFrom(offer.buyer, msg.sender, offer.price);
         require(success, "transfer failed");
         transferTicket(msg.sender, offer.buyer, offer.ticketId);
@@ -626,6 +629,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             offer.eventId,
             offer.ticketTypeId,
             offer.ticketId,
+            events[offer.eventId].ticketTypes[offer.ticketTypeId].tokenURI,
             offer.price
         );
         delete offers[id];
@@ -647,7 +651,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         offer.price = price;
         offer.deadline = 0;
         offer.buyOffer = false;
-        offer.sellOffer = false;
+        offer.sellOffer = true;
         offers[id] = offer;
         tickets[ticketId].usable = false;
         emit CreateSellOffer(
@@ -669,11 +673,10 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     ) external {
         Structs.Offer storage offer = offers[id];
         require(offer.seller != msg.sender, "Cannot buy your own ticket");
-
         token.permit(msg.sender, address(this), offer.price, deadline, v, r, s);
 
         require(
-            token.allowance(offer.buyer, address(this)) >= offer.price,
+            token.allowance(msg.sender, address(this)) >= offer.price,
             "Token allowance too low"
         );
         bool success = token.transferFrom(
@@ -693,6 +696,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             offer.eventId,
             offer.ticketTypeId,
             offer.ticketId,
+            events[offer.eventId].ticketTypes[offer.ticketTypeId].tokenURI,
             offer.price
         );
         delete offers[id];

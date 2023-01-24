@@ -25,6 +25,7 @@ describe("Describe entity assertions", () => {
     let eventId = Bytes.fromI32(1234567890)
     let ticketTypeId = Bytes.fromI32(1234567890)
     let ticketId = BigInt.fromI32(234)
+    let tokenURI = "Example string value"
     let price = BigInt.fromI32(234)
     let newAcceptBuyOfferEvent = createAcceptBuyOfferEvent(
       offerId,
@@ -33,6 +34,7 @@ describe("Describe entity assertions", () => {
       eventId,
       ticketTypeId,
       ticketId,
+      tokenURI,
       price
     )
     handleAcceptBuyOffer(newAcceptBuyOfferEvent)
@@ -84,6 +86,12 @@ describe("Describe entity assertions", () => {
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "ticketId",
       "234"
+    )
+    assert.fieldEquals(
+      "AcceptBuyOffer",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "tokenURI",
+      "Example string value"
     )
     assert.fieldEquals(
       "AcceptBuyOffer",

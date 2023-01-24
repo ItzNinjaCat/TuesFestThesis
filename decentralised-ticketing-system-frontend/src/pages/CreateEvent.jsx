@@ -63,7 +63,6 @@ function CreateEvent() {
     }, [provider, account, contract])
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
-        console.log(form.checkValidity());
         if (form.checkValidity() === false) {
             e.preventDefault();
             e.stopPropagation();
@@ -98,7 +97,6 @@ function CreateEvent() {
                 endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
             }
             const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name]));
-            console.log(eventId);
             const ticketCids = [];
             const ticketPromises = ticketInputFields.map(async ticket => {
                 const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir])
@@ -134,20 +132,10 @@ function CreateEvent() {
 
             })
             Promise.all(ticketPromises).then(async (responses) => {
-                console.log(responses);
                 const eventImagesCid = await uploadImmutableData(images);
-                console.log(eventImagesCid);
                 const tx = await contract.createEvent(eventId, name, desc, eventImagesCid, startDateUNIX, endDateUNIX);
                 tx.wait().then(() => {
                     const ticketTypes = ticketInputFields.map(async (ticket, index) => {
-                        console.log(                            eventId,
-                            ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
-                            ticket.name,
-                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_metadata.json`),
-                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_souvenir_metadate.json`),
-                            ethers.utils.parseEther(String(ticket.price)),
-                            ticket.quantity
-                        )
                         return await contract.createTicketType(
                             eventId,
                             ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
@@ -160,7 +148,6 @@ function CreateEvent() {
                         });
                     });
                     Promise.all(ticketTypes).then((types) => {
-                        console.log(types);
                         // navigate(`/events/${eventId}`);
                     });
                 })
@@ -210,7 +197,6 @@ function CreateEvent() {
     }
 
     const addTicketInfo = () => {
-        console.log(ticketInputFields)
         let newArr = [...ticketTypes];
         newArr.push(ticketTypes[ticketTypes.length-1] + 1);
         setTicketTypes(newArr);

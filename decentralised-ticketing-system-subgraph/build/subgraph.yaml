@@ -6,7 +6,7 @@ dataSources:
     name: TicketGenerator
     network: goerli
     source:
-      address: "0x1617ECdcEE81127b8A1c9734fB56E737C6dD22e7"
+      address: "0x80e3F0c78335bB1886F982a219AB79633cBE4bb3"
       abi: TicketGenerator
     mapping:
       kind: ethereum/events
@@ -41,10 +41,10 @@ dataSources:
           file: TicketGenerator\abis\TicketGenerator.json
       eventHandlers:
         - event: AcceptBuyOffer(indexed bytes32,indexed address,indexed
-            address,bytes32,bytes32,uint256,uint256)
+            address,bytes32,bytes32,uint256,string,uint256)
           handler: handleAcceptBuyOffer
         - event: AcceptSellOffer(indexed bytes32,indexed address,indexed
-            address,bytes32,bytes32,uint256,uint256)
+            address,bytes32,bytes32,uint256,string,uint256)
           handler: handleAcceptSellOffer
         - event: Approval(indexed address,indexed address,indexed uint256)
           handler: handleApproval
@@ -95,7 +95,7 @@ dataSources:
     name: SouvenirGenerator
     network: goerli
     source:
-      address: "0xbF7A0c556E50FA612098AF3Deb7a401718d54448"
+      address: "0x33bA084e025Fe166BfAA55Ef3fc865badE5273c3"
       abi: SouvenirGenerator
     mapping:
       kind: ethereum/events

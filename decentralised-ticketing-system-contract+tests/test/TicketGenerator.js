@@ -309,7 +309,7 @@ describe("NFT generator", function () {
 
     describe("Souvenir tests", function () {
       it("Should mint a souvenir", async function () {
-const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
+        const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
         await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, 0, 0);
@@ -342,7 +342,56 @@ const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         expect((await ticketGenerator.connect(owner).getTicket(1)).souvenirId).to.equal(0);
       });
     });
+    describe("Marketplace transactiobs", function () {
+      it("Should create a sell offer", async function () {
+        const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
+        const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
+        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, 0, 0);
+        await ticketGenerator.connect(owner).createTicketType(
+          eventId,
+          ticketTypeId,
+          testName,
+          "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
+          "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
+          ethers.utils.parseEther("1"),
+          100,
+        )
+        await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("4.0") });
+        preparedSignatureOwner = await generateSignature(owner.address, "1");
+        await ticketGenerator.ticketPurchasePermit(
+          ethers.utils.parseEther("1"),
+          preparedSignatureOwner.deadline,
+          preparedSignatureOwner.v,
+          preparedSignatureOwner.r,
+          preparedSignatureOwner.s
+        )
+        await ticketGenerator.buyTicket(
+          eventId,
+          ticketTypeId,
+          owner.address
+        );
+        expect((await ticketGenerator.getTicket(1)).owner).to.equal(owner.address);
+        const offerId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('offerId'));
+        await ticketGenerator.connect(owner).createSellOffer(
+          offerId,
+          eventId,
+          ticketTypeId,
+          1,
+          ethers.utils.parseEther("1")
+        );
 
+        await ticketGenerator.connect(addr1).deposit({ value: ethers.utils.parseEther("4.0") });
+        preparedSignatureAddr1 = await generateSignature(addr1.address, "1");
+        await ticketGenerator.connect(addr1).acceptSellOffer(
+          offerId,
+          preparedSignatureAddr1.deadline,
+          preparedSignatureAddr1.v,
+          preparedSignatureAddr1.r,
+          preparedSignatureAddr1.s
+        );
+      });
+    });
     describe("ETH Transactions", function () {
       it("Should deposit into the contract", async function () {
         const balanceBefore = await ethers.provider.getBalance(ticketGenerator.address);

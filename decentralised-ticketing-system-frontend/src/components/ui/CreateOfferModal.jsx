@@ -72,8 +72,8 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
                         startTime: result[4],
                         endTime: result[5],
                     };
-                }).catch((err) => {
-                    console.log(err);
+                }).catch((e) => {
+                    console.log(e.reason);
                 });
             })
             Promise.all(eventsPromises).then((events) => {
@@ -85,15 +85,31 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
   useEffect(() => {
     if(offerType === 'sell') {
       if (!eventsSellLoading) {
+        const ticketBuyOfferPromises = eventsSellData.acceptBuyOffers.map((ticket) => {
+            return contract.getTicket(ticket.ticketId).then((ticket) => {
+                if (ticket.owner === account && ticket.usable === true)
+                    return ticket;
+            }).catch((e) => {
+                console.log(e.reason);
+            });
+        });
+        const ticketSellOfferPromises = eventsSellData.acceptSellOffers.map((ticket) => {
+            return contract.getTicket(ticket.c).then((ticket) => {
+                if (ticket.owner === account && ticket.usable === true)
+                    return ticket;
+            }).catch((e) => {
+                console.log(e.reason);
+            });
+        });
         const ticketPromises = eventsSellData.buyTickets.map((ticket) => {
             return contract.getTicket(ticket.tokenId).then((ticket) => {
                 if (ticket.owner === account && ticket.usable === true)
                     return ticket;
-            }).catch((err) => {
-                console.log(err);
+            }).catch((e) => {
+                console.log(e.reason);
             });
         });
-          Promise.all(ticketPromises).then((tickets) => {
+        Promise.all([...ticketPromises, ...ticketBuyOfferPromises, ...ticketSellOfferPromises]).then((tickets) => {
         tickets = tickets.filter((ticket) => ticket !== undefined);
           setTicketObj(tickets);
           const promises = tickets.map((ticket) => {
@@ -213,22 +229,29 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
       e.preventDefault();
       e.stopPropagation();
       setValidated(true);
-      console.log('submit');
       const offerId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [randomBytes(32).toLocaleString()]));
         if (offerType === 'buy') {
             const event = events.find((event) => event.eventId === selectedEvent);
             const signature = await onAttemptToApprove(contract, tokenContract, account, price, +new Date(event.startTime * 1000) + 60 * 60);
         contract.createBuyOffer(
-          offerId, selectedEvent, selectedTicketId, parseEther(price), signature.deadline, signature.v, signature.r, signature.s).then((res) => {
-            console.log(res);
+          offerId, selectedEvent, selectedTicketId, parseEther(price), signature.deadline, signature.v, signature.r, signature.s).then(() => {
             handleClose();
+            handleClose();
+            setSelectedEvent("");
+            setSelectedTicket("");
+            setSelectedTicketId("");
+            setPrice("");
           });
       }
       else {
         const ticket = ticketObj.find((ticket) => ticket.ticketTypeId === selectedTicketId);
-        console.log(ticketObj)
-        const tx = await contract.createSellOffer(offerId, selectedEvent, selectedTicketId, ticket.id, price)
-        tx.wait().then(() => handleClose());
+        contract.createSellOffer(offerId, selectedEvent, selectedTicketId, ticket.id, parseEther(price)).then(() => {
+          handleClose();
+          setSelectedEvent("");
+          setSelectedTicket("");
+          setSelectedTicketId("");
+          setPrice("");
+        });
       }
     }
   }

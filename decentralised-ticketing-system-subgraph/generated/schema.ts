@@ -98,6 +98,15 @@ export class AcceptBuyOffer extends Entity {
     this.set("ticketId", Value.fromBigInt(value));
   }
 
+  get tokenURI(): string {
+    let value = this.get("tokenURI");
+    return value!.toString();
+  }
+
+  set tokenURI(value: string) {
+    this.set("tokenURI", Value.fromString(value));
+  }
+
   get price(): BigInt {
     let value = this.get("price");
     return value!.toBigInt();
@@ -220,6 +229,15 @@ export class AcceptSellOffer extends Entity {
 
   set ticketId(value: BigInt) {
     this.set("ticketId", Value.fromBigInt(value));
+  }
+
+  get tokenURI(): string {
+    let value = this.get("tokenURI");
+    return value!.toString();
+  }
+
+  set tokenURI(value: string) {
+    this.set("tokenURI", Value.fromString(value));
   }
 
   get price(): BigInt {

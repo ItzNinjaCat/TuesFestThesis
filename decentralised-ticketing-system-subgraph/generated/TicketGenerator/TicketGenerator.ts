@@ -47,8 +47,12 @@ export class AcceptBuyOffer__Params {
     return this._event.parameters[5].value.toBigInt();
   }
 
+  get tokenURI(): string {
+    return this._event.parameters[6].value.toString();
+  }
+
   get price(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
+    return this._event.parameters[7].value.toBigInt();
   }
 }
 
@@ -89,8 +93,12 @@ export class AcceptSellOffer__Params {
     return this._event.parameters[5].value.toBigInt();
   }
 
+  get tokenURI(): string {
+    return this._event.parameters[6].value.toString();
+  }
+
   get price(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
+    return this._event.parameters[7].value.toBigInt();
   }
 }
 
@@ -1489,6 +1497,10 @@ export class AcceptBuyOfferCall__Inputs {
 
   get id(): Bytes {
     return this._call.inputValues[0].value.toBytes();
+  }
+
+  get ticketId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
   }
 }
 

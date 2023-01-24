@@ -29,7 +29,6 @@ export function getContract(address, ABI, library, account) {
 }
 
 export async function onAttemptToApprove(ticketContract, tokenContract, account, amount, deadline) {
-    console.log(amount);
     const nonce = await tokenContract.nonces(account); // Our Token Contract Nonces
     const wrapValue = parseEther(amount); // Value to approve for the spender to use
 

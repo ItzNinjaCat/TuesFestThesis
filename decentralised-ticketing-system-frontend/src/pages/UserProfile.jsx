@@ -1,6 +1,6 @@
 import React, { useState, useEffect }  from 'react';
 import { useQuery } from '@apollo/client';
-import { TICKET_QUERY } from '../utils/subgraphQueries';
+import { TICKETS_QUERY } from '../utils/subgraphQueries';
 import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
 import { getContract } from '../utils/contractUtils';
 import { useWeb3React } from '@web3-react/core';
@@ -12,7 +12,7 @@ import Loader from '../components/ui/Loader';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 
 function UserProfile() {
-    const [tickets, setTickets] = useState(undefined);
+    const [tickets, setTickets] = useState([]);
     const [tab, setTab] = useState('tickets');
     const { connector } = useWeb3React();
     const hooks = connectorHooks[getName(connector)];
@@ -21,47 +21,54 @@ function UserProfile() {
     const account = useAccount();
     const { address } = useParams();
     const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    const { loading, error, data } = useQuery(TICKET_QUERY, {
+    const { loading, error, data } = useQuery(TICKETS_QUERY, {
         variables: {
             owner: String(address)
         }
     });
     const navigate = useNavigate(); 
     useEffect(() => {
-        if (account === undefined && provider === undefined) return;
+        if (account === undefined || provider === undefined) return;
         if(account !== address) navigate("/");
         if (!loading) {
-            Promise.all(data.buyTickets.map(async (ticket) => {
+            const promises = data.buyTickets.map(async (ticket) => {
                 return {
                     ticket: await contract.getTicket(ticket.tokenId),
                     tokenURI: ticket.tokenURI
                 }
-            })).then((results) => {
-                   setTickets(results);
-                })
+            });
+            const buyOfferPromises = data.acceptBuyOffers.map(async (ticket) => {
+                return {
+                    ticket: await contract.getTicket(ticket.ticketId),
+                    tokenURI: ticket.tokenURI
+                }
+            });
+            const sellOfferPromises = data.acceptSellOffers.map(async (ticket) => {
+                return {
+                    ticket: await contract.getTicket(ticket.ticketId),
+                    tokenURI: ticket.tokenURI
+                }
+            })
+            Promise.all([...promises, ...buyOfferPromises, ...sellOfferPromises]).then((results) => {
+                setTickets(results.filter((t) => t.ticket.owner === address));
+            });
         }
     }, [provider, account, address, data, loading]);
     if (loading) return <Loader />;
     if (error) return <p>Error: {error.message}</p>;
-    if (tickets === undefined) return <Loader/>;
     return (
         <>
             <ButtonGroup className="d-flex">
                 <ToggleButton
                 type="radio"
                 variant="secondary"
-                    onClick={() => {
-                    console.log('tickets');
-                    setTab('tickets');
-                }
-            }
+                    onClick={() => setTab('tickets')}
             checked={tab === 'tickets'}
             >Tickets</ToggleButton>
                 <ToggleButton
                 type="radio"
                 variant="secondary"
                     onClick={() => {
-                    console.log('souvenirs');
                     setTab('souvenirs');
                 }
                 }
@@ -71,7 +78,7 @@ function UserProfile() {
             <div className='d-flex justify-content-center flex-wrap mt-10'>
                 {
                     tab === 'tickets' ?
-                    tickets.map((ticket, index) => {
+                    tickets.map((t, index) => {
                         if (index % 4 === 0) {
                         return (
                             <div key={index} className='row w-75 d-flex justify-content-start mb-3'>

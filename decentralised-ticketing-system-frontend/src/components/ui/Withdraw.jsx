@@ -47,7 +47,6 @@ function Withdraw({
           e.preventDefault();
           setValidated(true);
           const ticketContract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-          console.log(ticketContract);
           const amount = ethers.utils.parseEther(withdrawAmount);
           const tx = await ticketContract.userWithdraw(amount);
           handleClose();

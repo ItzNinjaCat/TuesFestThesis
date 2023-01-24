@@ -41,7 +41,6 @@ function Deposit({provider, accounts, tokenContract, account, setBalance}) {
           e.preventDefault();
           setValidated(true);
           const ticketContract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-          console.log(ticketContract);
           const amount = ethers.utils.parseEther(depositAmount);
           const tx = await ticketContract.deposit({value: amount});
           handleClose();

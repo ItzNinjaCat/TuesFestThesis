@@ -76,7 +76,6 @@ function TicketInfo({
     const removeTicketInfo = () => {
         const values = [...ticketInputFields];
         const ticketValues = [...ticketTypes];
-        console.log(index);
         values.splice(index, 1);
         ticketValues.splice(index, 1);
         setTicketInputFields(values);

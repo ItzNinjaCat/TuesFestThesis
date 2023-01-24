@@ -65,8 +65,8 @@ function Ticket({
                     <span>Price: {formatEther(ticketType.price)}</span>
                     <span>Supply: {Number(ticketType.maxSupply)}</span>
                 </p>
-        : null}
-            </div>
+            : null}
+        </div>
         <Modal
             show={show}
             onHide={() => setShow(false)}

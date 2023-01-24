@@ -24,7 +24,6 @@ function EventCard({
     const navigate = useNavigate();
     const [imageUrls, setImageUrls] = React.useState([]);
     React.useEffect(() => {
-        console.log();
         Promise.resolve(fetchImageUrls(imagesCid, setImageUrls));
     }, [imagesCid]);
     function openEventPage() {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CURRENT_EVENT_BY_ID_QUERY, TICKET_SALES_QUERY } from '../utils/subgraphQueries';
+import { CURRENT_EVENT_BY_ID_QUERY } from '../utils/subgraphQueries';
 import { Button, Modal } from 'react-bootstrap';
 import Loader from '../components/ui/Loader';
 import { formatEther } from 'ethers/lib/utils';
@@ -39,19 +39,15 @@ function EventDashboard() {
     const account = useAccount();
     const navigate = useNavigate();
     const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    const { loading: loadingEvent, error: errorEvent, data : dataEvent } = useQuery(CURRENT_EVENT_BY_ID_QUERY, {
-        variables: {
-            eventId: String(id)
-        }
-    });
-    const { loading: loadingTicketSales, error: errorTicketSales, data: dataTicketSales } = useQuery(TICKET_SALES_QUERY, {
+    const { loading, error, data } = useQuery(CURRENT_EVENT_BY_ID_QUERY, {
         variables: {
             eventId: String(id)
         }
     });
 
     useEffect(() => {
-        if (!loadingEvent) {
+        if (!loading) {
+            setTicketSales(data.buyTickets);
             contract.getEvent(id).then((res) => {
                 if (res[0] !== account) {
                     navigate('/');
@@ -64,13 +60,28 @@ function EventDashboard() {
                     startTime: res[4],
                     endTime: res[5],
                     ticketTypes: res[6],
-                    createdAt: dataEvent.createEvents[0].blockTimestamp,
+                    createdAt: data.createEvents[0].blockTimestamp,
                 });
+                let current = new Date(data.createEvents[0].blockTimestamp * 1000);
+                current.setHours(0, 0, 0, 0);
+                const end = new Date(res[4] * 1000);
+                end.setHours(0, 0, 0, 0);
+                const tmpDates = [];
+                const tmpChartData = [];
+                while (current.getTime() < end.getTime()) {
+                    tmpDates.push(new Date(current));
+                    tmpChartData.push({
+                        name: current.getDate() + "." + (current.getMonth() + 1) + "." + current.getFullYear().toString().substr(-2)
+                    })
+                    current = new Date(current.setDate(current.getDate() + 1));
+                }
+                setDates(tmpDates);
+                setchartData(tmpChartData);
                 const results = res[6].map((ticketType) => {
                     return contract.getTicketType(id, ticketType).then((result) => {
                         return result;
-                    }).catch((err) => {
-                        console.log(err);
+                    }).catch((e) => {
+                        console.log(e.reason);
                     });
                 });
                 Promise.all(results).then((res) => {
@@ -87,37 +98,12 @@ function EventDashboard() {
                     setTicketTypes(res);
                     setMaxSupply(biggestSupply);
                 });
-            }).catch((err) => {
-                console.log(err);
+            }).catch((e) => {
+                console.log(e.reason);
                 navigate('/');
             });
         }
-    }, [dataEvent, loadingEvent]);
-
-    useEffect(() => {
-        if (event !== undefined && !loadingEvent) {
-            let current = new Date(dataEvent.createEvents[0].blockTimestamp * 1000);
-            current.setHours(0, 0, 0, 0);
-            const end = new Date(event.startTime * 1000);
-            end.setHours(0, 0, 0, 0);
-            const tmpDates = [];
-            const tmpChartData = [];
-            while (current.getTime() < end.getTime()) {
-                tmpDates.push(new Date(current));
-                tmpChartData.push({
-                    name: current.getDate() + "." + (current.getMonth() + 1) + "." + current.getFullYear().toString().substr(-2)
-                })
-                current = new Date(current.setDate(current.getDate() + 1));
-            }
-            setDates(tmpDates);
-            setchartData(tmpChartData);
-        }
-    }, [event, loadingEvent]);
-    useEffect(() => {
-        if (!loadingTicketSales) {
-            setTicketSales(dataTicketSales.buyTickets);
-        }
-    }, [dataTicketSales, loadingTicketSales]);
+    }, [data, loading]);
 
     useEffect(() => {
         if (ticketTypes !== undefined && ticketSales !== undefined && dates?.length > 0) {
@@ -173,14 +159,12 @@ function EventDashboard() {
             return (await contract.removeTicketType(id, ticketType)).wait();
         });
         Promise.all(promises).then(() => {
-            contract.deleteEvent(id).then((res) => {
-                console.log(res);
-            });
+            contract.deleteEvent(id);
         });
     };
 
-    if (loadingEvent || event === undefined || chartData?.length === 0) return <Loader />;
-    if (errorEvent) return <p>Error: {errorEvent.message}</p>;
+    if (loading || event === undefined || chartData?.length === 0) return <Loader />;
+    if (error) return <p>Error: {error.message}</p>;
     return (
         <>
                 <div className="d-flex mt-8 justify-content-around">

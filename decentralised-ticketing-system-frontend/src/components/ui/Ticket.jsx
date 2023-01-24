@@ -19,6 +19,10 @@ function Ticket({
 
     function getSouvenir() {
         contract.getSouvenir(ticket.id).then((res) => {
+            setShow(false);
+            res.wait().then(() => {
+                alert("Successfully minted souvenir!");
+            });
             console.log(res)
         }).catch((e) => {
             alert(e.reason);

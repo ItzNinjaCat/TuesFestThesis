@@ -47,6 +47,7 @@ function EventDashboard() {
 
     useEffect(() => {
         if (!loading) {
+            console.log(data);
             setTicketSales(data.buyTickets);
             contract.getEvent(id).then((res) => {
                 if (res[0] !== account) {
@@ -163,7 +164,7 @@ function EventDashboard() {
         });
     };
 
-    if (loading || event === undefined || chartData?.length === 0) return <Loader />;
+    if (loading || event === undefined ) return <Loader />;
     if (error) return <p>Error: {error.message}</p>;
     return (
         <>

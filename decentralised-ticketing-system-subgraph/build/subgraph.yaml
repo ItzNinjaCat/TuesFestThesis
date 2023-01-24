@@ -6,7 +6,7 @@ dataSources:
     name: TicketGenerator
     network: goerli
     source:
-      address: "0x80e3F0c78335bB1886F982a219AB79633cBE4bb3"
+      address: "0x315E8DB589C0f9d409F0D0435230db3f05168869"
       abi: TicketGenerator
     mapping:
       kind: ethereum/events
@@ -95,7 +95,7 @@ dataSources:
     name: SouvenirGenerator
     network: goerli
     source:
-      address: "0x33bA084e025Fe166BfAA55Ef3fc865badE5273c3"
+      address: "0xb602ADA6d36284b7903111fF65d92e0a8Af4FC55"
       abi: SouvenirGenerator
     mapping:
       kind: ethereum/events

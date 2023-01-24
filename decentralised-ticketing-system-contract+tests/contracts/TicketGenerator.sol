@@ -622,6 +622,8 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         transferTicket(msg.sender, offer.buyer, offer.ticketId);
         offer.accepted = true;
         offer.seller = msg.sender;
+        tickets[offer.ticketId].owner = offer.buyer;
+        tickets[offer.ticketId].usable = true;
         emit AcceptBuyOffer(
             id,
             offer.buyer,
@@ -689,6 +691,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         offer.accepted = true;
         offer.buyer = msg.sender;
         tickets[offer.ticketId].usable = true;
+        tickets[offer.ticketId].owner = offer.buyer;
         emit AcceptSellOffer(
             id,
             offer.seller,
@@ -710,6 +713,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             "Not the buyer or seller"
         );
         require(!offer.accepted, "Offer already accepted");
+        tickets[offers[id].ticketId].usable = true;
         delete offers[id];
         emit CancelOffer(id, msg.sender);
     }

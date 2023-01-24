@@ -105,7 +105,7 @@ function Offer({ offer, contract, account, tokenContract }) {
                 <span>Ticket: {type?.name}</span>
             </p>
             {(type !== undefined) ?
-                <p className='desc-text'>Price: {formatEther(type.price)}</p>
+                <p className='desc-text'>Price: {formatEther(offer.price)}</p>
             : null}
             <div className="d-flex justify-content-center">
                 <Button onClick={acceptOffer}>Accept offer</Button>

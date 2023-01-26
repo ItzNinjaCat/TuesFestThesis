@@ -6,31 +6,15 @@ import Image from 'react-bootstrap/Image';
 import QRCode from "react-qr-code";
 import { useNavigate } from 'react-router-dom';
 
-function Ticket({
-    ticket,
-    event,
-    ticketType,
-    tokenURI,
-    contract
+function Souvenir({
+    souvenir
 }) {
     const [ticketImage, setTicketImage] = useState(undefined);
     const [show, setShow] = useState(false);
     const navigate = useNavigate();
 
-    function getSouvenir() {
-        contract.getSouvenir(ticket.id).then((res) => {
-            setShow(false);
-            res.wait().then(() => {
-                alert("Successfully minted souvenir!");
-            });
-            console.log(res)
-        }).catch((e) => {
-            alert(e.reason);
-        });
-    }
-
     useEffect(() => {
-        fetch((tokenURI)).then(res => {
+        fetch((souvenir.tokenURI)).then(res => {
             res.json().then(metadata => {
                 setTicketImage(metadata.image);
             });

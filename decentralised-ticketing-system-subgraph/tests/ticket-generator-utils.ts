@@ -12,9 +12,9 @@ import {
   CreateSellOffer,
   CreateTicketType,
   DeleteEvent,
-  DeleteTickeyType,
+  DeleteTicketType,
   Deposit,
-  GenerateTicket,
+  GenerateSouvenir,
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
@@ -280,6 +280,7 @@ export function createCreateEventEvent(
   name: string,
   description: string,
   eventStorage: string,
+  location: string,
   startTime: BigInt,
   endTime: BigInt
 ): CreateEvent {
@@ -307,6 +308,9 @@ export function createCreateEventEvent(
       "eventStorage",
       ethereum.Value.fromString(eventStorage)
     )
+  )
+  createEventEvent.parameters.push(
+    new ethereum.EventParam("location", ethereum.Value.fromString(location))
   )
   createEventEvent.parameters.push(
     new ethereum.EventParam(
@@ -404,29 +408,29 @@ export function createDeleteEventEvent(
   return deleteEventEvent
 }
 
-export function createDeleteTickeyTypeEvent(
+export function createDeleteTicketTypeEvent(
   creator: Address,
   eventId: Bytes,
   ticketTypeId: Bytes
-): DeleteTickeyType {
-  let deleteTickeyTypeEvent = changetype<DeleteTickeyType>(newMockEvent())
+): DeleteTicketType {
+  let deleteTicketTypeEvent = changetype<DeleteTicketType>(newMockEvent())
 
-  deleteTickeyTypeEvent.parameters = new Array()
+  deleteTicketTypeEvent.parameters = new Array()
 
-  deleteTickeyTypeEvent.parameters.push(
+  deleteTicketTypeEvent.parameters.push(
     new ethereum.EventParam("creator", ethereum.Value.fromAddress(creator))
   )
-  deleteTickeyTypeEvent.parameters.push(
+  deleteTicketTypeEvent.parameters.push(
     new ethereum.EventParam("eventId", ethereum.Value.fromFixedBytes(eventId))
   )
-  deleteTickeyTypeEvent.parameters.push(
+  deleteTicketTypeEvent.parameters.push(
     new ethereum.EventParam(
       "ticketTypeId",
       ethereum.Value.fromFixedBytes(ticketTypeId)
     )
   )
 
-  return deleteTickeyTypeEvent
+  return deleteTicketTypeEvent
 }
 
 export function createDepositEvent(sender: Address, amount: BigInt): Deposit {
@@ -444,33 +448,33 @@ export function createDepositEvent(sender: Address, amount: BigInt): Deposit {
   return depositEvent
 }
 
-export function createGenerateTicketEvent(
-  creator: Address,
-  receiver: Address,
+export function createGenerateSouvenirEvent(
+  owner: Address,
+  ticket: ethereum.Tuple,
   tokenId: BigInt,
   tokenURI: string
-): GenerateTicket {
-  let generateTicketEvent = changetype<GenerateTicket>(newMockEvent())
+): GenerateSouvenir {
+  let generateSouvenirEvent = changetype<GenerateSouvenir>(newMockEvent())
 
-  generateTicketEvent.parameters = new Array()
+  generateSouvenirEvent.parameters = new Array()
 
-  generateTicketEvent.parameters.push(
-    new ethereum.EventParam("creator", ethereum.Value.fromAddress(creator))
+  generateSouvenirEvent.parameters.push(
+    new ethereum.EventParam("owner", ethereum.Value.fromAddress(owner))
   )
-  generateTicketEvent.parameters.push(
-    new ethereum.EventParam("receiver", ethereum.Value.fromAddress(receiver))
+  generateSouvenirEvent.parameters.push(
+    new ethereum.EventParam("ticket", ethereum.Value.fromTuple(ticket))
   )
-  generateTicketEvent.parameters.push(
+  generateSouvenirEvent.parameters.push(
     new ethereum.EventParam(
       "tokenId",
       ethereum.Value.fromUnsignedBigInt(tokenId)
     )
   )
-  generateTicketEvent.parameters.push(
+  generateSouvenirEvent.parameters.push(
     new ethereum.EventParam("tokenURI", ethereum.Value.fromString(tokenURI))
   )
 
-  return generateTicketEvent
+  return generateSouvenirEvent
 }
 
 export function createRoleAdminChangedEvent(
@@ -601,6 +605,7 @@ export function createUpdateEventEvent(
   name: string,
   description: string,
   eventStorage: string,
+  location: string,
   startTime: BigInt,
   endTime: BigInt
 ): UpdateEvent {
@@ -628,6 +633,9 @@ export function createUpdateEventEvent(
       "eventStorage",
       ethereum.Value.fromString(eventStorage)
     )
+  )
+  updateEventEvent.parameters.push(
+    new ethereum.EventParam("location", ethereum.Value.fromString(location))
   )
   updateEventEvent.parameters.push(
     new ethereum.EventParam(

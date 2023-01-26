@@ -18,6 +18,7 @@ function CreateEvent() {
     const [validated, setValidated] = useState(false);
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
+    const [location, setLocation] = useState('');
     const [images, setImages] = useState([]);
     const [startTime, setStartTime] = useState(new Date().toLocaleTimeString([], {
         hour: '2-digit',
@@ -97,6 +98,7 @@ function CreateEvent() {
                 endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
             }
             const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name]));
+            console.log(eventId);
             const ticketCids = [];
             const ticketPromises = ticketInputFields.map(async ticket => {
                 const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir])
@@ -133,7 +135,7 @@ function CreateEvent() {
             })
             Promise.all(ticketPromises).then(async (responses) => {
                 const eventImagesCid = await uploadImmutableData(images);
-                const tx = await contract.createEvent(eventId, name, desc, eventImagesCid, startDateUNIX, endDateUNIX);
+                const tx = await contract.createEvent(eventId, name, desc, eventImagesCid, location, startDateUNIX, endDateUNIX);
                 tx.wait().then(() => {
                     const ticketTypes = ticketInputFields.map(async (ticket, index) => {
                         return await contract.createTicketType(
@@ -252,6 +254,20 @@ function CreateEvent() {
                         </Form.Control.Feedback>
                     </Form.Group>
                 </Row>
+                <Form.Group controlId="eventLocation">
+                    <Form.Label>Event location</Form.Label>
+                    <Form.Control 
+                        type="text"
+                        placeholder="Enter event location"
+                        onChange={(e) => setLocation(e.target.value)}
+                        value={location}
+                        maxLength='100'
+                        required 
+                    />
+                    <Form.Control.Feedback type="invalid">
+                        Please provide an event location.
+                    </Form.Control.Feedback>
+                </Form.Group>
                 <Row className="mb-3">
                     <Form.Group as={Col} controlId="eventStartDate">
                         <Form.Label>Event start date</Form.Label>

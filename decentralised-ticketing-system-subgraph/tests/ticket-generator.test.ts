@@ -7,8 +7,8 @@ import {
   afterAll
 } from "matchstick-as/assembly/index"
 import { Bytes, Address, BigInt } from "@graphprotocol/graph-ts"
-import { AcceptBuyOffer } from "../generated/schema"
-import { AcceptBuyOffer as AcceptBuyOfferEvent } from "../generated/TicketGenerator/TicketGenerator"
+import { ExampleEntity } from "../generated/schema"
+import { AcceptBuyOffer } from "../generated/TicketGenerator/TicketGenerator"
 import { handleAcceptBuyOffer } from "../src/ticket-generator"
 import { createAcceptBuyOfferEvent } from "./ticket-generator-utils"
 
@@ -47,55 +47,55 @@ describe("Describe entity assertions", () => {
   // For more test scenarios, see:
   // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
 
-  test("AcceptBuyOffer created and stored", () => {
-    assert.entityCount("AcceptBuyOffer", 1)
+  test("ExampleEntity created and stored", () => {
+    assert.entityCount("ExampleEntity", 1)
 
     // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
     assert.fieldEquals(
-      "AcceptBuyOffer",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "ExampleEntity",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
       "offerId",
       "1234567890"
     )
     assert.fieldEquals(
-      "AcceptBuyOffer",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "ExampleEntity",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
       "buyer",
       "0x0000000000000000000000000000000000000001"
     )
     assert.fieldEquals(
-      "AcceptBuyOffer",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "ExampleEntity",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
       "seller",
       "0x0000000000000000000000000000000000000001"
     )
     assert.fieldEquals(
-      "AcceptBuyOffer",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "ExampleEntity",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
       "eventId",
       "1234567890"
     )
     assert.fieldEquals(
-      "AcceptBuyOffer",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "ExampleEntity",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
       "ticketTypeId",
       "1234567890"
     )
     assert.fieldEquals(
-      "AcceptBuyOffer",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "ExampleEntity",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
       "ticketId",
       "234"
     )
     assert.fieldEquals(
-      "AcceptBuyOffer",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "ExampleEntity",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
       "tokenURI",
       "Example string value"
     )
     assert.fieldEquals(
-      "AcceptBuyOffer",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
+      "ExampleEntity",
+      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
       "price",
       "234"
     )

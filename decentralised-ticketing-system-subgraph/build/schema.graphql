@@ -1,324 +1,63 @@
-type AcceptBuyOffer @entity(immutable: true) {
-  id: Bytes!
-  offerId: Bytes! # bytes32
-  buyer: Bytes! # address
-  seller: Bytes! # address
-  eventId: Bytes! # bytes32
-  ticketTypeId: Bytes! # bytes32
-  ticketId: BigInt! # uint256
-  tokenURI: String! # string
-  price: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Event @entity {
+    id: ID!
+    creator: Bytes!
+    name: String!
+    description: String!
+    eventStorage: String!
+    location: String!
+    startTime: BigInt!
+    endTime: BigInt!
+    ticketTypes: [TicketType!]! @derivedFrom(field: "event")
+    createdAt: BigInt!
+    updatedAt: BigInt
+    deleted: Boolean!
 }
 
-type AcceptSellOffer @entity(immutable: true) {
-  id: Bytes!
-  offerId: Bytes! # bytes32
-  buyer: Bytes! # address
-  seller: Bytes! # address
-  eventId: Bytes! # bytes32
-  ticketTypeId: Bytes! # bytes32
-  ticketId: BigInt! # uint256
-  tokenURI: String! # string
-  price: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type TicketType @entity {
+    id: ID!
+    event: Event!
+    name: String!
+    price: BigInt!
+    maxSupply: BigInt!
+    currentSupply: BigInt!
+    tokenURI: String!
+    souvenirTokenURI: String!
+    deleted: Boolean!
 }
 
-type Approval @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  approved: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Ticket @entity {
+    id: ID!
+    event: Event!
+    ticketType: TicketType!
+    creator: Bytes!
+    owner: Bytes!
+    deleted: Boolean!
+    souvenirMinted: Boolean!
+    souvenir: Souvenir @derivedFrom(field: "ticket")
+    usable: Boolean!
+    tokenId: BigInt!
+    tokenURI: String!
+    timestamp: BigInt!
 }
 
-type ApprovalForAll @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  operator: Bytes! # address
-  approved: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Souvenir @entity(immutable: true) {
+    id: ID!
+    owner: Bytes!
+    tokenId: BigInt!
+    tokenURI: String!
+    ticket: Ticket! @derivedFrom(field: "souvenir")
 }
 
-type BuyTicket @entity(immutable: true) {
-  id: Bytes!
-  buyer: Bytes! # address
-  owner: Bytes! # address
-  eventId: Bytes! # bytes32
-  ticketTypeId: Bytes! # bytes32
-  tokenId: BigInt! # uint256
-  tokenURI: String! # string
-  eventStartTime: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type CancelOffer @entity(immutable: true) {
-  id: Bytes!
-  offerId: Bytes! # bytes32
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type CreateBuyOffer @entity(immutable: true) {
-  id: Bytes!
-  offerId: Bytes! # bytes32
-  buyer: Bytes! # address
-  eventId: Bytes! # bytes32
-  ticketTypeId: Bytes! # bytes32
-  price: BigInt! # uint256
-  deadline: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type CreateEvent @entity(immutable: true) {
-  id: Bytes!
-  creator: Bytes! # address
-  eventId: Bytes! # bytes32
-  name: String! # string
-  description: String! # string
-  eventStorage: String! # string
-  startTime: BigInt! # uint256
-  endTime: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type CreateSellOffer @entity(immutable: true) {
-  id: Bytes!
-  offerId: Bytes! # bytes32
-  seller: Bytes! # address
-  eventId: Bytes! # bytes32
-  ticketTypeId: Bytes! # bytes32
-  ticketId: BigInt! # uint256
-  price: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type CreateTicketType @entity(immutable: true) {
-  id: Bytes!
-  creator: Bytes! # address
-  eventId: Bytes! # bytes32
-  ticketType_id: Bytes! # bytes32
-  ticketType_name: String! # string
-  ticketType_price: BigInt! # uint256
-  ticketType_maxSupply: BigInt! # uint256
-  ticketType_currentSupply: BigInt! # uint256
-  ticketType_tokenURI: String! # string
-  ticketType_souvenirTokenURI: String! # string
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type DeleteEvent @entity(immutable: true) {
-  id: Bytes!
-  creator: Bytes! # address
-  eventId: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type DeleteTickeyType @entity(immutable: true) {
-  id: Bytes!
-  creator: Bytes! # address
-  eventId: Bytes! # bytes32
-  ticketTypeId: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type Deposit @entity(immutable: true) {
-  id: Bytes!
-  sender: Bytes! # address
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type GenerateTicket @entity(immutable: true) {
-  id: Bytes!
-  creator: Bytes! # address
-  receiver: Bytes! # address
-  tokenId: BigInt! # uint256
-  tokenURI: String! # string
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RoleAdminChanged @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  previousAdminRole: Bytes! # bytes32
-  newAdminRole: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RoleGranted @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RoleRevoked @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type Transfer @entity(immutable: true) {
-  id: Bytes!
-  from: Bytes! # address
-  to: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type TransferTicket @entity(immutable: true) {
-  id: Bytes!
-  sender: Bytes! # address
-  receiver: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type UpdateEvent @entity(immutable: true) {
-  id: Bytes!
-  creator: Bytes! # address
-  eventId: Bytes! # bytes32
-  name: String! # string
-  description: String! # string
-  eventStorage: String! # string
-  startTime: BigInt! # uint256
-  endTime: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type UpdateTicketType @entity(immutable: true) {
-  id: Bytes!
-  creator: Bytes! # address
-  eventId: Bytes! # bytes32
-  ticketType_id: Bytes! # bytes32
-  ticketType_name: String! # string
-  ticketType_price: BigInt! # uint256
-  ticketType_maxSupply: BigInt! # uint256
-  ticketType_currentSupply: BigInt! # uint256
-  ticketType_tokenURI: String! # string
-  ticketType_souvenirTokenURI: String! # string
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type UseTicket @entity(immutable: true) {
-  id: Bytes!
-  sender: Bytes! # address
-  ticketId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type Withdraw @entity(immutable: true) {
-  id: Bytes!
-  receiver: Bytes! # address
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-type SouvenirGeneratorApproval @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  approved: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type SouvenirGeneratorApprovalForAll @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  operator: Bytes! # address
-  approved: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type GenerateSouvenir @entity(immutable: true) {
-  id: Bytes!
-  creator: Bytes! # address
-  receiver: Bytes! # address
-  tokenId: BigInt! # uint256
-  tokenURI: String! # string
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type OwnershipTransferred @entity(immutable: true) {
-  id: Bytes!
-  previousOwner: Bytes! # address
-  newOwner: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type SouvenirGeneratorTransfer @entity(immutable: true) {
-  id: Bytes!
-  from: Bytes! # address
-  to: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type TransferSouvenir @entity(immutable: true) {
-  id: Bytes!
-  sender: Bytes! # address
-  receiver: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Offer @entity {
+    id: ID!
+    event: Event!
+    ticketType: TicketType!
+    ticket: Ticket
+    price: BigInt!
+    buyer: Bytes
+    seller: Bytes
+    buyOffer: Boolean!
+    sellOffer: Boolean!
+    deadline: BigInt
+    deleted: Boolean!
 }

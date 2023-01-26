@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ToggleButton  from 'react-bootstrap/ToggleButton';
-import { BUY_TICKETS_EVENT_QUERY, SELL_TICKETS_QUERY, AVAILABLE_TICKETS_FOR_EVENT } from '../../utils/subgraphQueries';
+import { BUY_TICKETS_EVENT_QUERY, SELL_TICKETS_QUERY } from '../../utils/subgraphQueries';
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { TICKET_ADDRESS, TICKET_ABI, TIK_ADDRESS, TIK_ABI } from '../../constants/contracts';
@@ -17,23 +17,23 @@ import { onAttemptToApprove } from "../../utils/contractUtils";
 import { parseEther } from "ethers/lib/utils";
 
 function CreateOfferModal() {
-  const [show, setShow] = React.useState(false);
-  const [offerType, setOfferType] = React.useState('buy');
-  const [events, setEvents] = React.useState([]);
-  const [selectedEvent, setSelectedEvent] = React.useState("");
-  const [selectedTicket, setSelectedTicket] = React.useState("");
-  const [selectedTicketId, setSelectedTicketId] = React.useState("");
-  const [tickets, setTickets] = React.useState([]);
-  const [ticketObj, setTicketObj] = React.useState({});
-  const [price, setPrice] = React.useState("");
-  const [validated, setValidated] = React.useState(false);
-  const { connector } = useWeb3React();
-  const hooks = connectorHooks[getName(connector)];
-  const { useProvider, useAccount } = hooks;
-  const provider = useProvider();
-  const account = useAccount();
-const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
+    const [show, setShow] = React.useState(false);
+    const [offerType, setOfferType] = React.useState('buy');
+    const [events, setEvents] = React.useState([]);
+    const [selectedEvent, setSelectedEvent] = React.useState("");
+    const [selectedTicket, setSelectedTicket] = React.useState("");
+    const [selectedTicketId, setSelectedTicketId] = React.useState("");
+    const [types, setTypes] = React.useState([]);
+    const [tickets, setTickets] = React.useState({});
+    const [price, setPrice] = React.useState("");
+    const [validated, setValidated] = React.useState(false);
+    const { connector } = useWeb3React();
+    const hooks = connectorHooks[getName(connector)];
+    const { useProvider, useAccount } = hooks;
+    const provider = useProvider();
+    const account = useAccount();
+    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+    const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -41,145 +41,33 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
     variables: {
       timestamp: String(new Date().getTime())
     },
-    skip: (offerType !== 'buy'),
     pollInterval: 500
   });
-  const { loading : eventsSellLoading, data: eventsSellData } = useQuery(SELL_TICKETS_QUERY, {
+  const { loading : eventsSellLoading, data: eventsSellData, error: eventSellError } = useQuery(SELL_TICKETS_QUERY, {
     variables: {
       owner: account
     },
-    skip: (offerType !== 'sell'),
-    pollInterval: 500
-  });
-  const { loading: ticketsLoading, data: ticketsData } = useQuery(AVAILABLE_TICKETS_FOR_EVENT, {
-    variables: {
-      eventId: selectedEvent
-    },
     pollInterval: 500
   });
   useEffect(() => {
-    if (offerType === 'buy') {
-        if (!eventsBuyLoading) {
-            const eventsPromises = eventsBuyData.createEvents.map(async (event) => {
-                return await contract.getEvent(event.eventId).then((result) => {
-                    return {
-                        id: event.id,
-                        eventId: event.eventId,
-                        organizer: result[0],
-                        name: result[1],
-                        description: result[2],
-                        eventStorage: result[3],
-                        startTime: result[4],
-                        endTime: result[5],
-                    };
-                }).catch((e) => {
-                    console.log(e.reason);
-                });
-            })
-            Promise.all(eventsPromises).then((events) => {
-                setEvents(events.filter((event) => event !== undefined));
-            });
-      }
+      if (!eventsBuyLoading && offerType === 'buy') {
+        setEvents(eventsBuyData.events);
     }
   }, [eventsBuyLoading, offerType]);
   useEffect(() => {
-    if(offerType === 'sell') {
-      if (!eventsSellLoading) {
-        const ticketBuyOfferPromises = eventsSellData.acceptBuyOffers.map((ticket) => {
-            return contract.getTicket(ticket.ticketId).then((ticket) => {
-                if (ticket.owner === account && ticket.usable === true)
-                    return ticket;
-            }).catch((e) => {
-                console.log(e.reason);
-            });
+      if (!eventsSellLoading && offerType === 'sell') { 
+        const eventList = [];
+        eventsSellData.tickets.forEach((ticket) => {
+            eventList.push(ticket.event);
         });
-        const ticketSellOfferPromises = eventsSellData.acceptSellOffers.map((ticket) => {
-            return contract.getTicket(ticket.c).then((ticket) => {
-                if (ticket.owner === account && ticket.usable === true)
-                    return ticket;
-            }).catch((e) => {
-                console.log(e.reason);
-            });
-        });
-        const ticketPromises = eventsSellData.buyTickets.map((ticket) => {
-            return contract.getTicket(ticket.tokenId).then((ticket) => {
-                if (ticket.owner === account && ticket.usable === true)
-                    return ticket;
-            }).catch((e) => {
-                console.log(e.reason);
-            });
-        });
-        Promise.all([...ticketPromises, ...ticketBuyOfferPromises, ...ticketSellOfferPromises]).then((tickets) => {
-        tickets = tickets.filter((ticket) => ticket !== undefined);
-          setTicketObj(tickets);
-          const promises = tickets.map((ticket) => {
-            return {
-              event: contract.getEvent(ticket.eventId).then((event) => {
-                return {
-                  eventId: ticket.eventId,
-                  name: event[1],
-                }
-              }),
-              ticketType: contract.getTicketType(ticket.eventId, ticket.ticketTypeId).then((ticketType) => {
-                return {
-                  ...ticketType,
-                  eventId: ticket.eventId
-                }
-              })
-            }
-          });
-          Promise.all(promises.map(async (item) => {
-            const event = await item.event;
-            const ticketType = await item.ticketType;
-            return { event, ticketType };
-          })).then((tickets) => {
-            let events = [];
-            tickets.forEach((ticket) => {
-                events.push(ticket.event);
-            });
-            for(let i = 0; i < events.length; i++) {
-              for(let j = i + 1; j < events.length; j++) {
-                if(events[i].eventId === events[j].eventId) {
-                  events.splice(j, 1);
-                  j--;
-                }
-              }
-            }
-            setEvents(events);
-            const ticketTypes = [];
-            const countForIndex = [];
-            tickets.forEach((ticket) => {
-                ticketTypes.push(ticket.ticketType);
-                countForIndex.push(1);
-            });
-            for (let i = 0; i < ticketTypes.length; i++) {
-              for (let j = i + 1; j < ticketTypes.length; j++) {
-                if (ticketTypes[i].id === ticketTypes[j].id) {
-                  countForIndex[i]++;
-                  ticketTypes.splice(j, 1);
-                  countForIndex.splice(j, 1);
-                  j--;
-                }
-              }
-            }
-            const ticketsWithCount = [];
-            ticketTypes.forEach((ticketType, index) => {
-              ticketsWithCount.push({ ticketType, count: countForIndex[index] });
-            });
-            setTickets(ticketsWithCount);
-          });
-        });
-      }
+          setEvents(eventList);
+          setTickets(eventsSellData.tickets);
     }
-  }, [eventsSellLoading, offerType, account]);
-  useEffect(() => {
-    if (!ticketsLoading && offerType !== 'sell') {
-      setTickets(ticketsData.createTicketTypes);
-    }
-  }, [ticketsLoading, selectedEvent]);
+  }, [eventsSellLoading, offerType]);
 
   const selectEvent = (eventId) => {
     setSelectedEvent(eventId);
+      setTypes(events.find((event) => event.id === eventId).ticketTypes);
     setSelectedTicket("");
     setSelectedTicketId("");
     setPrice("");
@@ -188,23 +76,7 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
   const selectTicket = (ticketId) => {
     setSelectedTicketId(ticketId);
     setPrice("");
-    tickets.forEach((ticket) => {
-      if (offerType === 'sell') {
-        if (ticket.ticketType.id === ticketId) {
-          setSelectedTicket({
-            ...ticket.ticketType,
-            maxSupply: ticket.count
-          });
-       }
-      }
-      else {
-        if (ticket.ticketType_id === ticketId) {
-          contract.getTicketType(ticket.eventId, ticket.ticketType_id).then((ticketType) => {
-            setSelectedTicket(ticketType);
-          });
-        }
-      }
-    });
+    setSelectedTicket(types.find((ticket) => ticket.id === ticketId).ticketType);
     
   }
   const validatePrice = (e) => {
@@ -231,7 +103,7 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
       setValidated(true);
       const offerId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [randomBytes(32).toLocaleString()]));
         if (offerType === 'buy') {
-            const event = events.find((event) => event.eventId === selectedEvent);
+            const event = events.find((event) => event.id === selectedEvent);
             const signature = await onAttemptToApprove(contract, tokenContract, account, price, +new Date(event.startTime * 1000) + 60 * 60);
         contract.createBuyOffer(
           offerId, selectedEvent, selectedTicketId, parseEther(price), signature.deadline, signature.v, signature.r, signature.s).then(() => {
@@ -243,9 +115,9 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
             setPrice("");
           });
       }
-      else {
-        const ticket = ticketObj.find((ticket) => ticket.ticketTypeId === selectedTicketId);
-        contract.createSellOffer(offerId, selectedEvent, selectedTicketId, ticket.id, parseEther(price)).then(() => {
+        else {
+        const ticket = tickets.find((ticket) => ticket.ticketType.id === selectedTicketId);
+        contract.createSellOffer(offerId, selectedEvent, selectedTicketId, ticket.tokenId, parseEther(price)).then(() => {
           handleClose();
           setSelectedEvent("");
           setSelectedTicket("");
@@ -278,17 +150,17 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
               checked={offerType === 'buy'}
             >Buy offer</ToggleButton>
             <ToggleButton
-              type="radio"
-              variant="secondary"
-              onClick={() => {
-                setSelectedEvent("");
-                setSelectedTicket("");
-                setSelectedTicketId("");
-                setPrice("");
-                setOfferType('sell');
-              }
-              }
-              checked={offerType === 'sell'}
+                type="radio"
+                variant="secondary"
+                onClick={() => {
+                    setSelectedEvent("");
+                    setSelectedTicket("");
+                    setSelectedTicketId("");
+                    setPrice("");
+                    setOfferType('sell');
+                    }
+                }
+                checked={offerType === 'sell'}
             >Sell offer</ToggleButton>
           </ButtonGroup>
           <Form
@@ -311,7 +183,7 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
                     <option value="" disabled hidden>Choose here</option>
                     {
                       events.map((event) => (
-                        <option key={event.eventId} value={event.eventId}>{event.name}</option>
+                        <option key={event.id} value={event.id}>{event.name}</option>
                       ))
                     }
               </Form.Select>
@@ -322,14 +194,13 @@ const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
                 value={selectedTicketId}
                 onChange={(e) => selectTicket(e.target.value)}
                 required
-                >
+                disabled={selectedEvent === ""}                
+              >
                     <option value="" disabled hidden>Choose here</option>
                     {
-                  tickets.map((ticket) => ( 
-                        offerType === 'buy' && ticket?.ticketType_id ?
-                      <option key={ticket.ticketType_id} value={ticket.ticketType_id}>{ticket.ticketType_name}</option> :
-                      ticket.ticketType?.eventId === selectedEvent ?
-                      <option key={ticket.ticketType.id} value={ticket.ticketType.id}>{ticket.ticketType.name}</option> : null
+                    types.map((ticket) => ( 
+                      ticket?.event.id === selectedEvent ?
+                      <option key={ticket.id} value={ticket.id}>{ticket.name}</option> : null
                       ))
                     }
               </Form.Select>

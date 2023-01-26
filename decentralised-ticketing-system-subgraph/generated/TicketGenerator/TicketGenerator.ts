@@ -289,12 +289,16 @@ export class CreateEvent__Params {
     return this._event.parameters[4].value.toString();
   }
 
+  get location(): string {
+    return this._event.parameters[5].value.toString();
+  }
+
   get startTime(): BigInt {
-    return this._event.parameters[5].value.toBigInt();
+    return this._event.parameters[6].value.toBigInt();
   }
 
   get endTime(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
+    return this._event.parameters[7].value.toBigInt();
   }
 }
 
@@ -416,16 +420,16 @@ export class DeleteEvent__Params {
   }
 }
 
-export class DeleteTickeyType extends ethereum.Event {
-  get params(): DeleteTickeyType__Params {
-    return new DeleteTickeyType__Params(this);
+export class DeleteTicketType extends ethereum.Event {
+  get params(): DeleteTicketType__Params {
+    return new DeleteTicketType__Params(this);
   }
 }
 
-export class DeleteTickeyType__Params {
-  _event: DeleteTickeyType;
+export class DeleteTicketType__Params {
+  _event: DeleteTicketType;
 
-  constructor(event: DeleteTickeyType) {
+  constructor(event: DeleteTicketType) {
     this._event = event;
   }
 
@@ -464,25 +468,27 @@ export class Deposit__Params {
   }
 }
 
-export class GenerateTicket extends ethereum.Event {
-  get params(): GenerateTicket__Params {
-    return new GenerateTicket__Params(this);
+export class GenerateSouvenir extends ethereum.Event {
+  get params(): GenerateSouvenir__Params {
+    return new GenerateSouvenir__Params(this);
   }
 }
 
-export class GenerateTicket__Params {
-  _event: GenerateTicket;
+export class GenerateSouvenir__Params {
+  _event: GenerateSouvenir;
 
-  constructor(event: GenerateTicket) {
+  constructor(event: GenerateSouvenir) {
     this._event = event;
   }
 
-  get creator(): Address {
+  get owner(): Address {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get receiver(): Address {
-    return this._event.parameters[1].value.toAddress();
+  get ticket(): GenerateSouvenirTicketStruct {
+    return changetype<GenerateSouvenirTicketStruct>(
+      this._event.parameters[1].value.toTuple()
+    );
   }
 
   get tokenId(): BigInt {
@@ -491,6 +497,36 @@ export class GenerateTicket__Params {
 
   get tokenURI(): string {
     return this._event.parameters[3].value.toString();
+  }
+}
+
+export class GenerateSouvenirTicketStruct extends ethereum.Tuple {
+  get id(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get eventId(): Bytes {
+    return this[1].toBytes();
+  }
+
+  get ticketTypeId(): Bytes {
+    return this[2].toBytes();
+  }
+
+  get souvenirId(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get owner(): Address {
+    return this[4].toAddress();
+  }
+
+  get souvenirMinted(): boolean {
+    return this[5].toBoolean();
+  }
+
+  get usable(): boolean {
+    return this[6].toBoolean();
   }
 }
 
@@ -657,12 +693,16 @@ export class UpdateEvent__Params {
     return this._event.parameters[4].value.toString();
   }
 
+  get location(): string {
+    return this._event.parameters[5].value.toString();
+  }
+
   get startTime(): BigInt {
-    return this._event.parameters[5].value.toBigInt();
+    return this._event.parameters[6].value.toBigInt();
   }
 
   get endTime(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
+    return this._event.parameters[7].value.toBigInt();
   }
 }
 
@@ -1041,15 +1081,23 @@ export class TicketGenerator extends ethereum.SmartContract {
   buyTicket(
     _eventId: Bytes,
     _ticketTypeId: Bytes,
-    _recipient: Address
+    _recipient: Address,
+    deadline: BigInt,
+    v: i32,
+    r: Bytes,
+    s: Bytes
   ): BigInt {
     let result = super.call(
       "buyTicket",
-      "buyTicket(bytes32,bytes32,address):(uint256)",
+      "buyTicket(bytes32,bytes32,address,uint256,uint8,bytes32,bytes32):(uint256)",
       [
         ethereum.Value.fromFixedBytes(_eventId),
         ethereum.Value.fromFixedBytes(_ticketTypeId),
-        ethereum.Value.fromAddress(_recipient)
+        ethereum.Value.fromAddress(_recipient),
+        ethereum.Value.fromUnsignedBigInt(deadline),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(v)),
+        ethereum.Value.fromFixedBytes(r),
+        ethereum.Value.fromFixedBytes(s)
       ]
     );
 
@@ -1059,15 +1107,23 @@ export class TicketGenerator extends ethereum.SmartContract {
   try_buyTicket(
     _eventId: Bytes,
     _ticketTypeId: Bytes,
-    _recipient: Address
+    _recipient: Address,
+    deadline: BigInt,
+    v: i32,
+    r: Bytes,
+    s: Bytes
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "buyTicket",
-      "buyTicket(bytes32,bytes32,address):(uint256)",
+      "buyTicket(bytes32,bytes32,address,uint256,uint8,bytes32,bytes32):(uint256)",
       [
         ethereum.Value.fromFixedBytes(_eventId),
         ethereum.Value.fromFixedBytes(_ticketTypeId),
-        ethereum.Value.fromAddress(_recipient)
+        ethereum.Value.fromAddress(_recipient),
+        ethereum.Value.fromUnsignedBigInt(deadline),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(v)),
+        ethereum.Value.fromFixedBytes(r),
+        ethereum.Value.fromFixedBytes(s)
       ]
     );
     if (result.reverted) {
@@ -1646,6 +1702,22 @@ export class BuyTicketCall__Inputs {
   get _recipient(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
+
+  get deadline(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get v(): i32 {
+    return this._call.inputValues[4].value.toI32();
+  }
+
+  get r(): Bytes {
+    return this._call.inputValues[5].value.toBytes();
+  }
+
+  get s(): Bytes {
+    return this._call.inputValues[6].value.toBytes();
+  }
 }
 
 export class BuyTicketCall__Outputs {
@@ -1781,12 +1853,16 @@ export class CreateEventCall__Inputs {
     return this._call.inputValues[3].value.toString();
   }
 
+  get location(): string {
+    return this._call.inputValues[4].value.toString();
+  }
+
   get startTime(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[5].value.toBigInt();
   }
 
   get endTime(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[6].value.toBigInt();
   }
 }
 
@@ -1928,6 +2004,40 @@ export class DeleteEventCall__Outputs {
   }
 }
 
+export class DeleteTicketTypeCall extends ethereum.Call {
+  get inputs(): DeleteTicketTypeCall__Inputs {
+    return new DeleteTicketTypeCall__Inputs(this);
+  }
+
+  get outputs(): DeleteTicketTypeCall__Outputs {
+    return new DeleteTicketTypeCall__Outputs(this);
+  }
+}
+
+export class DeleteTicketTypeCall__Inputs {
+  _call: DeleteTicketTypeCall;
+
+  constructor(call: DeleteTicketTypeCall) {
+    this._call = call;
+  }
+
+  get _eventId(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get _ticketTypeId(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+}
+
+export class DeleteTicketTypeCall__Outputs {
+  _call: DeleteTicketTypeCall;
+
+  constructor(call: DeleteTicketTypeCall) {
+    this._call = call;
+  }
+}
+
 export class DepositCall extends ethereum.Call {
   get inputs(): DepositCall__Inputs {
     return new DepositCall__Inputs(this);
@@ -2044,40 +2154,6 @@ export class OwnerWithdrawCall__Outputs {
   _call: OwnerWithdrawCall;
 
   constructor(call: OwnerWithdrawCall) {
-    this._call = call;
-  }
-}
-
-export class RemoveTicketTypeCall extends ethereum.Call {
-  get inputs(): RemoveTicketTypeCall__Inputs {
-    return new RemoveTicketTypeCall__Inputs(this);
-  }
-
-  get outputs(): RemoveTicketTypeCall__Outputs {
-    return new RemoveTicketTypeCall__Outputs(this);
-  }
-}
-
-export class RemoveTicketTypeCall__Inputs {
-  _call: RemoveTicketTypeCall;
-
-  constructor(call: RemoveTicketTypeCall) {
-    this._call = call;
-  }
-
-  get _eventId(): Bytes {
-    return this._call.inputValues[0].value.toBytes();
-  }
-
-  get _ticketTypeId(): Bytes {
-    return this._call.inputValues[1].value.toBytes();
-  }
-}
-
-export class RemoveTicketTypeCall__Outputs {
-  _call: RemoveTicketTypeCall;
-
-  constructor(call: RemoveTicketTypeCall) {
     this._call = call;
   }
 }
@@ -2471,12 +2547,16 @@ export class UpdateEventCall__Inputs {
     return this._call.inputValues[3].value.toString();
   }
 
+  get location(): string {
+    return this._call.inputValues[4].value.toString();
+  }
+
   get startTime(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[5].value.toBigInt();
   }
 
   get endTime(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[6].value.toBigInt();
   }
 }
 

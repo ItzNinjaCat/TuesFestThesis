@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CURRENT_EVENT_BY_ID_QUERY } from '../utils/subgraphQueries';
+import { EVENT_AND_TICKETS_QUERY } from '../utils/subgraphQueries';
 import { Button, Modal } from 'react-bootstrap';
 import Loader from '../components/ui/Loader';
 import { formatEther } from 'ethers/lib/utils';
@@ -39,70 +39,42 @@ function EventDashboard() {
     const account = useAccount();
     const navigate = useNavigate();
     const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    const { loading, error, data } = useQuery(CURRENT_EVENT_BY_ID_QUERY, {
+    const { loading, error, data } = useQuery(EVENT_AND_TICKETS_QUERY, {
         variables: {
-            eventId: String(id)
+            event: String(id)
         }
     });
 
     useEffect(() => {
         if (!loading) {
-            console.log(data);
-            setTicketSales(data.buyTickets);
-            contract.getEvent(id).then((res) => {
-                if (res[0] !== account) {
-                    navigate('/');
+            setTicketSales(data.tickets);
+            let current = new Date(data.event.createdAt * 1000);
+            current.setHours(0, 0, 0, 0);
+            const end = new Date(data.event.startTime * 1000);
+            end.setHours(0, 0, 0, 0);
+            const tmpDates = [];
+            const tmpChartData = [];
+            while (current.getTime() < end.getTime()) {
+                tmpDates.push(new Date(current));
+                tmpChartData.push({
+                    name: current.getDate() + "." + (current.getMonth() + 1) + "." + current.getFullYear().toString().substr(-2)
+                })
+                current = new Date(current.setDate(current.getDate() + 1));
+            }
+            setDates(tmpDates);
+            setchartData(tmpChartData);
+            const tmpColors = [];
+            let biggestSupply = 0;
+            data.event.ticketTypes.forEach((ticketType) => {
+                if (Number(ticketType.maxSupply) > biggestSupply) {
+                    biggestSupply = Number(ticketType.maxSupply);
                 }
-                setEvent({
-                    creator: res[0],
-                    name: res[1],
-                    description: res[2],
-                    imageCid: res[3],
-                    startTime: res[4],
-                    endTime: res[5],
-                    ticketTypes: res[6],
-                    createdAt: data.createEvents[0].blockTimestamp,
-                });
-                let current = new Date(data.createEvents[0].blockTimestamp * 1000);
-                current.setHours(0, 0, 0, 0);
-                const end = new Date(res[4] * 1000);
-                end.setHours(0, 0, 0, 0);
-                const tmpDates = [];
-                const tmpChartData = [];
-                while (current.getTime() < end.getTime()) {
-                    tmpDates.push(new Date(current));
-                    tmpChartData.push({
-                        name: current.getDate() + "." + (current.getMonth() + 1) + "." + current.getFullYear().toString().substr(-2)
-                    })
-                    current = new Date(current.setDate(current.getDate() + 1));
-                }
-                setDates(tmpDates);
-                setchartData(tmpChartData);
-                const results = res[6].map((ticketType) => {
-                    return contract.getTicketType(id, ticketType).then((result) => {
-                        return result;
-                    }).catch((e) => {
-                        console.log(e.reason);
-                    });
-                });
-                Promise.all(results).then((res) => {
-                    const tmpColors = [];
-                    let biggestSupply = 0;
-                    res = res.filter((ticketType) => ticketType !== undefined);
-                    res.forEach((ticketType) => {
-                        if (Number(ticketType.maxSupply) > biggestSupply) {
-                            biggestSupply = Number(ticketType.maxSupply);
-                        }
-                        tmpColors.push("#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase());
-                    });
-                    setChartColors(tmpColors);
-                    setTicketTypes(res);
-                    setMaxSupply(biggestSupply);
-                });
-            }).catch((e) => {
-                console.log(e.reason);
-                navigate('/');
+                tmpColors.push("#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase());
             });
+            setChartColors(tmpColors);
+            setTicketTypes(data.event.ticketTypes);
+            setMaxSupply(biggestSupply);
+            setEvent(data.event);
         }
     }, [data, loading]);
 
@@ -124,11 +96,11 @@ function EventDashboard() {
                     data[ticketType.name] = 0;
                 });
                 ticketSales.forEach((ticketSale) => {
-                    if (ticketSale.ticketTypeId === ticketType.id) {
+                    if (ticketSale.ticketType.id === ticketType.id) {
                         dates.forEach((date) => {
                             const dateEnd = new Date(date);
                             dateEnd.setHours(24, 0, 0, 0);
-                            const dateSale = new Date(ticketSale.blockTimestamp * 1000);
+                            const dateSale = new Date(ticketSale.timestamp * 1000);
                             if (dateSale.getTime() >= date.getTime() && dateSale.getTime() < dateEnd.getTime()) {
                                 tmpChartData.forEach((data) => {
                                     if (data.name === date.getDate()  + "." + (date.getMonth()+1) + "." + date.getFullYear().toString().substr(-2)) {
@@ -157,7 +129,7 @@ function EventDashboard() {
 
     const deleteEvent = () => {
         const promises = event.ticketTypes.map(async (ticketType) => {
-            return (await contract.removeTicketType(id, ticketType)).wait();
+            return (await contract.deleteTicketType(id, ticketType)).wait();
         });
         Promise.all(promises).then(() => {
             contract.deleteEvent(id);

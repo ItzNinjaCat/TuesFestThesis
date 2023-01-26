@@ -1,29 +1,6 @@
+import { BigInt } from "@graphprotocol/graph-ts"
 import {
-  AcceptBuyOffer as AcceptBuyOfferEvent,
-  AcceptSellOffer as AcceptSellOfferEvent,
-  Approval as ApprovalEvent,
-  ApprovalForAll as ApprovalForAllEvent,
-  BuyTicket as BuyTicketEvent,
-  CancelOffer as CancelOfferEvent,
-  CreateBuyOffer as CreateBuyOfferEvent,
-  CreateEvent as CreateEventEvent,
-  CreateSellOffer as CreateSellOfferEvent,
-  CreateTicketType as CreateTicketTypeEvent,
-  DeleteEvent as DeleteEventEvent,
-  DeleteTickeyType as DeleteTickeyTypeEvent,
-  Deposit as DepositEvent,
-  GenerateTicket as GenerateTicketEvent,
-  RoleAdminChanged as RoleAdminChangedEvent,
-  RoleGranted as RoleGrantedEvent,
-  RoleRevoked as RoleRevokedEvent,
-  Transfer as TransferEvent,
-  TransferTicket as TransferTicketEvent,
-  UpdateEvent as UpdateEventEvent,
-  UpdateTicketType as UpdateTicketTypeEvent,
-  UseTicket as UseTicketEvent,
-  Withdraw as WithdrawEvent
-} from "../generated/TicketGenerator/TicketGenerator"
-import {
+  TicketGenerator,
   AcceptBuyOffer,
   AcceptSellOffer,
   Approval,
@@ -35,9 +12,9 @@ import {
   CreateSellOffer,
   CreateTicketType,
   DeleteEvent,
-  DeleteTickeyType,
+  DeleteTicketType,
   Deposit,
-  GenerateTicket,
+  GenerateSouvenir,
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
@@ -47,385 +24,199 @@ import {
   UpdateTicketType,
   UseTicket,
   Withdraw
-} from "../generated/schema"
+} from "../generated/TicketGenerator/TicketGenerator"
+import { Event, Ticket, TicketType, Souvenir, Offer } from "../generated/schema"
 
-export function handleAcceptBuyOffer(event: AcceptBuyOfferEvent): void {
-  let entity = new AcceptBuyOffer(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.offerId = event.params.offerId
-  entity.buyer = event.params.buyer
-  entity.seller = event.params.seller
-  entity.eventId = event.params.eventId
-  entity.ticketTypeId = event.params.ticketTypeId
-  entity.ticketId = event.params.ticketId
-  entity.tokenURI = event.params.tokenURI
-  entity.price = event.params.price
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+export function handleCreateEvent(event: CreateEvent): void {
+  let entity = new Event(event.params.eventId.toHex());
+  entity.creator = event.params.creator;
+  entity.name = event.params.name;
+  entity.description = event.params.description;
+  entity.eventStorage = event.params.eventStorage;
+  entity.location = event.params.location;
+  entity.startTime = event.params.startTime;
+  entity.endTime = event.params.endTime;
+  entity.createdAt = event.block.timestamp;
+  entity.deleted = false;
+  entity.save();
 }
 
-export function handleAcceptSellOffer(event: AcceptSellOfferEvent): void {
-  let entity = new AcceptSellOffer(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.offerId = event.params.offerId
-  entity.buyer = event.params.buyer
-  entity.seller = event.params.seller
-  entity.eventId = event.params.eventId
-  entity.ticketTypeId = event.params.ticketTypeId
-  entity.ticketId = event.params.ticketId
-  entity.tokenURI = event.params.tokenURI
-  entity.price = event.params.price
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+export function handleUpdateEvent(event: UpdateEvent): void {
+  let entity = Event.load(event.params.eventId.toHex());
+  if (entity !== null) {
+    entity.creator = event.params.creator;
+    entity.name = event.params.name;
+    entity.description = event.params.description;
+    entity.eventStorage = event.params.eventStorage;
+    entity.location = event.params.location;
+    entity.startTime = event.params.startTime;
+    entity.endTime = event.params.endTime;
+    entity.updatedAt = event.block.timestamp;
+    entity.save();
+  }
 }
 
-export function handleApproval(event: ApprovalEvent): void {
-  let entity = new Approval(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.owner = event.params.owner
-  entity.approved = event.params.approved
-  entity.tokenId = event.params.tokenId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+export function handleDeleteEvent(event: DeleteEvent): void {
+  let entity = Event.load(event.params.eventId.toHex());
+  if (entity !== null) {
+    entity.deleted = true;
+    entity.save();
+  }
 }
 
-export function handleApprovalForAll(event: ApprovalForAllEvent): void {
-  let entity = new ApprovalForAll(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.owner = event.params.owner
-  entity.operator = event.params.operator
-  entity.approved = event.params.approved
+export function handleCreateTicketType(event: CreateTicketType): void {
+  let entity = new TicketType(event.params.ticketType.id.toHex());
+  entity.name = event.params.ticketType.name;
+  entity.price = event.params.ticketType.price;
+  entity.maxSupply = event.params.ticketType.maxSupply;
+  entity.currentSupply = event.params.ticketType.currentSupply;
+  entity.tokenURI = event.params.ticketType.tokenURI;
+  entity.souvenirTokenURI = event.params.ticketType.souvenirTokenURI;
+  entity.event = event.params.eventId.toHex();
+  entity.deleted = false;
+  entity.save();
+}
+export function handleDeleteTicketType(event: DeleteTicketType): void {
+  let entity = TicketType.load(event.params.ticketTypeId.toHex());
+  if (entity !== null) {
+    entity.deleted = true;
+    entity.save();
+  }
+}
+export function handleUpdateTicketType(event: UpdateTicketType): void {
+  let entity = TicketType.load(event.params.ticketType.id.toHex());
+  if (entity !== null) {
+    entity.name = event.params.ticketType.name;
+    entity.price = event.params.ticketType.price;
+    entity.maxSupply = event.params.ticketType.maxSupply;
+    entity.currentSupply = event.params.ticketType.currentSupply;
+    entity.tokenURI = event.params.ticketType.tokenURI;
+    entity.souvenirTokenURI = event.params.ticketType.souvenirTokenURI;
+    entity.save();
+  }
+}
+export function handleCreateBuyOffer(event: CreateBuyOffer): void {
+  let entity = new Offer(event.params.offerId.toHex());
+  entity.buyer = event.params.buyer;
+  entity.event = event.params.eventId.toHex();
+  entity.ticketType = event.params.ticketTypeId.toHex();
+  entity.price = event.params.price;
+  entity.buyOffer = true;
+  entity.sellOffer = false;
+  entity.deadline = event.params.deadline;
+  entity.deleted = false;
+  entity.save();
+}
+export function handleAcceptBuyOffer(event: AcceptBuyOffer): void {
+  let entity = Offer.load(event.params.offerId.toHex());
+  if (entity !== null) {
+    entity.seller = event.params.seller;
+    entity.ticket = event.params.ticketId.toHex();
+    entity.deleted = true;
+    entity.save();
+  }
+}
+export function handleCreateSellOffer(event: CreateSellOffer): void {
+  let entity = new Offer(event.params.offerId.toHex());
+  entity.seller = event.params.seller;
+  entity.event = event.params.eventId.toHex();
+  entity.ticketType = event.params.ticketTypeId.toHex();
+  entity.ticket = event.params.ticketId.toHex();
+  entity.price = event.params.price;
+  entity.buyOffer = false;
+  entity.sellOffer = true;
+  entity.deleted = false;
+  entity.save();
+  let ticket = Ticket.load(event.params.ticketId.toHex());
+  if (ticket !== null) {
+    ticket.usable = false;
+    ticket.save();
+  }
+}
+export function handleAcceptSellOffer(event: AcceptSellOffer): void {
+  let entity = Offer.load(event.params.offerId.toHex());
+  if (entity !== null) {
+    entity.deleted = true;
+    entity.buyer = event.params.buyer;
+    entity.save();
+    let ticket = Ticket.load(event.params.ticketId.toHex());
+    if (ticket !== null) {
+      ticket.usable = true;
+      ticket.save();
+    }
+  }
+}
+export function handleCancelOffer(event: CancelOffer): void {
+  let entity = Offer.load(event.params.offerId.toHex());
+  if (entity !== null) {
+    entity.deleted = true;
+    entity.save();
+    if (entity.sellOffer) {
+      let ticket = Ticket.load(entity.ticket!);
+      if (ticket !== null) {
+        ticket.usable = true;
+        ticket.save();
+      }
+    }
+  }
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
 }
 
-export function handleBuyTicket(event: BuyTicketEvent): void {
-  let entity = new BuyTicket(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.buyer = event.params.buyer
-  entity.owner = event.params.owner
-  entity.eventId = event.params.eventId
-  entity.ticketTypeId = event.params.ticketTypeId
-  entity.tokenId = event.params.tokenId
-  entity.tokenURI = event.params.tokenURI
-  entity.eventStartTime = event.params.eventStartTime
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+export function handleBuyTicket(event: BuyTicket): void {
+  let entity = new Ticket(event.params.tokenId.toHex());
+  entity.event = event.params.eventId.toHex();
+  entity.ticketType = event.params.ticketTypeId.toHex();
+  entity.creator = event.params.buyer;
+  entity.owner = event.params.owner;
+  entity.deleted = false;
+  entity.souvenirMinted = false;
+  entity.usable = true;
+  entity.tokenId = event.params.tokenId;
+  entity.tokenURI = event.params.tokenURI;
+  entity.timestamp = event.block.timestamp;
+  entity.save();
+}
+export function handleTransferTicket(event: TransferTicket): void {
+  let entity = Ticket.load(event.params.tokenId.toHex());
+  if (entity !== null) {
+    entity.owner = event.params.receiver;
+    entity.save();
+  }
+}
+export function handleUseTicket(event: UseTicket): void {
+  let entity = Ticket.load(event.params.ticketId.toHex());
+  if (entity !== null) {
+    entity.usable = false;
+    entity.save();
+  }
 }
 
-export function handleCancelOffer(event: CancelOfferEvent): void {
-  let entity = new CancelOffer(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.offerId = event.params.offerId
-  entity.sender = event.params.sender
+export function handleGenerateSouvenir(event: GenerateSouvenir): void {
+  let entity = new Souvenir(event.params.tokenId.toHex());
+  entity.ticket = event.params.ticket.id.toHex();
+  entity.owner = event.params.owner;
+  entity.tokenURI = event.params.tokenURI;
+  entity.save();
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  let ticket = Ticket.load(event.params.ticket.id.toHex());
+  if (ticket !== null) {
+    ticket.souvenirMinted = true;
+    ticket.save();
+  }
 }
 
-export function handleCreateBuyOffer(event: CreateBuyOfferEvent): void {
-  let entity = new CreateBuyOffer(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.offerId = event.params.offerId
-  entity.buyer = event.params.buyer
-  entity.eventId = event.params.eventId
-  entity.ticketTypeId = event.params.ticketTypeId
-  entity.price = event.params.price
-  entity.deadline = event.params.deadline
+export function handleApproval(event: Approval): void {}
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+export function handleApprovalForAll(event: ApprovalForAll): void {}
 
-  entity.save()
-}
+export function handleDeposit(event: Deposit): void {}
 
-export function handleCreateEvent(event: CreateEventEvent): void {
-  let entity = new CreateEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.creator = event.params.creator
-  entity.eventId = event.params.eventId
-  entity.name = event.params.name
-  entity.description = event.params.description
-  entity.eventStorage = event.params.eventStorage
-  entity.startTime = event.params.startTime
-  entity.endTime = event.params.endTime
+export function handleRoleAdminChanged(event: RoleAdminChanged): void {}
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+export function handleRoleGranted(event: RoleGranted): void {}
 
-  entity.save()
-}
+export function handleRoleRevoked(event: RoleRevoked): void {}
 
-export function handleCreateSellOffer(event: CreateSellOfferEvent): void {
-  let entity = new CreateSellOffer(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.offerId = event.params.offerId
-  entity.seller = event.params.seller
-  entity.eventId = event.params.eventId
-  entity.ticketTypeId = event.params.ticketTypeId
-  entity.ticketId = event.params.ticketId
-  entity.price = event.params.price
+export function handleTransfer(event: Transfer): void {}
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleCreateTicketType(event: CreateTicketTypeEvent): void {
-  let entity = new CreateTicketType(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.creator = event.params.creator
-  entity.eventId = event.params.eventId
-  entity.ticketType_id = event.params.ticketType.id
-  entity.ticketType_name = event.params.ticketType.name
-  entity.ticketType_price = event.params.ticketType.price
-  entity.ticketType_maxSupply = event.params.ticketType.maxSupply
-  entity.ticketType_currentSupply = event.params.ticketType.currentSupply
-  entity.ticketType_tokenURI = event.params.ticketType.tokenURI
-  entity.ticketType_souvenirTokenURI = event.params.ticketType.souvenirTokenURI
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleDeleteEvent(event: DeleteEventEvent): void {
-  let entity = new DeleteEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.creator = event.params.creator
-  entity.eventId = event.params.eventId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleDeleteTickeyType(event: DeleteTickeyTypeEvent): void {
-  let entity = new DeleteTickeyType(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.creator = event.params.creator
-  entity.eventId = event.params.eventId
-  entity.ticketTypeId = event.params.ticketTypeId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleDeposit(event: DepositEvent): void {
-  let entity = new Deposit(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.sender = event.params.sender
-  entity.amount = event.params.amount
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleGenerateTicket(event: GenerateTicketEvent): void {
-  let entity = new GenerateTicket(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.creator = event.params.creator
-  entity.receiver = event.params.receiver
-  entity.tokenId = event.params.tokenId
-  entity.tokenURI = event.params.tokenURI
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
-  let entity = new RoleAdminChanged(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.role = event.params.role
-  entity.previousAdminRole = event.params.previousAdminRole
-  entity.newAdminRole = event.params.newAdminRole
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleRoleGranted(event: RoleGrantedEvent): void {
-  let entity = new RoleGranted(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.role = event.params.role
-  entity.account = event.params.account
-  entity.sender = event.params.sender
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleRoleRevoked(event: RoleRevokedEvent): void {
-  let entity = new RoleRevoked(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.role = event.params.role
-  entity.account = event.params.account
-  entity.sender = event.params.sender
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleTransfer(event: TransferEvent): void {
-  let entity = new Transfer(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.from = event.params.from
-  entity.to = event.params.to
-  entity.tokenId = event.params.tokenId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleTransferTicket(event: TransferTicketEvent): void {
-  let entity = new TransferTicket(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.sender = event.params.sender
-  entity.receiver = event.params.receiver
-  entity.tokenId = event.params.tokenId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleUpdateEvent(event: UpdateEventEvent): void {
-  let entity = new UpdateEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.creator = event.params.creator
-  entity.eventId = event.params.eventId
-  entity.name = event.params.name
-  entity.description = event.params.description
-  entity.eventStorage = event.params.eventStorage
-  entity.startTime = event.params.startTime
-  entity.endTime = event.params.endTime
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleUpdateTicketType(event: UpdateTicketTypeEvent): void {
-  let entity = new UpdateTicketType(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.creator = event.params.creator
-  entity.eventId = event.params.eventId
-  entity.ticketType_id = event.params.ticketType.id
-  entity.ticketType_name = event.params.ticketType.name
-  entity.ticketType_price = event.params.ticketType.price
-  entity.ticketType_maxSupply = event.params.ticketType.maxSupply
-  entity.ticketType_currentSupply = event.params.ticketType.currentSupply
-  entity.ticketType_tokenURI = event.params.ticketType.tokenURI
-  entity.ticketType_souvenirTokenURI = event.params.ticketType.souvenirTokenURI
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleUseTicket(event: UseTicketEvent): void {
-  let entity = new UseTicket(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.sender = event.params.sender
-  entity.ticketId = event.params.ticketId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleWithdraw(event: WithdrawEvent): void {
-  let entity = new Withdraw(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.receiver = event.params.receiver
-  entity.amount = event.params.amount
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
+export function handleWithdraw(event: Withdraw): void {}

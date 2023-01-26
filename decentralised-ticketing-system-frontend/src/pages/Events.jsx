@@ -4,43 +4,22 @@ import { useQuery } from '@apollo/client';
 import { EVENTS_QUERY } from '../utils/subgraphQueries';
 import EventCard from '../components/ui/EventCard';
 import "../style/style.scss";
-import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
-import { getContract } from '../utils/contractUtils';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../utils/connectors';
 import Loader from '../components/ui/Loader';
 function Events() {
-    const [ events, setEvents ] = useState(undefined);
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
-    const { loading, error, data } = useQuery(EVENTS_QUERY);
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    
+    const [events, setEvents] = useState(undefined);
+    const [first, setFirst] = useState(20);
+    const [skip, setSkip] = useState(0);
+    const { loading, error, data } = useQuery(EVENTS_QUERY, {
+        variables: {
+            skip: skip,
+            first: first
+        }
+    });
     useEffect(() => {
         if (!loading && !error) {
-            const eventsPromises = data.createEvents.map(async (event) => {
-                return await contract.getEvent(event.eventId).then((result) => {
-                    return {
-                        id: event.id,
-                        eventId: event.eventId,
-                        organizer: result[0],
-                        name: result[1],
-                        description: result[2],
-                        eventStorage: result[3],
-                        startTime: result[4],
-                        endTime: result[5],
-                        ticketTypes: result[6],
-                    };
-                }).catch((e) => {});
-            })
-            Promise.all(eventsPromises).then((events) => {
-                setEvents(events.filter((event) => event !== null && event !== undefined));
-            });
+            setEvents(data.events);
         }
-    }, [provider, account, loading, data]);
+    }, [loading, data]);
     if(loading || events === undefined) return <Loader/>;
     if (error) return <p>Error: {error.message}</p>;
     return (
@@ -49,7 +28,7 @@ function Events() {
                     events?.map((event, index) => {
                         if (index % 4 === 0) {
                             return (
-                            <div key={event?.eventId} className='row w-75 d-flex justify-content-start'>
+                            <div key={event?.id} className='row w-75 d-flex justify-content-start'>
                                     {
                                         events.slice(index, index + 4).map((event) => 
                                         <div key={event.id}
@@ -57,11 +36,11 @@ function Events() {
                                         <EventCard
                                             key={event.id}
                                             name={event.name}
-                                            description={event.description}
+                                            location={event.location}
                                             startTime={event.startTime}
                                             endTime={event.endTime}
                                             imagesCid={event.eventStorage}
-                                            url={`/events/${event.eventId}`}
+                                            url={`/events/${event.id}`}
                                             creator={event.organizer}
                                         />
                                             </div>

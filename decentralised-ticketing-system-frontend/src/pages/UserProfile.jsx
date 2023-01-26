@@ -1,6 +1,6 @@
 import React, { useState, useEffect }  from 'react';
 import { useQuery } from '@apollo/client';
-import { TICKETS_QUERY } from '../utils/subgraphQueries';
+import { TICKETS_BY_OWNER_QUERY } from '../utils/subgraphQueries';
 import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
 import { getContract } from '../utils/contractUtils';
 import { useWeb3React } from '@web3-react/core';
@@ -13,6 +13,7 @@ import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 
 function UserProfile() {
     const [tickets, setTickets] = useState([]);
+    const [souvenirs, setSouvenirs] = useState([]);
     const [tab, setTab] = useState('tickets');
     const { connector } = useWeb3React();
     const hooks = connectorHooks[getName(connector)];
@@ -21,7 +22,7 @@ function UserProfile() {
     const account = useAccount();
     const { address } = useParams();
     const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    const { loading, error, data } = useQuery(TICKETS_QUERY, {
+    const { loading, error, data } = useQuery(TICKETS_BY_OWNER_QUERY, {
         variables: {
             owner: String(address)
         }
@@ -31,29 +32,10 @@ function UserProfile() {
         if (account === undefined || provider === undefined) return;
         if(account !== address) navigate("/");
         if (!loading) {
-            const promises = data.buyTickets.map(async (ticket) => {
-                return {
-                    ticket: await contract.getTicket(ticket.tokenId),
-                    tokenURI: ticket.tokenURI
-                }
-            });
-            const buyOfferPromises = data.acceptBuyOffers.map(async (ticket) => {
-                return {
-                    ticket: await contract.getTicket(ticket.ticketId),
-                    tokenURI: ticket.tokenURI
-                }
-            });
-            const sellOfferPromises = data.acceptSellOffers.map(async (ticket) => {
-                return {
-                    ticket: await contract.getTicket(ticket.ticketId),
-                    tokenURI: ticket.tokenURI
-                }
-            })
-            Promise.all([...promises, ...buyOfferPromises, ...sellOfferPromises]).then((results) => {
-                setTickets(results.filter((t) => t.ticket.owner === address));
-            });
+            setTickets(data.tickets);
+            setSouvenirs(data.souvenirs);
         }
-    }, [provider, account, address, data, loading]);
+    }, [provider, account, address, data, loading, tab]);
     if (loading) return <Loader />;
     if (error) return <p>Error: {error.message}</p>;
     return (
@@ -85,9 +67,16 @@ function UserProfile() {
                                  {
 
                                     tickets.slice(index, index + 4).map((ticket) => 
-                                    <div key={ticket.ticket.id}
+                                    <div key={ticket.id}
                                     className='w-25 col-3 d-flex flex-wrap text-wrap event-card'>
-                                    <Ticket key={ticket.ticket.id} ticket={ticket.ticket} tokenURI={ticket.tokenURI} contract={contract}/>
+                                            <Ticket
+                                                key={ticket.id}
+                                                ticket={ticket}
+                                                tokenURI={ticket.tokenURI}
+                                                contract={contract}
+                                                event={ticket.event}
+                                                ticketType={ticket.ticketType}
+                                            />
                                     </div>
                                     )    
                                 }
@@ -96,8 +85,25 @@ function UserProfile() {
                     }
                     return null;
                     })
-                        
-                    : null
+                        : 
+                    souvenirs.map((t, index) => {
+                        if (index % 4 === 0) {
+                        return (
+                            <div key={index} className='row w-75 d-flex justify-content-start mb-3'>
+                                 {
+
+                                    tickets.slice(index, index + 4).map((ticket) => 
+                                    <div key={ticket.ticket.id}
+                                    className='w-25 col-3 d-flex flex-wrap text-wrap event-card'>
+                                    {/* <Ticket key={ticket.ticket.id} ticket={ticket.ticket} tokenURI={ticket.tokenURI} contract={contract}/> */}
+                                    </div>
+                                    )    
+                                }
+                             </div>
+                        )
+                    }
+                    return null;
+                    })
                 }
                 </div>
                 </>

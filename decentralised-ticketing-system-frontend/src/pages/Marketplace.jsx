@@ -16,7 +16,6 @@ function Marketplace() {
   const [offerType, setOfferType] = React.useState('buy');
   const [buyOffers, setBuyOffers] = React.useState([]);
   const [sellOffers, setSellOffers] = React.useState([]);
-
   const { connector } = useWeb3React();
   const hooks = connectorHooks[getName(connector)];
   const { useProvider, useAccount } = hooks;
@@ -29,20 +28,10 @@ function Marketplace() {
   });
   useEffect(() => {
     if (!loading) {  
-      const buyOfferPromises = data.createBuyOffers.map(async (offer) => {
-        return await contract.getOffer(offer.offerId).catch((e) => {});
-      });
-      Promise.all(buyOfferPromises).then((results) => {
-        setBuyOffers(results.filter((offer) => offer !== undefined));
-      });
-      const sellOfferPromises = data.createSellOffers.map(async (offer) => {
-        return await contract.getOffer(offer.offerId);
-      });
-      Promise.all(sellOfferPromises).then((results) => {
-        setSellOffers(results.filter((offer) => offer !== undefined));
-      });
+      setBuyOffers(data.offers.filter(offer => offer.buyOffer === true));
+      setSellOffers(data.offers.filter(offer => offer.sellOffer === true));
     }
-  }, [data, loading]);
+  }, [data, loading, offerType]);
 
   return (
     <div className="container my-5">

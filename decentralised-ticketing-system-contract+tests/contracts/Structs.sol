@@ -18,6 +18,7 @@ library Structs {
         uint256 startTime;
         uint256 endTime;
         string description;
+        string location;
         string eventStorage;
         bytes32[] ticketTypeIds;
         mapping(bytes32 => uint8) indexOf;

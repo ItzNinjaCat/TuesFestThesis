@@ -11,486 +11,305 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class AcceptBuyOffer extends Entity {
-  constructor(id: Bytes) {
+export class Event extends Entity {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save AcceptBuyOffer entity without an ID");
+    assert(id != null, "Cannot save Event entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type AcceptBuyOffer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.STRING,
+        `Entities of type Event must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("AcceptBuyOffer", id.toBytes().toHexString(), this);
+      store.set("Event", id.toString(), this);
     }
   }
 
-  static load(id: Bytes): AcceptBuyOffer | null {
-    return changetype<AcceptBuyOffer | null>(
-      store.get("AcceptBuyOffer", id.toHexString())
-    );
+  static load(id: string): Event | null {
+    return changetype<Event | null>(store.get("Event", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get offerId(): Bytes {
-    let value = this.get("offerId");
-    return value!.toBytes();
-  }
-
-  set offerId(value: Bytes) {
-    this.set("offerId", Value.fromBytes(value));
-  }
-
-  get buyer(): Bytes {
-    let value = this.get("buyer");
-    return value!.toBytes();
-  }
-
-  set buyer(value: Bytes) {
-    this.set("buyer", Value.fromBytes(value));
-  }
-
-  get seller(): Bytes {
-    let value = this.get("seller");
-    return value!.toBytes();
-  }
-
-  set seller(value: Bytes) {
-    this.set("seller", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get ticketTypeId(): Bytes {
-    let value = this.get("ticketTypeId");
-    return value!.toBytes();
-  }
-
-  set ticketTypeId(value: Bytes) {
-    this.set("ticketTypeId", Value.fromBytes(value));
-  }
-
-  get ticketId(): BigInt {
-    let value = this.get("ticketId");
-    return value!.toBigInt();
-  }
-
-  set ticketId(value: BigInt) {
-    this.set("ticketId", Value.fromBigInt(value));
-  }
-
-  get tokenURI(): string {
-    let value = this.get("tokenURI");
     return value!.toString();
   }
 
-  set tokenURI(value: string) {
-    this.set("tokenURI", Value.fromString(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
-  get price(): BigInt {
-    let value = this.get("price");
-    return value!.toBigInt();
-  }
-
-  set price(value: BigInt) {
-    this.set("price", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
+  get creator(): Bytes {
+    let value = this.get("creator");
     return value!.toBytes();
   }
 
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class AcceptSellOffer extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
+  set creator(value: Bytes) {
+    this.set("creator", Value.fromBytes(value));
   }
 
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save AcceptSellOffer entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type AcceptSellOffer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("AcceptSellOffer", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): AcceptSellOffer | null {
-    return changetype<AcceptSellOffer | null>(
-      store.get("AcceptSellOffer", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get offerId(): Bytes {
-    let value = this.get("offerId");
-    return value!.toBytes();
-  }
-
-  set offerId(value: Bytes) {
-    this.set("offerId", Value.fromBytes(value));
-  }
-
-  get buyer(): Bytes {
-    let value = this.get("buyer");
-    return value!.toBytes();
-  }
-
-  set buyer(value: Bytes) {
-    this.set("buyer", Value.fromBytes(value));
-  }
-
-  get seller(): Bytes {
-    let value = this.get("seller");
-    return value!.toBytes();
-  }
-
-  set seller(value: Bytes) {
-    this.set("seller", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get ticketTypeId(): Bytes {
-    let value = this.get("ticketTypeId");
-    return value!.toBytes();
-  }
-
-  set ticketTypeId(value: Bytes) {
-    this.set("ticketTypeId", Value.fromBytes(value));
-  }
-
-  get ticketId(): BigInt {
-    let value = this.get("ticketId");
-    return value!.toBigInt();
-  }
-
-  set ticketId(value: BigInt) {
-    this.set("ticketId", Value.fromBigInt(value));
-  }
-
-  get tokenURI(): string {
-    let value = this.get("tokenURI");
+  get name(): string {
+    let value = this.get("name");
     return value!.toString();
   }
 
-  set tokenURI(value: string) {
-    this.set("tokenURI", Value.fromString(value));
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
   }
 
-  get price(): BigInt {
-    let value = this.get("price");
+  get description(): string {
+    let value = this.get("description");
+    return value!.toString();
+  }
+
+  set description(value: string) {
+    this.set("description", Value.fromString(value));
+  }
+
+  get eventStorage(): string {
+    let value = this.get("eventStorage");
+    return value!.toString();
+  }
+
+  set eventStorage(value: string) {
+    this.set("eventStorage", Value.fromString(value));
+  }
+
+  get location(): string {
+    let value = this.get("location");
+    return value!.toString();
+  }
+
+  set location(value: string) {
+    this.set("location", Value.fromString(value));
+  }
+
+  get startTime(): BigInt {
+    let value = this.get("startTime");
     return value!.toBigInt();
   }
 
-  set price(value: BigInt) {
-    this.set("price", Value.fromBigInt(value));
+  set startTime(value: BigInt) {
+    this.set("startTime", Value.fromBigInt(value));
   }
 
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
+  get endTime(): BigInt {
+    let value = this.get("endTime");
     return value!.toBigInt();
   }
 
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
+  set endTime(value: BigInt) {
+    this.set("endTime", Value.fromBigInt(value));
   }
 
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
+  get ticketTypes(): Array<string> {
+    let value = this.get("ticketTypes");
+    return value!.toStringArray();
+  }
+
+  set ticketTypes(value: Array<string>) {
+    this.set("ticketTypes", Value.fromStringArray(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
     return value!.toBigInt();
   }
 
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
   }
 
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class Approval extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save Approval entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type Approval must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("Approval", id.toBytes().toHexString(), this);
+  get updatedAt(): BigInt | null {
+    let value = this.get("updatedAt");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
     }
   }
 
-  static load(id: Bytes): Approval | null {
-    return changetype<Approval | null>(store.get("Approval", id.toHexString()));
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get owner(): Bytes {
-    let value = this.get("owner");
-    return value!.toBytes();
-  }
-
-  set owner(value: Bytes) {
-    this.set("owner", Value.fromBytes(value));
-  }
-
-  get approved(): Bytes {
-    let value = this.get("approved");
-    return value!.toBytes();
-  }
-
-  set approved(value: Bytes) {
-    this.set("approved", Value.fromBytes(value));
-  }
-
-  get tokenId(): BigInt {
-    let value = this.get("tokenId");
-    return value!.toBigInt();
-  }
-
-  set tokenId(value: BigInt) {
-    this.set("tokenId", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class ApprovalForAll extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save ApprovalForAll entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type ApprovalForAll must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("ApprovalForAll", id.toBytes().toHexString(), this);
+  set updatedAt(value: BigInt | null) {
+    if (!value) {
+      this.unset("updatedAt");
+    } else {
+      this.set("updatedAt", Value.fromBigInt(<BigInt>value));
     }
   }
 
-  static load(id: Bytes): ApprovalForAll | null {
-    return changetype<ApprovalForAll | null>(
-      store.get("ApprovalForAll", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get owner(): Bytes {
-    let value = this.get("owner");
-    return value!.toBytes();
-  }
-
-  set owner(value: Bytes) {
-    this.set("owner", Value.fromBytes(value));
-  }
-
-  get operator(): Bytes {
-    let value = this.get("operator");
-    return value!.toBytes();
-  }
-
-  set operator(value: Bytes) {
-    this.set("operator", Value.fromBytes(value));
-  }
-
-  get approved(): boolean {
-    let value = this.get("approved");
+  get deleted(): boolean {
+    let value = this.get("deleted");
     return value!.toBoolean();
   }
 
-  set approved(value: boolean) {
-    this.set("approved", Value.fromBoolean(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
+  set deleted(value: boolean) {
+    this.set("deleted", Value.fromBoolean(value));
   }
 }
 
-export class BuyTicket extends Entity {
-  constructor(id: Bytes) {
+export class TicketType extends Entity {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save BuyTicket entity without an ID");
+    assert(id != null, "Cannot save TicketType entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type BuyTicket must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.STRING,
+        `Entities of type TicketType must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("BuyTicket", id.toBytes().toHexString(), this);
+      store.set("TicketType", id.toString(), this);
     }
   }
 
-  static load(id: Bytes): BuyTicket | null {
-    return changetype<BuyTicket | null>(
-      store.get("BuyTicket", id.toHexString())
-    );
+  static load(id: string): TicketType | null {
+    return changetype<TicketType | null>(store.get("TicketType", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get event(): string {
+    let value = this.get("event");
+    return value!.toString();
+  }
+
+  set event(value: string) {
+    this.set("event", Value.fromString(value));
+  }
+
+  get name(): string {
+    let value = this.get("name");
+    return value!.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get price(): BigInt {
+    let value = this.get("price");
+    return value!.toBigInt();
+  }
+
+  set price(value: BigInt) {
+    this.set("price", Value.fromBigInt(value));
+  }
+
+  get maxSupply(): BigInt {
+    let value = this.get("maxSupply");
+    return value!.toBigInt();
+  }
+
+  set maxSupply(value: BigInt) {
+    this.set("maxSupply", Value.fromBigInt(value));
+  }
+
+  get currentSupply(): BigInt {
+    let value = this.get("currentSupply");
+    return value!.toBigInt();
+  }
+
+  set currentSupply(value: BigInt) {
+    this.set("currentSupply", Value.fromBigInt(value));
+  }
+
+  get tokenURI(): string {
+    let value = this.get("tokenURI");
+    return value!.toString();
+  }
+
+  set tokenURI(value: string) {
+    this.set("tokenURI", Value.fromString(value));
+  }
+
+  get souvenirTokenURI(): string {
+    let value = this.get("souvenirTokenURI");
+    return value!.toString();
+  }
+
+  set souvenirTokenURI(value: string) {
+    this.set("souvenirTokenURI", Value.fromString(value));
+  }
+
+  get deleted(): boolean {
+    let value = this.get("deleted");
+    return value!.toBoolean();
+  }
+
+  set deleted(value: boolean) {
+    this.set("deleted", Value.fromBoolean(value));
+  }
+}
+
+export class Ticket extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Ticket entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Ticket must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Ticket", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Ticket | null {
+    return changetype<Ticket | null>(store.get("Ticket", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get event(): string {
+    let value = this.get("event");
+    return value!.toString();
+  }
+
+  set event(value: string) {
+    this.set("event", Value.fromString(value));
+  }
+
+  get ticketType(): string {
+    let value = this.get("ticketType");
+    return value!.toString();
+  }
+
+  set ticketType(value: string) {
+    this.set("ticketType", Value.fromString(value));
+  }
+
+  get creator(): Bytes {
+    let value = this.get("creator");
     return value!.toBytes();
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get buyer(): Bytes {
-    let value = this.get("buyer");
-    return value!.toBytes();
-  }
-
-  set buyer(value: Bytes) {
-    this.set("buyer", Value.fromBytes(value));
+  set creator(value: Bytes) {
+    this.set("creator", Value.fromBytes(value));
   }
 
   get owner(): Bytes {
@@ -502,22 +321,48 @@ export class BuyTicket extends Entity {
     this.set("owner", Value.fromBytes(value));
   }
 
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
+  get deleted(): boolean {
+    let value = this.get("deleted");
+    return value!.toBoolean();
   }
 
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
+  set deleted(value: boolean) {
+    this.set("deleted", Value.fromBoolean(value));
   }
 
-  get ticketTypeId(): Bytes {
-    let value = this.get("ticketTypeId");
-    return value!.toBytes();
+  get souvenirMinted(): boolean {
+    let value = this.get("souvenirMinted");
+    return value!.toBoolean();
   }
 
-  set ticketTypeId(value: Bytes) {
-    this.set("ticketTypeId", Value.fromBytes(value));
+  set souvenirMinted(value: boolean) {
+    this.set("souvenirMinted", Value.fromBoolean(value));
+  }
+
+  get souvenir(): string | null {
+    let value = this.get("souvenir");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set souvenir(value: string | null) {
+    if (!value) {
+      this.unset("souvenir");
+    } else {
+      this.set("souvenir", Value.fromString(<string>value));
+    }
+  }
+
+  get usable(): boolean {
+    let value = this.get("usable");
+    return value!.toBoolean();
+  }
+
+  set usable(value: boolean) {
+    this.set("usable", Value.fromBoolean(value));
   }
 
   get tokenId(): BigInt {
@@ -538,189 +383,148 @@ export class BuyTicket extends Entity {
     this.set("tokenURI", Value.fromString(value));
   }
 
-  get eventStartTime(): BigInt {
-    let value = this.get("eventStartTime");
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
     return value!.toBigInt();
   }
 
-  set eventStartTime(value: BigInt) {
-    this.set("eventStartTime", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
   }
 }
 
-export class CancelOffer extends Entity {
-  constructor(id: Bytes) {
+export class Souvenir extends Entity {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save CancelOffer entity without an ID");
+    assert(id != null, "Cannot save Souvenir entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type CancelOffer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.STRING,
+        `Entities of type Souvenir must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("CancelOffer", id.toBytes().toHexString(), this);
+      store.set("Souvenir", id.toString(), this);
     }
   }
 
-  static load(id: Bytes): CancelOffer | null {
-    return changetype<CancelOffer | null>(
-      store.get("CancelOffer", id.toHexString())
-    );
+  static load(id: string): Souvenir | null {
+    return changetype<Souvenir | null>(store.get("Souvenir", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get owner(): Bytes {
+    let value = this.get("owner");
     return value!.toBytes();
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set owner(value: Bytes) {
+    this.set("owner", Value.fromBytes(value));
   }
 
-  get offerId(): Bytes {
-    let value = this.get("offerId");
-    return value!.toBytes();
-  }
-
-  set offerId(value: Bytes) {
-    this.set("offerId", Value.fromBytes(value));
-  }
-
-  get sender(): Bytes {
-    let value = this.get("sender");
-    return value!.toBytes();
-  }
-
-  set sender(value: Bytes) {
-    this.set("sender", Value.fromBytes(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
+  get tokenId(): BigInt {
+    let value = this.get("tokenId");
     return value!.toBigInt();
   }
 
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
+  set tokenId(value: BigInt) {
+    this.set("tokenId", Value.fromBigInt(value));
   }
 
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
+  get tokenURI(): string {
+    let value = this.get("tokenURI");
+    return value!.toString();
   }
 
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
+  set tokenURI(value: string) {
+    this.set("tokenURI", Value.fromString(value));
   }
 
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
+  get ticket(): string {
+    let value = this.get("ticket");
+    return value!.toString();
   }
 
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
+  set ticket(value: string) {
+    this.set("ticket", Value.fromString(value));
   }
 }
 
-export class CreateBuyOffer extends Entity {
-  constructor(id: Bytes) {
+export class Offer extends Entity {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save CreateBuyOffer entity without an ID");
+    assert(id != null, "Cannot save Offer entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type CreateBuyOffer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.STRING,
+        `Entities of type Offer must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("CreateBuyOffer", id.toBytes().toHexString(), this);
+      store.set("Offer", id.toString(), this);
     }
   }
 
-  static load(id: Bytes): CreateBuyOffer | null {
-    return changetype<CreateBuyOffer | null>(
-      store.get("CreateBuyOffer", id.toHexString())
-    );
+  static load(id: string): Offer | null {
+    return changetype<Offer | null>(store.get("Offer", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
-    return value!.toBytes();
+    return value!.toString();
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
-  get offerId(): Bytes {
-    let value = this.get("offerId");
-    return value!.toBytes();
+  get event(): string {
+    let value = this.get("event");
+    return value!.toString();
   }
 
-  set offerId(value: Bytes) {
-    this.set("offerId", Value.fromBytes(value));
+  set event(value: string) {
+    this.set("event", Value.fromString(value));
   }
 
-  get buyer(): Bytes {
-    let value = this.get("buyer");
-    return value!.toBytes();
+  get ticketType(): string {
+    let value = this.get("ticketType");
+    return value!.toString();
   }
 
-  set buyer(value: Bytes) {
-    this.set("buyer", Value.fromBytes(value));
+  set ticketType(value: string) {
+    this.set("ticketType", Value.fromString(value));
   }
 
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
+  get ticket(): string | null {
+    let value = this.get("ticket");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get ticketTypeId(): Bytes {
-    let value = this.get("ticketTypeId");
-    return value!.toBytes();
-  }
-
-  set ticketTypeId(value: Bytes) {
-    this.set("ticketTypeId", Value.fromBytes(value));
+  set ticket(value: string | null) {
+    if (!value) {
+      this.unset("ticket");
+    } else {
+      this.set("ticket", Value.fromString(<string>value));
+    }
   }
 
   get price(): BigInt {
@@ -732,2162 +536,81 @@ export class CreateBuyOffer extends Entity {
     this.set("price", Value.fromBigInt(value));
   }
 
-  get deadline(): BigInt {
+  get buyer(): Bytes | null {
+    let value = this.get("buyer");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set buyer(value: Bytes | null) {
+    if (!value) {
+      this.unset("buyer");
+    } else {
+      this.set("buyer", Value.fromBytes(<Bytes>value));
+    }
+  }
+
+  get seller(): Bytes | null {
+    let value = this.get("seller");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set seller(value: Bytes | null) {
+    if (!value) {
+      this.unset("seller");
+    } else {
+      this.set("seller", Value.fromBytes(<Bytes>value));
+    }
+  }
+
+  get buyOffer(): boolean {
+    let value = this.get("buyOffer");
+    return value!.toBoolean();
+  }
+
+  set buyOffer(value: boolean) {
+    this.set("buyOffer", Value.fromBoolean(value));
+  }
+
+  get sellOffer(): boolean {
+    let value = this.get("sellOffer");
+    return value!.toBoolean();
+  }
+
+  set sellOffer(value: boolean) {
+    this.set("sellOffer", Value.fromBoolean(value));
+  }
+
+  get deadline(): BigInt | null {
     let value = this.get("deadline");
-    return value!.toBigInt();
-  }
-
-  set deadline(value: BigInt) {
-    this.set("deadline", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class CreateEvent extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save CreateEvent entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type CreateEvent must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("CreateEvent", id.toBytes().toHexString(), this);
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
     }
   }
 
-  static load(id: Bytes): CreateEvent | null {
-    return changetype<CreateEvent | null>(
-      store.get("CreateEvent", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get name(): string {
-    let value = this.get("name");
-    return value!.toString();
-  }
-
-  set name(value: string) {
-    this.set("name", Value.fromString(value));
-  }
-
-  get description(): string {
-    let value = this.get("description");
-    return value!.toString();
-  }
-
-  set description(value: string) {
-    this.set("description", Value.fromString(value));
-  }
-
-  get eventStorage(): string {
-    let value = this.get("eventStorage");
-    return value!.toString();
-  }
-
-  set eventStorage(value: string) {
-    this.set("eventStorage", Value.fromString(value));
-  }
-
-  get startTime(): BigInt {
-    let value = this.get("startTime");
-    return value!.toBigInt();
-  }
-
-  set startTime(value: BigInt) {
-    this.set("startTime", Value.fromBigInt(value));
-  }
-
-  get endTime(): BigInt {
-    let value = this.get("endTime");
-    return value!.toBigInt();
-  }
-
-  set endTime(value: BigInt) {
-    this.set("endTime", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class CreateSellOffer extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save CreateSellOffer entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type CreateSellOffer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("CreateSellOffer", id.toBytes().toHexString(), this);
+  set deadline(value: BigInt | null) {
+    if (!value) {
+      this.unset("deadline");
+    } else {
+      this.set("deadline", Value.fromBigInt(<BigInt>value));
     }
   }
 
-  static load(id: Bytes): CreateSellOffer | null {
-    return changetype<CreateSellOffer | null>(
-      store.get("CreateSellOffer", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get offerId(): Bytes {
-    let value = this.get("offerId");
-    return value!.toBytes();
-  }
-
-  set offerId(value: Bytes) {
-    this.set("offerId", Value.fromBytes(value));
-  }
-
-  get seller(): Bytes {
-    let value = this.get("seller");
-    return value!.toBytes();
-  }
-
-  set seller(value: Bytes) {
-    this.set("seller", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get ticketTypeId(): Bytes {
-    let value = this.get("ticketTypeId");
-    return value!.toBytes();
-  }
-
-  set ticketTypeId(value: Bytes) {
-    this.set("ticketTypeId", Value.fromBytes(value));
-  }
-
-  get ticketId(): BigInt {
-    let value = this.get("ticketId");
-    return value!.toBigInt();
-  }
-
-  set ticketId(value: BigInt) {
-    this.set("ticketId", Value.fromBigInt(value));
-  }
-
-  get price(): BigInt {
-    let value = this.get("price");
-    return value!.toBigInt();
-  }
-
-  set price(value: BigInt) {
-    this.set("price", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class CreateTicketType extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save CreateTicketType entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type CreateTicketType must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("CreateTicketType", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): CreateTicketType | null {
-    return changetype<CreateTicketType | null>(
-      store.get("CreateTicketType", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get ticketType_id(): Bytes {
-    let value = this.get("ticketType_id");
-    return value!.toBytes();
-  }
-
-  set ticketType_id(value: Bytes) {
-    this.set("ticketType_id", Value.fromBytes(value));
-  }
-
-  get ticketType_name(): string {
-    let value = this.get("ticketType_name");
-    return value!.toString();
-  }
-
-  set ticketType_name(value: string) {
-    this.set("ticketType_name", Value.fromString(value));
-  }
-
-  get ticketType_price(): BigInt {
-    let value = this.get("ticketType_price");
-    return value!.toBigInt();
-  }
-
-  set ticketType_price(value: BigInt) {
-    this.set("ticketType_price", Value.fromBigInt(value));
-  }
-
-  get ticketType_maxSupply(): BigInt {
-    let value = this.get("ticketType_maxSupply");
-    return value!.toBigInt();
-  }
-
-  set ticketType_maxSupply(value: BigInt) {
-    this.set("ticketType_maxSupply", Value.fromBigInt(value));
-  }
-
-  get ticketType_currentSupply(): BigInt {
-    let value = this.get("ticketType_currentSupply");
-    return value!.toBigInt();
-  }
-
-  set ticketType_currentSupply(value: BigInt) {
-    this.set("ticketType_currentSupply", Value.fromBigInt(value));
-  }
-
-  get ticketType_tokenURI(): string {
-    let value = this.get("ticketType_tokenURI");
-    return value!.toString();
-  }
-
-  set ticketType_tokenURI(value: string) {
-    this.set("ticketType_tokenURI", Value.fromString(value));
-  }
-
-  get ticketType_souvenirTokenURI(): string {
-    let value = this.get("ticketType_souvenirTokenURI");
-    return value!.toString();
-  }
-
-  set ticketType_souvenirTokenURI(value: string) {
-    this.set("ticketType_souvenirTokenURI", Value.fromString(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class DeleteEvent extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save DeleteEvent entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type DeleteEvent must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("DeleteEvent", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): DeleteEvent | null {
-    return changetype<DeleteEvent | null>(
-      store.get("DeleteEvent", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class DeleteTickeyType extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save DeleteTickeyType entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type DeleteTickeyType must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("DeleteTickeyType", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): DeleteTickeyType | null {
-    return changetype<DeleteTickeyType | null>(
-      store.get("DeleteTickeyType", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get ticketTypeId(): Bytes {
-    let value = this.get("ticketTypeId");
-    return value!.toBytes();
-  }
-
-  set ticketTypeId(value: Bytes) {
-    this.set("ticketTypeId", Value.fromBytes(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class Deposit extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save Deposit entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type Deposit must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("Deposit", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): Deposit | null {
-    return changetype<Deposit | null>(store.get("Deposit", id.toHexString()));
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get sender(): Bytes {
-    let value = this.get("sender");
-    return value!.toBytes();
-  }
-
-  set sender(value: Bytes) {
-    this.set("sender", Value.fromBytes(value));
-  }
-
-  get amount(): BigInt {
-    let value = this.get("amount");
-    return value!.toBigInt();
-  }
-
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class GenerateTicket extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save GenerateTicket entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type GenerateTicket must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("GenerateTicket", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): GenerateTicket | null {
-    return changetype<GenerateTicket | null>(
-      store.get("GenerateTicket", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get receiver(): Bytes {
-    let value = this.get("receiver");
-    return value!.toBytes();
-  }
-
-  set receiver(value: Bytes) {
-    this.set("receiver", Value.fromBytes(value));
-  }
-
-  get tokenId(): BigInt {
-    let value = this.get("tokenId");
-    return value!.toBigInt();
-  }
-
-  set tokenId(value: BigInt) {
-    this.set("tokenId", Value.fromBigInt(value));
-  }
-
-  get tokenURI(): string {
-    let value = this.get("tokenURI");
-    return value!.toString();
-  }
-
-  set tokenURI(value: string) {
-    this.set("tokenURI", Value.fromString(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class RoleAdminChanged extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save RoleAdminChanged entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type RoleAdminChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("RoleAdminChanged", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): RoleAdminChanged | null {
-    return changetype<RoleAdminChanged | null>(
-      store.get("RoleAdminChanged", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get role(): Bytes {
-    let value = this.get("role");
-    return value!.toBytes();
-  }
-
-  set role(value: Bytes) {
-    this.set("role", Value.fromBytes(value));
-  }
-
-  get previousAdminRole(): Bytes {
-    let value = this.get("previousAdminRole");
-    return value!.toBytes();
-  }
-
-  set previousAdminRole(value: Bytes) {
-    this.set("previousAdminRole", Value.fromBytes(value));
-  }
-
-  get newAdminRole(): Bytes {
-    let value = this.get("newAdminRole");
-    return value!.toBytes();
-  }
-
-  set newAdminRole(value: Bytes) {
-    this.set("newAdminRole", Value.fromBytes(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class RoleGranted extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save RoleGranted entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type RoleGranted must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("RoleGranted", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): RoleGranted | null {
-    return changetype<RoleGranted | null>(
-      store.get("RoleGranted", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get role(): Bytes {
-    let value = this.get("role");
-    return value!.toBytes();
-  }
-
-  set role(value: Bytes) {
-    this.set("role", Value.fromBytes(value));
-  }
-
-  get account(): Bytes {
-    let value = this.get("account");
-    return value!.toBytes();
-  }
-
-  set account(value: Bytes) {
-    this.set("account", Value.fromBytes(value));
-  }
-
-  get sender(): Bytes {
-    let value = this.get("sender");
-    return value!.toBytes();
-  }
-
-  set sender(value: Bytes) {
-    this.set("sender", Value.fromBytes(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class RoleRevoked extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save RoleRevoked entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type RoleRevoked must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("RoleRevoked", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): RoleRevoked | null {
-    return changetype<RoleRevoked | null>(
-      store.get("RoleRevoked", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get role(): Bytes {
-    let value = this.get("role");
-    return value!.toBytes();
-  }
-
-  set role(value: Bytes) {
-    this.set("role", Value.fromBytes(value));
-  }
-
-  get account(): Bytes {
-    let value = this.get("account");
-    return value!.toBytes();
-  }
-
-  set account(value: Bytes) {
-    this.set("account", Value.fromBytes(value));
-  }
-
-  get sender(): Bytes {
-    let value = this.get("sender");
-    return value!.toBytes();
-  }
-
-  set sender(value: Bytes) {
-    this.set("sender", Value.fromBytes(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class Transfer extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save Transfer entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type Transfer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("Transfer", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): Transfer | null {
-    return changetype<Transfer | null>(store.get("Transfer", id.toHexString()));
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get from(): Bytes {
-    let value = this.get("from");
-    return value!.toBytes();
-  }
-
-  set from(value: Bytes) {
-    this.set("from", Value.fromBytes(value));
-  }
-
-  get to(): Bytes {
-    let value = this.get("to");
-    return value!.toBytes();
-  }
-
-  set to(value: Bytes) {
-    this.set("to", Value.fromBytes(value));
-  }
-
-  get tokenId(): BigInt {
-    let value = this.get("tokenId");
-    return value!.toBigInt();
-  }
-
-  set tokenId(value: BigInt) {
-    this.set("tokenId", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class TransferTicket extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save TransferTicket entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type TransferTicket must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("TransferTicket", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): TransferTicket | null {
-    return changetype<TransferTicket | null>(
-      store.get("TransferTicket", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get sender(): Bytes {
-    let value = this.get("sender");
-    return value!.toBytes();
-  }
-
-  set sender(value: Bytes) {
-    this.set("sender", Value.fromBytes(value));
-  }
-
-  get receiver(): Bytes {
-    let value = this.get("receiver");
-    return value!.toBytes();
-  }
-
-  set receiver(value: Bytes) {
-    this.set("receiver", Value.fromBytes(value));
-  }
-
-  get tokenId(): BigInt {
-    let value = this.get("tokenId");
-    return value!.toBigInt();
-  }
-
-  set tokenId(value: BigInt) {
-    this.set("tokenId", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class UpdateEvent extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save UpdateEvent entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type UpdateEvent must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("UpdateEvent", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): UpdateEvent | null {
-    return changetype<UpdateEvent | null>(
-      store.get("UpdateEvent", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get name(): string {
-    let value = this.get("name");
-    return value!.toString();
-  }
-
-  set name(value: string) {
-    this.set("name", Value.fromString(value));
-  }
-
-  get description(): string {
-    let value = this.get("description");
-    return value!.toString();
-  }
-
-  set description(value: string) {
-    this.set("description", Value.fromString(value));
-  }
-
-  get eventStorage(): string {
-    let value = this.get("eventStorage");
-    return value!.toString();
-  }
-
-  set eventStorage(value: string) {
-    this.set("eventStorage", Value.fromString(value));
-  }
-
-  get startTime(): BigInt {
-    let value = this.get("startTime");
-    return value!.toBigInt();
-  }
-
-  set startTime(value: BigInt) {
-    this.set("startTime", Value.fromBigInt(value));
-  }
-
-  get endTime(): BigInt {
-    let value = this.get("endTime");
-    return value!.toBigInt();
-  }
-
-  set endTime(value: BigInt) {
-    this.set("endTime", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class UpdateTicketType extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save UpdateTicketType entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type UpdateTicketType must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("UpdateTicketType", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): UpdateTicketType | null {
-    return changetype<UpdateTicketType | null>(
-      store.get("UpdateTicketType", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get eventId(): Bytes {
-    let value = this.get("eventId");
-    return value!.toBytes();
-  }
-
-  set eventId(value: Bytes) {
-    this.set("eventId", Value.fromBytes(value));
-  }
-
-  get ticketType_id(): Bytes {
-    let value = this.get("ticketType_id");
-    return value!.toBytes();
-  }
-
-  set ticketType_id(value: Bytes) {
-    this.set("ticketType_id", Value.fromBytes(value));
-  }
-
-  get ticketType_name(): string {
-    let value = this.get("ticketType_name");
-    return value!.toString();
-  }
-
-  set ticketType_name(value: string) {
-    this.set("ticketType_name", Value.fromString(value));
-  }
-
-  get ticketType_price(): BigInt {
-    let value = this.get("ticketType_price");
-    return value!.toBigInt();
-  }
-
-  set ticketType_price(value: BigInt) {
-    this.set("ticketType_price", Value.fromBigInt(value));
-  }
-
-  get ticketType_maxSupply(): BigInt {
-    let value = this.get("ticketType_maxSupply");
-    return value!.toBigInt();
-  }
-
-  set ticketType_maxSupply(value: BigInt) {
-    this.set("ticketType_maxSupply", Value.fromBigInt(value));
-  }
-
-  get ticketType_currentSupply(): BigInt {
-    let value = this.get("ticketType_currentSupply");
-    return value!.toBigInt();
-  }
-
-  set ticketType_currentSupply(value: BigInt) {
-    this.set("ticketType_currentSupply", Value.fromBigInt(value));
-  }
-
-  get ticketType_tokenURI(): string {
-    let value = this.get("ticketType_tokenURI");
-    return value!.toString();
-  }
-
-  set ticketType_tokenURI(value: string) {
-    this.set("ticketType_tokenURI", Value.fromString(value));
-  }
-
-  get ticketType_souvenirTokenURI(): string {
-    let value = this.get("ticketType_souvenirTokenURI");
-    return value!.toString();
-  }
-
-  set ticketType_souvenirTokenURI(value: string) {
-    this.set("ticketType_souvenirTokenURI", Value.fromString(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class UseTicket extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save UseTicket entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type UseTicket must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("UseTicket", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): UseTicket | null {
-    return changetype<UseTicket | null>(
-      store.get("UseTicket", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get sender(): Bytes {
-    let value = this.get("sender");
-    return value!.toBytes();
-  }
-
-  set sender(value: Bytes) {
-    this.set("sender", Value.fromBytes(value));
-  }
-
-  get ticketId(): BigInt {
-    let value = this.get("ticketId");
-    return value!.toBigInt();
-  }
-
-  set ticketId(value: BigInt) {
-    this.set("ticketId", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class Withdraw extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save Withdraw entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type Withdraw must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("Withdraw", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): Withdraw | null {
-    return changetype<Withdraw | null>(store.get("Withdraw", id.toHexString()));
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get receiver(): Bytes {
-    let value = this.get("receiver");
-    return value!.toBytes();
-  }
-
-  set receiver(value: Bytes) {
-    this.set("receiver", Value.fromBytes(value));
-  }
-
-  get amount(): BigInt {
-    let value = this.get("amount");
-    return value!.toBigInt();
-  }
-
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class SouvenirGeneratorApproval extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(
-      id != null,
-      "Cannot save SouvenirGeneratorApproval entity without an ID"
-    );
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type SouvenirGeneratorApproval must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("SouvenirGeneratorApproval", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): SouvenirGeneratorApproval | null {
-    return changetype<SouvenirGeneratorApproval | null>(
-      store.get("SouvenirGeneratorApproval", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get owner(): Bytes {
-    let value = this.get("owner");
-    return value!.toBytes();
-  }
-
-  set owner(value: Bytes) {
-    this.set("owner", Value.fromBytes(value));
-  }
-
-  get approved(): Bytes {
-    let value = this.get("approved");
-    return value!.toBytes();
-  }
-
-  set approved(value: Bytes) {
-    this.set("approved", Value.fromBytes(value));
-  }
-
-  get tokenId(): BigInt {
-    let value = this.get("tokenId");
-    return value!.toBigInt();
-  }
-
-  set tokenId(value: BigInt) {
-    this.set("tokenId", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class SouvenirGeneratorApprovalForAll extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(
-      id != null,
-      "Cannot save SouvenirGeneratorApprovalForAll entity without an ID"
-    );
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type SouvenirGeneratorApprovalForAll must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set(
-        "SouvenirGeneratorApprovalForAll",
-        id.toBytes().toHexString(),
-        this
-      );
-    }
-  }
-
-  static load(id: Bytes): SouvenirGeneratorApprovalForAll | null {
-    return changetype<SouvenirGeneratorApprovalForAll | null>(
-      store.get("SouvenirGeneratorApprovalForAll", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get owner(): Bytes {
-    let value = this.get("owner");
-    return value!.toBytes();
-  }
-
-  set owner(value: Bytes) {
-    this.set("owner", Value.fromBytes(value));
-  }
-
-  get operator(): Bytes {
-    let value = this.get("operator");
-    return value!.toBytes();
-  }
-
-  set operator(value: Bytes) {
-    this.set("operator", Value.fromBytes(value));
-  }
-
-  get approved(): boolean {
-    let value = this.get("approved");
+  get deleted(): boolean {
+    let value = this.get("deleted");
     return value!.toBoolean();
   }
 
-  set approved(value: boolean) {
-    this.set("approved", Value.fromBoolean(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class GenerateSouvenir extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save GenerateSouvenir entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type GenerateSouvenir must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("GenerateSouvenir", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): GenerateSouvenir | null {
-    return changetype<GenerateSouvenir | null>(
-      store.get("GenerateSouvenir", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get receiver(): Bytes {
-    let value = this.get("receiver");
-    return value!.toBytes();
-  }
-
-  set receiver(value: Bytes) {
-    this.set("receiver", Value.fromBytes(value));
-  }
-
-  get tokenId(): BigInt {
-    let value = this.get("tokenId");
-    return value!.toBigInt();
-  }
-
-  set tokenId(value: BigInt) {
-    this.set("tokenId", Value.fromBigInt(value));
-  }
-
-  get tokenURI(): string {
-    let value = this.get("tokenURI");
-    return value!.toString();
-  }
-
-  set tokenURI(value: string) {
-    this.set("tokenURI", Value.fromString(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class OwnershipTransferred extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save OwnershipTransferred entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type OwnershipTransferred must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("OwnershipTransferred", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): OwnershipTransferred | null {
-    return changetype<OwnershipTransferred | null>(
-      store.get("OwnershipTransferred", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get previousOwner(): Bytes {
-    let value = this.get("previousOwner");
-    return value!.toBytes();
-  }
-
-  set previousOwner(value: Bytes) {
-    this.set("previousOwner", Value.fromBytes(value));
-  }
-
-  get newOwner(): Bytes {
-    let value = this.get("newOwner");
-    return value!.toBytes();
-  }
-
-  set newOwner(value: Bytes) {
-    this.set("newOwner", Value.fromBytes(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class SouvenirGeneratorTransfer extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(
-      id != null,
-      "Cannot save SouvenirGeneratorTransfer entity without an ID"
-    );
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type SouvenirGeneratorTransfer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("SouvenirGeneratorTransfer", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): SouvenirGeneratorTransfer | null {
-    return changetype<SouvenirGeneratorTransfer | null>(
-      store.get("SouvenirGeneratorTransfer", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get from(): Bytes {
-    let value = this.get("from");
-    return value!.toBytes();
-  }
-
-  set from(value: Bytes) {
-    this.set("from", Value.fromBytes(value));
-  }
-
-  get to(): Bytes {
-    let value = this.get("to");
-    return value!.toBytes();
-  }
-
-  set to(value: Bytes) {
-    this.set("to", Value.fromBytes(value));
-  }
-
-  get tokenId(): BigInt {
-    let value = this.get("tokenId");
-    return value!.toBigInt();
-  }
-
-  set tokenId(value: BigInt) {
-    this.set("tokenId", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class TransferSouvenir extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save TransferSouvenir entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type TransferSouvenir must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("TransferSouvenir", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static load(id: Bytes): TransferSouvenir | null {
-    return changetype<TransferSouvenir | null>(
-      store.get("TransferSouvenir", id.toHexString())
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    return value!.toBytes();
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get sender(): Bytes {
-    let value = this.get("sender");
-    return value!.toBytes();
-  }
-
-  set sender(value: Bytes) {
-    this.set("sender", Value.fromBytes(value));
-  }
-
-  get receiver(): Bytes {
-    let value = this.get("receiver");
-    return value!.toBytes();
-  }
-
-  set receiver(value: Bytes) {
-    this.set("receiver", Value.fromBytes(value));
-  }
-
-  get tokenId(): BigInt {
-    let value = this.get("tokenId");
-    return value!.toBigInt();
-  }
-
-  set tokenId(value: BigInt) {
-    this.set("tokenId", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    return value!.toBigInt();
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    return value!.toBigInt();
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    return value!.toBytes();
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
+  set deleted(value: boolean) {
+    this.set("deleted", Value.fromBoolean(value));
   }
 }

@@ -1,134 +1,193 @@
 import { gql } from '@apollo/client';
 
 export const EVENTS_QUERY = gql`
-    query {
-        createEvents(first: 10, orderBy: blockTimestamp, orderDirection: desc) {
+    query Events($first: Int!, $skip: Int!) {
+        events(
+            orderBy: createdAt, 
+            orderDirection: desc, 
+            skip: $skip, 
+            first: $first, 
+            where: { deleted: false, startTime_gt: ${Math.floor(Date.now() / 1000)} 
+        }) {
             id
-            eventId
+            creator
+            name
+            description
+            eventStorage
+            location
+            startTime
+            endTime
         }
     }
 `;
 
 export const TICKETS_QUERY = gql`
-    query ($owner: String!) {
-        buyTickets(where: { owner: $owner }) {
-            tokenId
-            tokenURI
-        }
-        acceptBuyOffers(where: { buyer: $owner }) {
-            offerId
-            eventId
-            ticketTypeId
-            ticketId
-            tokenURI
-        }
-        acceptSellOffers(where: { buyer: $owner }) {
-            offerId
-            eventId
-            ticketTypeId
-            ticketId
+    query Tickets($owner: String!, $event: String!, $ticketType: String!) {
+        tickets(
+            where: {
+                owner: $owner
+                event_: { id: $event }
+                ticketType_: { id: $ticketType }
+                usable: true
+            }
+        ) {
+            id
+            owner
             tokenURI
         }
     }
 `;
 
-export const EVENTS_BY_ORGANIZER_QUERY = gql`
-    query Events($creator: String!) {
-        createEvents(where: { creator: $creator }) {
-            eventId
+export const EVENT_AND_TICKETS_QUERY = gql`
+    query EventAndTickets($event: String!) {
+        event(id: $event) {
+            id
+            creator
+            name
+            description
+            eventStorage
+            location
+            startTime
+            endTime
+            createdAt
+            ticketTypes {
+                id
+                name
+                price
+                maxSupply
+                currentSupply
+            }
+        }
+
+        tickets(where: { event_: { id: $event } }) {
+            id
+            owner
+            timestamp
+            ticketType {
+                id
+            }
+        }
+    }
+`;
+
+export const EVENTS_BY_CREATOR_QUERY = gql`
+    query EventsByCreator($creator: String!) {
+        events(where: { creator: $creator, deleted: false }) {
+            id
+            creator
+            name
+            description
+            eventStorage
+            location
+            startTime
+            endTime
+        }
+    }
+`;
+
+export const TICKETS_BY_OWNER_QUERY = gql`
+    query TicketsByOwner($owner: String!) {
+        tickets(where: { owner: $owner, usable: true }) {
+            id
+            owner
+            tokenId
+            tokenURI
+            event {
+                id
+                creator
+                name
+                description
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                price
+                maxSupply
+                currentSupply
+            }
+        }
+        souvenirs(where: { owner: $owner }) {
+            id
+            tokenId
+            tokenURI
+            owner
         }
     }
 `;
 
 export const BUY_TICKETS_EVENT_QUERY = gql`
-    query Events {
-        createEvents {
-            eventId
+    query BuyTicketsEvent {
+        events(orderBy: createdAt, orderDirection: desc, where: { deleted: false }) {
+            id
+            name
+            startTime
+            ticketTypes {
+                id
+                name
+                event {
+                    id
+                    name
+                }
+            }
         }
     }
 `;
 
 export const SELL_TICKETS_QUERY = gql`
-    query Tickets($owner: String!) {
-        buyTickets(where: { owner: $owner }) {
-            eventId
-            ticketTypeId
+    query SellTickets($owner: String!) {
+        tickets(where: { owner: $owner }) {
             tokenId
-        }
-        acceptBuyOffers(where: { buyer: $owner }) {
-            offerId
-            eventId
-            ticketTypeId
-            ticketId
-            tokenURI
-        }
-        acceptSellOffers(where: { buyer: $owner }) {
-            offerId
-            eventId
-            ticketTypeId
-            ticketId
-            tokenURI
+            event {
+                id
+                name
+                startTime
+                ticketTypes {
+                    id
+                    name
+                    event {
+                        id
+                        name
+                    }
+                }
+            }
+            ticketType {
+                id
+                name
+            }
         }
     }
 `;
 
-export const AVAILABLE_TICKETS_FOR_EVENT = gql`
-    query Tickets($eventId: String!) {
-        createTicketTypes(where: { eventId: $eventId }) {
-            eventId
-            ticketType_id
-            ticketType_name
-        }
-    }
-`;
-
-export const CURRENT_EVENT_BY_ID_QUERY = gql`
-    query Event($eventId: String!) {
-        createEvents(where: { eventId: $eventId }) {
-            eventId
-            blockTimestamp
-        }
-        buyTickets(where: { eventId: $eventId }) {
-            ticketTypeId
-            tokenId
-            blockTimestamp
-        }
-    }
-`;
 export const OFFERS_QUERY = gql`
     query Offers {
-        createBuyOffers(orderBy: blockTimestamp, orderDirection: desc) {
+        offers(where: { deleted: false }) {
             id
-            offerId
-            eventId
-            ticketTypeId
-            price
             buyer
-            blockTimestamp
-        }
-        createSellOffers(orderBy: blockTimestamp, orderDirection: desc) {
-            id
-            offerId
-            eventId
-            ticketTypeId
-            ticketId
-            price
             seller
-            blockTimestamp
-        }
-    }
-`;
-
-export const TICKET_QUERY = gql`
-    query ($owner: String!, $eventId: String!, $ticketTypeId: String!) {
-        buyTickets(where: { owner: $owner, eventId: $eventId, ticketTypeId: $ticketTypeId }) {
-            tokenId
-        }
-        acceptBuyOffers(where: { buyer: $owner, eventId: $eventId, ticketTypeId: $ticketTypeId }) {
-            ticketId
-        }
-        acceptSellOffers(where: { buyer: $owner, eventId: $eventId, ticketTypeId: $ticketTypeId }) {
-            ticketId
+            buyOffer
+            sellOffer
+            price
+            event {
+                id
+                name
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                tokenURI
+            }
+            ticket {
+                id
+                tokenId
+            }
         }
     }
 `;

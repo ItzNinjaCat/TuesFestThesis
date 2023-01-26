@@ -10,22 +10,13 @@ import "./TIK.sol";
 contract SouvenirGenerator is Ownable, ERC721URIStorage {
     event GenerateSouvenir(
         address indexed creator,
-        address indexed receiver,
+        address indexed recipient,
         uint256 tokenId,
         string tokenURI
-    );
-    event TransferSouvenir(
-        address indexed sender,
-        address indexed receiver,
-        uint256 tokenId
     );
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-
-    bytes32 public constant EVENT_ORGANIZER = keccak256("EVENT_ORGANIZER");
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
     uint256 private balance = 0;
     address private ticketContractAddress;
 
@@ -44,12 +35,6 @@ contract SouvenirGenerator is Ownable, ERC721URIStorage {
     ) external onlyOwner {
         ticketContractAddress = _ticketContractAddress;
     }
-
-    // function supportsInterface(
-    //     bytes4 interfaceId
-    // ) public view virtual override(ERC721, Ownable) returns (bool) {
-    //     return super.supportsInterface(interfaceId);
-    // }
 
     function getSouvenirMetadata(
         uint256 tokenId
@@ -77,12 +62,20 @@ contract SouvenirGenerator is Ownable, ERC721URIStorage {
         return _mintNFT(recipient, tokenURI);
     }
 
-    function transferSouvenir(address _receiver, uint256 _tokenId) external {
-        require(
-            _isApprovedOrOwner(msg.sender, _tokenId),
-            "ERC721: transfer caller is not owner nor approved"
-        );
-        _transfer(msg.sender, _receiver, _tokenId);
-        emit TransferSouvenir(msg.sender, _receiver, _tokenId);
+    function safeTransferFrom(address, address, uint256) public pure override {
+        revert("You can't transfer souvenirs");
+    }
+
+    function safeTransferFrom(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public pure override {
+        revert("You can't transfer souvenirs");
+    }
+
+    function transferFrom(address, address, uint256) public pure override {
+        revert("You can't transfer souvenirs");
     }
 }

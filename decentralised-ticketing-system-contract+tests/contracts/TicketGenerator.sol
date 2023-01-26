@@ -20,6 +20,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         string name,
         string description,
         string eventStorage,
+        string location,
         uint256 startTime,
         uint256 endTime
     );
@@ -30,6 +31,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         string name,
         string description,
         string eventStorage,
+        string location,
         uint256 startTime,
         uint256 endTime
     );
@@ -48,7 +50,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         Structs.TicketType ticketType
     );
 
-    event DeleteTickeyType(
+    event DeleteTicketType(
         address indexed creator,
         bytes32 eventId,
         bytes32 ticketTypeId
@@ -64,12 +66,13 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         uint256 eventStartTime
     );
 
-    event GenerateTicket(
-        address indexed creator,
-        address indexed receiver,
+    event GenerateSouvenir(
+        address indexed owner,
+        Structs.Ticket ticket,
         uint256 tokenId,
         string tokenURI
     );
+
     event TransferTicket(
         address indexed sender,
         address indexed receiver,
@@ -230,6 +233,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         string memory _name,
         string memory _description,
         string memory eventStorage,
+        string memory location,
         uint256 startTime,
         uint256 endTime
     ) external onlyOrganizer {
@@ -240,6 +244,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         events[_eventId].name = _name;
         events[_eventId].description = _description;
         events[_eventId].eventStorage = eventStorage;
+        events[_eventId].location = location;
         events[_eventId].startTime = startTime;
         events[_eventId].endTime = endTime;
         emit CreateEvent(
@@ -248,6 +253,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             _name,
             _description,
             eventStorage,
+            location,
             startTime,
             endTime
         );
@@ -258,6 +264,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         string memory _name,
         string memory _description,
         string memory eventStorage,
+        string memory location,
         uint256 startTime,
         uint256 endTime
     ) external eventExists(_eventId) onlyOrganizer {
@@ -268,6 +275,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         events[_eventId].name = _name;
         events[_eventId].description = _description;
         events[_eventId].eventStorage = eventStorage;
+        events[_eventId].location = location;
         events[_eventId].startTime = startTime;
         events[_eventId].endTime = endTime;
         emit UpdateEvent(
@@ -276,6 +284,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             _name,
             _description,
             eventStorage,
+            location,
             startTime,
             endTime
         );
@@ -356,7 +365,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         emit UpdateTicketType(msg.sender, _eventId, ticketType);
     }
 
-    function removeTicketType(
+    function deleteTicketType(
         bytes32 _eventId,
         bytes32 _ticketTypeId
     )
@@ -381,7 +390,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
 
         _event.ticketTypeIds[index] = lastKey;
         _event.ticketTypeIds.pop();
-        emit DeleteTickeyType(msg.sender, _eventId, _ticketTypeId);
+        emit DeleteTicketType(msg.sender, _eventId, _ticketTypeId);
     }
 
     function _mintNFT(
@@ -393,7 +402,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         uint256 newItemId = _tokenIds.current();
         _mint(_recipient, newItemId);
         _setTokenURI(newItemId, _tokenURI);
-        emit GenerateTicket(msg.sender, _recipient, newItemId, _tokenURI);
         return newItemId;
     }
 
@@ -410,7 +418,11 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     function buyTicket(
         bytes32 _eventId,
         bytes32 _ticketTypeId,
-        address _recipient
+        address _recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
     )
         external
         eventExists(_eventId)
@@ -425,6 +437,17 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             ticketType.currentSupply > 0,
             "Tickets from this type sold out"
         );
+        if (deadline != 0) {
+            token.permit(
+                msg.sender,
+                address(this),
+                ticketType.price,
+                deadline,
+                v,
+                r,
+                s
+            );
+        }
         require(
             token.allowance(msg.sender, address(this)) >= ticketType.price,
             "Token allowance too low"
@@ -476,6 +499,15 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         );
         ticket.souvenirMinted = true;
         ticket.souvenirId = souvenirId;
+        tickets[_ticketId] = ticket;
+        emit GenerateSouvenir(
+            msg.sender,
+            tickets[_ticketId],
+            souvenirId,
+            events[ticket.eventId]
+                .ticketTypes[ticket.ticketTypeId]
+                .souvenirTokenURI
+        );
         return souvenirId;
     }
 

@@ -51,30 +51,54 @@ const TicketType = (({
     const handleCloseSuccessGift = () => setShowSuccessGift(false);
     const buyTickets = (async (recipient, amount, handleClose, handleShowSuccess, setTickets, setAddr = undefined) => {
         const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount), +new Date() + 60 * 60);
-        const tx = await contract.ticketPurchasePermit(
-            parseEther(String(price * amount)),
-            signature.deadline,
-            signature.v,
-            signature.r,
-            signature.s,
-        )
-        handleClose();
-        tx.wait().then(() => {
-            const ticketSale = Array(Number(amount)).fill(0).map(async () => {
-                return await (await contract.buyTicket(
-                    eventId,
-                    ticketTypeId,
-                    recipient
-                )).wait();
+        if (amount > 1) {
+            const tx = await contract.ticketPurchasePermit(
+                parseEther(String(price * amount)),
+                signature.deadline,
+                signature.v,
+                signature.r,
+                signature.s,
+            )
+            handleClose();
+            tx.wait().then(() => {
+                const ticketSale = Array(Number(amount)).fill(0).map(async () => {
+                    return await (await contract.buyTicket(
+                        eventId,
+                        ticketTypeId,
+                        recipient,
+                        0, 0,
+                        '0x0000000000000000000000000000000000000000000000000000000000000000',
+                        '0x0000000000000000000000000000000000000000000000000000000000000000',
+                    )).wait();
+                });
+                Promise.all(ticketSale).then(() => {
+                setTickets(1);
+                handleShowSuccess();
+                if(setAddr !== undefined) {
+                    setAddr('');
+                }
+                });
             });
-            Promise.all(ticketSale).then(() => {
-            setTickets(1);
-            handleShowSuccess();
-            if(setAddr !== undefined) {
-                setAddr('');
-            }
+        }
+        else {
+            const tx = await contract.buyTicket(
+                eventId,
+                ticketTypeId,
+                recipient,
+                signature.deadline,
+                signature.v,
+                signature.r,
+                signature.s,
+            );
+            handleClose();
+            tx.wait().then(() => {
+                setTickets(1);
+                handleShowSuccess();
+                if(setAddr !== undefined) {
+                    setAddr('');
+                }
             });
-        });
+        }
     });
 
     const changeTicketAmountPersonal = ((event) => {

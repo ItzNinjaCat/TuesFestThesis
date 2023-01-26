@@ -241,7 +241,7 @@ function Tickets() {
     }
 
     const deleteType = async () => {
-        const tx = await contract.removeTicketType(event.eventId, selectedTicketId);
+        const tx = await contract.deleteTicketType(event.eventId, selectedTicketId);
         await tx.wait();
     }
 

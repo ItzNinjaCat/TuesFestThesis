@@ -1,8 +1,8 @@
-export const TIK_ADDRESS = '0x633a48c65C7476c925345f5d75386B7A1a87E630';
+export const TIK_ADDRESS = '0x7d729Be5f01105DD92b5b69f6D7e13682CCaE76e';
 export const TIK_ABI = require('./abis/TIK.json');
-export const SOUVENIR_ADDRESS = '0xb602ADA6d36284b7903111fF65d92e0a8Af4FC55';
+export const SOUVENIR_ADDRESS = '0x6426c0e175a9881d0D778e33E02b46F39B01AD48';
 export const SOUVENIR_ABI = require('./abis/souvenirGenerator.json');
-export const TICKET_ADDRESS = '0x315E8DB589C0f9d409F0D0435230db3f05168869';
+export const TICKET_ADDRESS = '0xbc7D3F59396a6087dd23AD88F4B39236E4373ed7';
 export const TICKET_ABI = require('./abis/ticketGenerator.json');
 export const SUBGRAPH_URL =
-    'https://api.studio.thegraph.com/query/39731/decentralised-ticketing-system/v0.1.1';
+    'https://api.studio.thegraph.com/query/39731/decentralised-ticketing-system/v0.1.8';

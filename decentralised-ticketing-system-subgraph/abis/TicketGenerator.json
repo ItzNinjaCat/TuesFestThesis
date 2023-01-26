@@ -317,6 +317,12 @@
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "location",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "startTime",
         "type": "uint256"
@@ -457,7 +463,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "DeleteTickeyType",
+    "name": "DeleteTicketType",
     "type": "event"
   },
   {
@@ -485,14 +491,31 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "creator",
+        "name": "owner",
         "type": "address"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
+        "components": [
+          { "internalType": "uint256", "name": "id", "type": "uint256" },
+          { "internalType": "bytes32", "name": "eventId", "type": "bytes32" },
+          {
+            "internalType": "bytes32",
+            "name": "ticketTypeId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "souvenirId",
+            "type": "uint256"
+          },
+          { "internalType": "address", "name": "owner", "type": "address" },
+          { "internalType": "bool", "name": "souvenirMinted", "type": "bool" },
+          { "internalType": "bool", "name": "usable", "type": "bool" }
+        ],
+        "indexed": false,
+        "internalType": "struct Structs.Ticket",
+        "name": "ticket",
+        "type": "tuple"
       },
       {
         "indexed": false,
@@ -507,7 +530,7 @@
         "type": "string"
       }
     ],
-    "name": "GenerateTicket",
+    "name": "GenerateSouvenir",
     "type": "event"
   },
   {
@@ -666,6 +689,12 @@
         "indexed": false,
         "internalType": "string",
         "name": "eventStorage",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "location",
         "type": "string"
       },
       {
@@ -845,7 +874,11 @@
     "inputs": [
       { "internalType": "bytes32", "name": "_eventId", "type": "bytes32" },
       { "internalType": "bytes32", "name": "_ticketTypeId", "type": "bytes32" },
-      { "internalType": "address", "name": "_recipient", "type": "address" }
+      { "internalType": "address", "name": "_recipient", "type": "address" },
+      { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+      { "internalType": "uint8", "name": "v", "type": "uint8" },
+      { "internalType": "bytes32", "name": "r", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "s", "type": "bytes32" }
     ],
     "name": "buyTicket",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -881,6 +914,7 @@
       { "internalType": "string", "name": "_name", "type": "string" },
       { "internalType": "string", "name": "_description", "type": "string" },
       { "internalType": "string", "name": "eventStorage", "type": "string" },
+      { "internalType": "string", "name": "location", "type": "string" },
       { "internalType": "uint256", "name": "startTime", "type": "uint256" },
       { "internalType": "uint256", "name": "endTime", "type": "uint256" }
     ],
@@ -926,6 +960,16 @@
       { "internalType": "bytes32", "name": "_eventId", "type": "bytes32" }
     ],
     "name": "deleteEvent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "_eventId", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "_ticketTypeId", "type": "bytes32" }
+    ],
+    "name": "deleteTicketType",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1140,16 +1184,6 @@
   },
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "_eventId", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "_ticketTypeId", "type": "bytes32" }
-    ],
-    "name": "removeTicketType",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
       { "internalType": "bytes32", "name": "role", "type": "bytes32" },
       { "internalType": "address", "name": "account", "type": "address" }
     ],
@@ -1291,6 +1325,7 @@
       { "internalType": "string", "name": "_name", "type": "string" },
       { "internalType": "string", "name": "_description", "type": "string" },
       { "internalType": "string", "name": "eventStorage", "type": "string" },
+      { "internalType": "string", "name": "location", "type": "string" },
       { "internalType": "uint256", "name": "startTime", "type": "uint256" },
       { "internalType": "uint256", "name": "endTime", "type": "uint256" }
     ],

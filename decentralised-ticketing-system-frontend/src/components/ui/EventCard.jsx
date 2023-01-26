@@ -14,9 +14,8 @@ async function fetchImageUrls(storageBytes, setImageUrls) {
 
 function EventCard({
     name,
-    description,
+    location,
     imagesCid,
-    creator,
     url,
     startTime,
     endTime
@@ -35,6 +34,7 @@ function EventCard({
             <div role="button" onClick={openEventPage}>
                 {imageUrls.length > 0 ? <Image src={imageUrls[0]} className="mt-2" fluid rounded/> : null}
                 <h4 className='text-break'>{name}</h4>
+                <p className='text-break desc-text'>{location}</p>
                 <p className='text-break desc-text'>
                     {
                         `

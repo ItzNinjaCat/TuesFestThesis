@@ -27,14 +27,12 @@ function CreateOfferModal() {
   const { loading : eventsBuyLoading, data: eventsBuyData } = useQuery(BUY_TICKETS_EVENT_QUERY, {
     variables: {
       timestamp: String(new Date().getTime())
-    },
-    pollInterval: 500
+    }
   });
   const { loading : eventsSellLoading, data: eventsSellData, error: eventSellError } = useQuery(SELL_TICKETS_QUERY, {
     variables: {
       owner: account
-    },
-    pollInterval: 500
+    }
   });
   useEffect(() => {
       if (!eventsBuyLoading && offerType === 'buy') {

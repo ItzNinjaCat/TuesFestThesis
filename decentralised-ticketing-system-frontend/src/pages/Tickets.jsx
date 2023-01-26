@@ -24,8 +24,7 @@ function Tickets() {
     const { loading, data, error } = useQuery(EVENT_WITH_TYPES_BY_ID_QUERY, {
         variables: {
             id: id,
-        },
-        pollInterval: 500,
+        }
     });
     const { account, contract, isActive } = useContext(Web3Context);
     useEffect(() => {

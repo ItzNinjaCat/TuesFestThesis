@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from '../pages/Home';
 import UserProfile from '../pages/UserProfile';
@@ -18,10 +18,12 @@ import { connectorHooks, getName } from '../utils/connectors';
 import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
 import { TIK_ADDRESS, TIK_ABI } from '../constants/contracts';
 import { getContract } from '../utils/contractUtils';
+import useBalance from '../hooks/useBalance';
 
 const Web3Context = createContext();
 
 function App() {
+  const [balanceUpdate, setBalanceUpdate] = useState(false);
   const scrollDirection = useScrollDirection();
   const { connector } = useWeb3React();
   const hooks = connectorHooks[getName(connector)];
@@ -32,9 +34,10 @@ function App() {
   const accounts = useAccounts();
   const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
   const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+  const balance = (useBalance(isActive, provider, account, tokenContract, balanceUpdate, setBalanceUpdate));
   return (
     <Web3Context.Provider
-      value={{ connector, provider, account, isActive, accounts, tokenContract, contract }}>
+      value={{ connector, provider, account, isActive, accounts, tokenContract, contract, balance, setBalanceUpdate }}>
     <BrowserRouter>
       <div className="wrapper">
         {scrollDirection !== "down" ? <Header/> : null}

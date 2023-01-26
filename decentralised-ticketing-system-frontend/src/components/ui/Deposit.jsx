@@ -1,17 +1,16 @@
 import { ethers } from 'ethers';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { useState, useContext } from 'react';
-import useBalances from '../../hooks/useBalance';
 import { Web3Context } from '../App';
 
-function Deposit({setBalance}) {
+function Deposit() {
   const [validated, setValidated] = useState(false);
   const [show, setShow] = useState(false);
   const [depositAmount, setDepositAmount] = useState(0);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [showSuccess, setShowSuccess] = useState(false);
-  const { contract, provider, accounts, tokenContract } = useContext(Web3Context);
+  const { contract, balance, setBalanceUpdate } = useContext(Web3Context);
   const handleCloseSuccess = () => {
     setShowSuccess(false);
     setDepositAmount(0);
@@ -42,14 +41,11 @@ function Deposit({setBalance}) {
           const tx = await contract.deposit({value: amount});
           handleClose();
           await tx.wait();
-          setBalance(String(Number(balances) + Number(depositAmount)));
-          balances[0] = String(Number(balances) + Number(depositAmount));
           setValidated(false);
+          setBalanceUpdate(true);
           handleShowSuccess();
         }
       }
-      
-  const balances = useBalances(provider, accounts, tokenContract);
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
@@ -97,7 +93,7 @@ function Deposit({setBalance}) {
             fontWeight: "bold"
           }}
           >
-            Balance after deposit : {(Number(balances) + Number(depositAmount))} TIK (ETH:TIK - 1:1)
+            Balance after deposit : {(Number(balance) + Number(depositAmount))} TIK (ETH:TIK - 1:1)
           </p>
         </Modal.Body>
         </Modal>

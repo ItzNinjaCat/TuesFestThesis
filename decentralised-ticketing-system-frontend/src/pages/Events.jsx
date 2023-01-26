@@ -5,10 +5,13 @@ import { EVENTS_QUERY } from '../utils/subgraphQueries';
 import EventCard from '../components/ui/EventCard';
 import "../style/style.scss";
 import Loader from '../components/ui/Loader';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 function Events() {
     const [events, setEvents] = useState(undefined);
     const [first, setFirst] = useState(20);
     const [skip, setSkip] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
     const { loading, error, data, fetchMore } = useQuery(EVENTS_QUERY, {
         variables: {
             skip: skip,
@@ -17,13 +20,41 @@ function Events() {
     });
     useEffect(() => {
         if (!loading && !error) {
+            if (data.events.length < first) setHasMore(false);
             setEvents(data.events);
         }
     }, [loading, data]);
     if(loading || events === undefined) return <Loader/>;
     if (error) return <p>Error: {error.message}</p>;
     return (
-        <div className='d-flex justify-content-center flex-wrap mt-5'>
+            <InfiniteScroll
+                dataLength={events.length}
+                next={() => {
+                    fetchMore({
+                        variables: {
+                            skip: skip + events.length,
+                            first: first    
+                        },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
+                            setSkip(skip + fetchMoreResult.events.length);      
+                            return Object.assign({}, prev, {    
+                                events: [...prev.events, ...fetchMoreResult.events]
+                            });
+                        }
+                    });
+                }}
+                hasMore={hasMore}
+                loader={<h4>Loading...</h4>}
+                endMessage={
+                    <p style={{ textAlign: 'center' }}>
+                    <b>Yay! You have seen it all</b>
+                    </p>
+                }
+            >  
+            <div id="eventHolder" className='d-flex justify-content-center flex-wrap m-5'>
                 {
                     events?.map((event, index) => {
                         if (index % 4 === 0) {
@@ -54,7 +85,8 @@ function Events() {
                     } 
                     )
                 }
-        </div>
+            </div>
+        </InfiniteScroll>
   );
 }
 

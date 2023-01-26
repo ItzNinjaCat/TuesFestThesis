@@ -1,24 +1,23 @@
 import { useEffect, useState } from 'react';
 import { formatEther } from '@ethersproject/units';
 
-function useBalances(provider, accounts, tokenContract) {
-    const [balances, setBalances] = useState();
+function useBalance(isActive, provider, account, tokenContract, balanceUpdate, setBalanceUpdate) {
+    const [balance, setBalance] = useState(undefined);
     useEffect(() => {
-        if (provider && accounts?.length) {
+        if (isActive && provider && account) {
             let stale = false;
-            void Promise.all(accounts.map(account => tokenContract.balanceOf(account))).then(
-                balances => {
-                    if (stale) return;
-                    setBalances(balances.map(balance => formatEther(balance)));
-                },
-            );
+            tokenContract.balanceOf(account).then(bal => {
+                if (stale) return;
+                setBalance(formatEther(bal));
+            });
             return () => {
                 stale = true;
-                setBalances(undefined);
+                setBalance(undefined);
             };
+            setBalanceUpdate(false);
         }
-    }, [provider, accounts]);
-    return balances;
+    }, [provider, account, isActive, balanceUpdate]);
+    return balance;
 }
 
-export default useBalances;
+export default useBalance;

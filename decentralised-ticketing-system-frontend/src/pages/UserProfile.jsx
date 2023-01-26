@@ -8,15 +8,24 @@ import Loader from '../components/ui/Loader';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Web3Context } from '../components/App';
 import Souvenir from '../components/ui/Souvenir';
+import InfiniteScroll from 'react-infinite-scroll-component';
 function UserProfile() {
     const [tickets, setTickets] = useState([]);
     const [souvenirs, setSouvenirs] = useState([]);
+    const [firstTicket, setFirstTicket] = useState(20);
+    const [skipTicket, setSkipTicket] = useState(0);
+    const [firstSouvenir, setFirstSouvenir] = useState(20);
+    const [skipSouvenir, setSkipSouvenir] = useState(0);
     const [tab, setTab] = useState('tickets');
     const { account, contract, isActive } = useContext(Web3Context);
     const { address } = useParams();
-    const { loading, error, data } = useQuery(TICKETS_BY_OWNER_QUERY, {
+    const { loading, error, data, fetchMore } = useQuery(TICKETS_BY_OWNER_QUERY, {
         variables: {
-            owner: String(address)
+            owner: String(address),
+            firstTicket: firstTicket,
+            skipTicket: skipTicket,
+            firstSouvenir: firstSouvenir,
+            skipSouvenir: skipSouvenir
         }
     });
     const navigate = useNavigate(); 
@@ -48,33 +57,41 @@ function UserProfile() {
                 checked={tab === 'souvenirs'}
                 >Souvenirs</ToggleButton>
             </ButtonGroup>
-            <div className='d-flex justify-content-center flex-wrap mt-10'>
                 {
-                    tab === 'tickets' ?
-                    tickets.map((t, index) => {
-                        if (index % 4 === 0) {
-                        return (
-                            <div key={index} className='row w-75 d-flex justify-content-start mb-3'>
-                                 {
+                tab === 'tickets' ?
+                    <InfiniteScroll
+                        dataLength={tickets.length}
+                        
+                    >
+                    <div className='d-flex justify-content-center flex-wrap mt-10'>
+                        {
+                            tickets.map((t, index) => {
+                                if (index % 4 === 0) {
+                                    return (
+                                        <div key={index} className='row w-75 d-flex justify-content-start mb-3'>
+                                            {
 
-                                    tickets.slice(index, index + 4).map((ticket) => 
-                                    <div key={ticket.id}
-                                    className='w-25 col-3 d-flex flex-wrap text-wrap event-card'>
-                                            <Ticket
-                                                key={ticket.id}
-                                                ticket={ticket}
-                                                contract={contract}
-                                                event={ticket.event}
-                                                ticketType={ticket.ticketType}
-                                            />
-                                    </div>
-                                    )    
+                                                tickets.slice(index, index + 4).map((ticket) =>
+                                                    <div key={ticket.id}
+                                                        className='w-25 col-3 d-flex flex-wrap text-wrap event-card'>
+                                                        <Ticket
+                                                            key={ticket.id}
+                                                            ticket={ticket}
+                                                            contract={contract}
+                                                            event={ticket.event}
+                                                            ticketType={ticket.ticketType}
+                                                        />
+                                                    </div>
+                                                )
+                                            }
+                                        </div>
+                                    )
                                 }
-                             </div>
-                        )
-                    }
-                    return null;
-                    })
+                                return null;
+                            })
+                        }
+                        </div>           
+                    </InfiniteScroll>
                         : 
                     souvenirs.map((s, index) => {
                         if (index % 4 === 0) {
@@ -95,7 +112,6 @@ function UserProfile() {
                     return null;
                     })
                 }
-                </div>
                 </>
     );
 }

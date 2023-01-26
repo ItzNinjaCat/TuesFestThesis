@@ -8,7 +8,7 @@ import { Button, Navbar, Nav, Offcanvas, Container } from 'react-bootstrap';
 import { CgProfile } from 'react-icons/cg';
 import { ethers } from 'ethers';
 import { useNavigate } from 'react-router-dom';
-import useBalances from '../../hooks/useBalance';
+import useBalance from '../../hooks/useBalance';
 import { Web3Context } from '../App';
 function Header() {
   const navigate = useNavigate();
@@ -22,10 +22,9 @@ function Header() {
     contract.becomeOrganizer();
   }
 
-  const { connector, provider, account, isActive, accounts, tokenContract, contract } = useContext(Web3Context);
-  const [balance, setBalance] = useState(undefined);
+  const { connector, provider, account, isActive, balance, contract } = useContext(Web3Context);
+  
   const [isOrganizer, setIsOrganizer] = useState(undefined);
-  const balances = useBalances(provider, accounts, tokenContract);
   useEffect(() => {
     if (provider && account && contract) {
       contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
@@ -34,11 +33,6 @@ function Header() {
         })
     }
   }, [provider, account, contract])
-  useEffect(() => {
-    if (provider && account && balances?.length) {
-      setBalance(balances[0]);
-    }
-  }, [balances, account, provider])
   useEffect(() => {
     connector.connectEagerly().catch(() => {
       console.debug('Failed to connect eagerly')
@@ -93,10 +87,10 @@ function Header() {
                   <code className='me-3'>{account}</code>
                   <div className="d-flex align-items-center justify-content-between w-100">
                     <div className='me-2'>
-                      <Deposit setBalance={setBalance}/>
+                      <Deposit/>
                     </div>
                     <div className='me-1'>
-                      <Withdraw setBalance={setBalance}/>
+                      <Withdraw/>
                     </div>
                     <code className='me-2'>Balance: {balance} Tik</code>
                   </div>

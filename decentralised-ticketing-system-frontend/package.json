@@ -63,6 +63,7 @@
     "recharts": "^2.3.2",
     "sass": "^1.54.0",
     "stream-browserify": "^3.0.0",
+    "update-browserslist-db": "^1.0.10",
     "urql": "^3.0.3",
     "util": "^0.12.5",
     "uuid": "^9.0.0",

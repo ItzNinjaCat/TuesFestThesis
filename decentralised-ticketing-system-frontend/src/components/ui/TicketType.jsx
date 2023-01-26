@@ -3,7 +3,6 @@ import { Button, Modal, Form, InputGroup, Image } from 'react-bootstrap';
 import { useState, useContext, useEffect } from 'react';
 import { onAttemptToApprove } from '../../utils/contractUtils';
 import { ethers } from 'ethers';
-import useBalances from '../../hooks/useBalance';
 import { parseEther } from 'ethers/lib/utils';
 import { Web3Context } from '../App';
 const TicketType = (({
@@ -16,8 +15,7 @@ const TicketType = (({
     tokenURI,
     souvenirTokenURI,
 }) => {
-    const { provider, accounts, tokenContract, account, contract } = useContext(Web3Context);
-    const balances = useBalances(provider, accounts, tokenContract);
+    const { tokenContract, account, contract, balance, setBalanceUpdate } = useContext(Web3Context);
     const [recipeintAddress, setRecipeintAddress] = useState('');
     const [ticketAmountPersonal, setTicketAmountPersonal] = useState(1);
     const [ticketAmountGift, setTicketAmountGift] = useState(1);
@@ -27,6 +25,7 @@ const TicketType = (({
     const [ showSuccessGift, setShowSuccessGift ] = useState(false);
     const [validatedPersonal, setValidatedPersonal] = useState(false);
     const [validatedGift, setValidatedGift] = useState(false);
+    const [successAmount, setSuccessAmount] = useState(0);
     const handleShowPersonal = () => setShowPersonal(true);
     const handleClosePersonal = () => setShowPersonal(false);
     const handleShowGift = () => setShowGift(true);
@@ -35,7 +34,7 @@ const TicketType = (({
     const handleCloseSuccessPersonal = () => setShowSuccessPersonal(false);
     const handleShowSuccessGift = () => setShowSuccessGift(true);
     const handleCloseSuccessGift = () => setShowSuccessGift(false);
-    const buyTickets = (async (recipient, amount, handleClose, handleShowSuccess, setTickets, setAddr = undefined) => {
+    const buyTickets = (async (recipient, amount, handleClose, handleShowSuccess) => {
         const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount), +new Date() + 60 * 60);
         if (amount > 1) {
             const tx = await contract.ticketPurchasePermit(
@@ -58,11 +57,12 @@ const TicketType = (({
                     )).wait();
                 });
                 Promise.all(ticketSale).then(() => {
-                setTickets(1);
+                setSuccessAmount(amount);
+                setTicketAmountGift(1);
+                setTicketAmountPersonal(1);
+                setRecipeintAddress('');
+                setBalanceUpdate(true);
                 handleShowSuccess();
-                if(setAddr !== undefined) {
-                    setAddr('');
-                }
                 });
             });
         }
@@ -78,11 +78,12 @@ const TicketType = (({
             );
             handleClose();
             tx.wait().then(() => {
-                setTickets(1);
+                setSuccessAmount(amount);
+                setTicketAmountGift(1);
+                setTicketAmountPersonal(1);
+                setRecipeintAddress('');
+                setBalanceUpdate(true);
                 handleShowSuccess();
-                if(setAddr !== undefined) {
-                    setAddr('');
-                }
             });
         }
     });
@@ -114,7 +115,7 @@ const TicketType = (({
             setValidatedGift(true);
             event.preventDefault();
             event.stopPropagation();
-            buyTickets(recipeintAddress, ticketAmountGift, handleCloseGift, handleShowSuccessGift, setTicketAmountGift, setRecipeintAddress);
+            buyTickets(recipeintAddress, ticketAmountGift, handleCloseGift, handleShowSuccessGift);
             setValidatedGift(false);
         }
     });
@@ -133,7 +134,7 @@ const TicketType = (({
             setValidatedPersonal(true);
             event.preventDefault();
             event.stopPropagation();
-            buyTickets(account, ticketAmountPersonal, handleClosePersonal, handleShowSuccessPersonal, setTicketAmountPersonal);
+            buyTickets(account, ticketAmountPersonal, handleClosePersonal, handleShowSuccessPersonal);
             setValidatedPersonal(false);
         }
     });     
@@ -196,7 +197,7 @@ const TicketType = (({
                                     onChange={changeTicketAmountGift}
                                     value={ticketAmountGift}
                                     min='1'
-                                    max={Number(currentSupply)}
+                                    max={Math.floor(balance / price) > currentSupply ? currentSupply : Math.floor(balance / price)}
                                     step='1'
                                     required 
                                     isValid={ticketAmountGift > 0 && ticketAmountGift <= Number(currentSupply)}
@@ -220,7 +221,7 @@ const TicketType = (({
                     >
                         Total cost : {(Number(price * ticketAmountGift))} TIK
                         <br />
-                        New balance : {(Number(balances) - Number(price * ticketAmountGift))} TIK
+                        New balance : {(Number(balance) - Number(price * ticketAmountGift))} TIK
                     </p>
                 </Modal.Body>
             </Modal>
@@ -247,7 +248,7 @@ const TicketType = (({
                                     onChange={changeTicketAmountPersonal}
                                     value={ticketAmountPersonal}
                                     min='1'
-                                    max={Number(currentSupply)}
+                                    max={Math.floor(balance / price) > currentSupply ? currentSupply : Math.floor(balance / price)}
                                     step='1'
                                     required 
                                     isValid={ticketAmountPersonal > 0 && ticketAmountPersonal <= Number(currentSupply)}
@@ -271,7 +272,7 @@ const TicketType = (({
                     >
                         Total cost : {(Number(price * ticketAmountPersonal))} TIK
                         <br />
-                        New balance : {(Number(balances) - Number(price * ticketAmountPersonal))} TIK
+                        New balance : {(Number(balance) - Number(price * ticketAmountPersonal))} TIK
                     </p>
                 </Modal.Body>
             </Modal>
@@ -308,8 +309,11 @@ const TicketType = (({
                     fontWeight: "bold"
                 }}
                 >
-                    You have successfully purchased {ticketAmountPersonal} {name} tickets for {eventName}!
+                    You have successfully purchased {successAmount} {name} ticket/s for {eventName}!
                 </p>
+                <Button variant="primary" onClick={handleCloseSuccessPersonal}>
+                    Continue
+                </Button>
             </Modal.Body>
         </Modal>
         <Modal
@@ -328,8 +332,11 @@ const TicketType = (({
                     fontWeight: "bold"
                 }}
                 >
-                    You have successfully gifted {ticketAmountGift} {name} ticket/s for {eventName} to {recipeintAddress}!
-                </p>
+                    You have successfully gifted {successAmount} {name} ticket/s for {eventName} to {recipeintAddress}!
+                    </p>
+              <Button variant="primary" onClick={handleCloseSuccessGift}>
+                  Continue
+              </Button>
             </Modal.Body>
         </Modal>
         </div>

@@ -1,18 +1,15 @@
 import { ethers } from 'ethers';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { useState, useContext } from 'react';
-import useBalances from '../../hooks/useBalance';
 import { Web3Context } from '../App';
-function Withdraw({
-    setBalance
-}) {
-  const [validated, setValidated] = useState(false);
-  const [show, setShow] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState(0);
+function Withdraw() {
+    const [validated, setValidated] = useState(false);
+    const [show, setShow] = useState(false);
+    const [withdrawAmount, setWithdrawAmount] = useState(0);
     const [showSuccess, setShowSuccess] = useState(false);
-    const { contract, provider, accounts, tokenContract } = useContext(Web3Context);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+    const { contract, balance, setBalanceUpdate } = useContext(Web3Context);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
   const handleCloseSuccess = () => {
     setShowSuccess(false);
     setWithdrawAmount(0);
@@ -43,14 +40,11 @@ function Withdraw({
           const tx = await contract.userWithdraw(amount);
           handleClose();
           await tx.wait();
-          setBalance(String(Number(balances) - Number(withdrawAmount)));
-          balances[0] = String(Number(balances) - Number(withdrawAmount));
           setValidated(false);
           handleShowSuccess();
+          setBalanceUpdate(true);
         }
       }
-      
-  const balances = useBalances(provider, accounts, tokenContract);
     return (
     <>
       <Button variant="primary" onClick={handleShow}>
@@ -76,12 +70,12 @@ function Withdraw({
                 <Form.Control 
                     type="number"
                     step="0.001"
-                    placeholder="Ticket price"
+                    placeholder="Withdraw amount"
                     onChange={validatewithdrawAmount}
                     value={withdrawAmount}
                     required
                     min="0.001"
-                    max={balances === undefined? 0 : balances}
+                    max={balance === undefined? 0 : balance}
                 />
                 <Form.Control.Feedback type="invalid">
                     Minimum withdraw is 0.001 Tik.
@@ -98,7 +92,7 @@ function Withdraw({
             fontWeight: "bold"
           }}
           >
-            Balance after withdraw : {(Number(balances) - Number(withdrawAmount))} TIK (ETH:TIK - 1:1)
+            Balance after withdraw : {(Number(balance) - Number(withdrawAmount))} TIK (ETH:TIK - 1:1)
           </p>
         </Modal.Body>
         </Modal>

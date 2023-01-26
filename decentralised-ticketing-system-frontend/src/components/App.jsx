@@ -1,4 +1,4 @@
-import React from 'react';
+import { createContext } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from '../pages/Home';
 import UserProfile from '../pages/UserProfile';
@@ -13,11 +13,28 @@ import EditEvent from '../pages/EditEvent';
 import Tickets from '../pages/Tickets';
 import useScrollDirection from '../hooks/useScrollDirection';
 import UseTicket from '../pages/UseTicket';
+import { useWeb3React } from '@web3-react/core';
+import { connectorHooks, getName } from '../utils/connectors';
+import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
+import { TIK_ADDRESS, TIK_ABI } from '../constants/contracts';
+import { getContract } from '../utils/contractUtils';
+
+const Web3Context = createContext();
 
 function App() {
   const scrollDirection = useScrollDirection();
-  
+  const { connector } = useWeb3React();
+  const hooks = connectorHooks[getName(connector)];
+  const { useAccount, useAccounts, useIsActive, useProvider} = hooks;
+  const provider = useProvider();
+  const account = useAccount();
+  const isActive = useIsActive();
+  const accounts = useAccounts();
+  const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
+  const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
   return (
+    <Web3Context.Provider
+      value={{ connector, provider, account, isActive, accounts, tokenContract, contract }}>
     <BrowserRouter>
       <div className="wrapper">
         {scrollDirection !== "down" ? <Header/> : null}
@@ -30,7 +47,7 @@ function App() {
               path="create-event"
               element={<CreateEvent />} />
             <Route path="user/:address" element={<UserProfile />} />
-            <Route path="organizer/:address" element={<OrganizerProfile />} />
+            <Route path="organizer/:address" element={<OrganizerProfile/>} />
             <Route path="marketplace" element={<Marketplace />} />
             <Route path="events/:id/dashboard" element={<EventDashboard />} />
             <Route path="events/:id/edit" element={<EditEvent />} />
@@ -39,8 +56,10 @@ function App() {
           </Routes>
         </div>
       </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </Web3Context.Provider>
   );
 }
 
+export { Web3Context };
 export default App;

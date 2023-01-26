@@ -1,20 +1,13 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {ethers} from 'ethers';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { Button, Form, Row, Col } from 'react-bootstrap';
 import TicketInfo from '../components/ui/TicketInfo';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { uploadImmutableData } from '../utils/web3.storageEndpoints'
-import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
-import { getContract } from '../utils/contractUtils';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../utils/connectors';
-
+import { Web3Context } from '../components/App';
 function CreateEvent() {
     const navigate = useNavigate();
+    const { provider, account, contract, isActive } = useContext(Web3Context);
     const [validated, setValidated] = useState(false);
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
@@ -37,12 +30,7 @@ function CreateEvent() {
             souvenir: ''
         }
     ]);
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+
     const getTypeIndex = (ticket) => {
         return ticketTypes.indexOf(ticket);
     }
@@ -50,10 +38,10 @@ function CreateEvent() {
         if(validated === true){
             return;
         }
-        if (!provider && !account && !contract.provider) {
+        if (isActive && !account) {
             navigate('/');
         }
-        else if (provider && account && contract) {
+        else if (isActive) {
         contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
             (status) => {
                 if (!status) {

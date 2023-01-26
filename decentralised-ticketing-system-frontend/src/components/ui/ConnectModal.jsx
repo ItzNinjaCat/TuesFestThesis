@@ -1,8 +1,6 @@
 
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Stack from 'react-bootstrap/Stack';
-import React, { useState } from 'react';
+import { Button, Modal, Stack } from 'react-bootstrap';
+import { useState } from 'react';
 import { GOERLI } from '../../constants/chainIds';
 import { connectors } from '../../utils/connectors';
 

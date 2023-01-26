@@ -1,25 +1,18 @@
 import { ethers } from 'ethers';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import React, { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import { getContract } from '../../utils/contractUtils';
-import { TICKET_ADDRESS, TICKET_ABI } from '../../constants/contracts';
+import { Button, Modal, Form } from 'react-bootstrap';
+import { useState, useContext } from 'react';
 import useBalances from '../../hooks/useBalance';
-
+import { Web3Context } from '../App';
 function Withdraw({
-    provider,
-    accounts,
-    tokenContract,
-    account,
-    setBalance,
+    setBalance
 }) {
   const [validated, setValidated] = useState(false);
   const [show, setShow] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const { contract, provider, accounts, tokenContract } = useContext(Web3Context);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [showSuccess, setShowSuccess] = useState(false);
   const handleCloseSuccess = () => {
     setShowSuccess(false);
     setWithdrawAmount(0);
@@ -46,9 +39,8 @@ function Withdraw({
       else {
           e.preventDefault();
           setValidated(true);
-          const ticketContract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
           const amount = ethers.utils.parseEther(withdrawAmount);
-          const tx = await ticketContract.userWithdraw(amount);
+          const tx = await contract.userWithdraw(amount);
           handleClose();
           await tx.wait();
           setBalance(String(Number(balances) - Number(withdrawAmount)));

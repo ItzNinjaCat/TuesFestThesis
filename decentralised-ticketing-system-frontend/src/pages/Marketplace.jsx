@@ -1,29 +1,16 @@
-import React from 'react';
-import { useEffect } from 'react';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import ToggleButton  from 'react-bootstrap/ToggleButton';
+import { useEffect, useState } from 'react';
+import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import CreateOfferModal from '../components/ui/CreateOfferModal';
 import { useQuery } from '@apollo/client';
 import { OFFERS_QUERY } from '../utils/subgraphQueries';
 import Offer from '../components/ui/Offer';
 import Loader from '../components/ui/Loader';
-import { TICKET_ADDRESS, TICKET_ABI, TIK_ADDRESS, TIK_ABI } from '../constants/contracts';
-import { getContract } from '../utils/contractUtils';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../utils/connectors';
 
 function Marketplace() {
-  const [offerType, setOfferType] = React.useState('buy');
-  const [buyOffers, setBuyOffers] = React.useState([]);
-  const [sellOffers, setSellOffers] = React.useState([]);
-  const { connector } = useWeb3React();
-  const hooks = connectorHooks[getName(connector)];
-  const { useProvider, useAccount } = hooks;
-  const provider = useProvider();
-  const account = useAccount();
-  const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-  const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
-  const { data, loading, error } = useQuery(OFFERS_QUERY, {
+  const [offerType, setOfferType] = useState('buy');
+  const [buyOffers, setBuyOffers] = useState([]);
+  const [sellOffers, setSellOffers] = useState([]);
+  const { data, loading } = useQuery(OFFERS_QUERY, {
     pollInterval: 1000
   });
   useEffect(() => {
@@ -72,7 +59,7 @@ function Marketplace() {
                         {
                           buyOffers.slice(index, index + 4).map((offer) => 
                             <div key={offer.id} className='w-25 col-3 d-flex flex-wrap text-wrap ticket-card'>
-                              <Offer key={offer.id} offer={offer} contract={contract} account={account} tokenContract={tokenContract}/>
+                              <Offer key={offer.id} offer={offer}/>
                             </div>
                           )
                         }
@@ -89,7 +76,7 @@ function Marketplace() {
                         {
                           sellOffers.slice(index, index + 4).map((offer) => 
                             <div key={offer.id} className='w-25 col-3 d-flex flex-wrap text-wrap ticket-card'>
-                              <Offer key={offer.id} offer={offer} contract={contract} account={account} tokenContract={tokenContract}/>
+                              <Offer key={offer.id} offer={offer}/>
                             </div>
                           )
                         }

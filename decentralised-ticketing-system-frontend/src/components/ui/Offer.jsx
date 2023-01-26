@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import Button from "react-bootstrap/Button";
-import Image from "react-bootstrap/Image";
+import { useEffect, useState, useContext } from "react";
+import { Button, Image } from "react-bootstrap";
 import { TICKETS_QUERY } from "../../utils/subgraphQueries";
 import { formatEther } from "ethers/lib/utils";
 import { useQuery } from "@apollo/client";
 import { onAttemptToApprove } from "../../utils/contractUtils";
-function Offer({ offer, contract, account, tokenContract }) {
+import { Web3Context } from "../App";
+function Offer({ offer }) {
     const [image, setImage] = useState(undefined);
-    const { loading, error, data } = useQuery(TICKETS_QUERY, {
+    const { account, contract, tokenContract } = useContext(Web3Context);
+    const { loading, data } = useQuery(TICKETS_QUERY, {
         variables: {
             owner: account,
             event: offer.event.id,

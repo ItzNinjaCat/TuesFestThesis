@@ -1,39 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { EVENTS_BY_CREATOR_QUERY } from '../utils/subgraphQueries';
 import Loader from '../components/ui/Loader';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../utils/connectors';
-import { getContract } from '../utils/contractUtils';
-import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
 import EventCard from '../components/ui/EventCard';
+import { Web3Context } from '../components/App';
 function OrganizerProfile() {
     const [events, setEvents] = useState(undefined);
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
     const { address } = useParams();
+    const { account, isActive } = useContext(Web3Context);
     const navigate = useNavigate();
     const { loading, error, data } = useQuery(EVENTS_BY_CREATOR_QUERY, {
         variables: {
             creator: String(address)
         }
     });
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    contract.getTicket(1).then((res) => {
-        console.log(res);
-    });
 
     useEffect(() => {
-        if (account === undefined && provider === undefined) return;
-        if(account !== address) navigate("/");
+        if  (isActive && account !== address) navigate("/");
         if (!loading) {
             setEvents(data.events);
         }
-    }, [data, provider, account, loading]);
+    }, [data, isActive, account, loading]);
     if(loading || events === undefined) return <Loader/>;   
     if (error) return <p>Error: {error.message}</p>;    
     return (

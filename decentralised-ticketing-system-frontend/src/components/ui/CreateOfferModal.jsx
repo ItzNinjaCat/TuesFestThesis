@@ -1,40 +1,27 @@
-import React from "react";
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import ToggleButton  from 'react-bootstrap/ToggleButton';
+
+import { useState } from 'react';
+import { Button, Modal, Form, ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { BUY_TICKETS_EVENT_QUERY, SELL_TICKETS_QUERY } from '../../utils/subgraphQueries';
 import { useQuery } from '@apollo/client';
-import { useEffect } from 'react';
-import { TICKET_ADDRESS, TICKET_ABI, TIK_ADDRESS, TIK_ABI } from '../../constants/contracts';
-import { getContract } from '../../utils/contractUtils';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../../utils/connectors';
+import { useEffect, useContext } from 'react';
 import { randomBytes } from 'ethers/lib/utils';
 import { ethers } from 'ethers';
 import { onAttemptToApprove } from "../../utils/contractUtils";
 import { parseEther } from "ethers/lib/utils";
+import { Web3Context } from "../App";
 
 function CreateOfferModal() {
-    const [show, setShow] = React.useState(false);
-    const [offerType, setOfferType] = React.useState('buy');
-    const [events, setEvents] = React.useState([]);
-    const [selectedEvent, setSelectedEvent] = React.useState("");
-    const [selectedTicket, setSelectedTicket] = React.useState("");
-    const [selectedTicketId, setSelectedTicketId] = React.useState("");
-    const [types, setTypes] = React.useState([]);
-    const [tickets, setTickets] = React.useState({});
-    const [price, setPrice] = React.useState("");
-    const [validated, setValidated] = React.useState(false);
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
-
+    const [show, setShow] = useState(false);
+    const [offerType, setOfferType] = useState('buy');
+    const [events, setEvents] = useState([]);
+    const [selectedEvent, setSelectedEvent] = useState("");
+    const [selectedTicket, setSelectedTicket] = useState("");
+    const [selectedTicketId, setSelectedTicketId] = useState("");
+    const [types, setTypes] = useState([]);
+    const [tickets, setTickets] = useState({});
+    const [price, setPrice] = useState("");
+    const [validated, setValidated] = useState(false);
+    const { account, contract, tokenContract } = useContext(Web3Context);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const { loading : eventsBuyLoading, data: eventsBuyData } = useQuery(BUY_TICKETS_EVENT_QUERY, {

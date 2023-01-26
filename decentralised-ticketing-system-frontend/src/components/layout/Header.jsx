@@ -1,23 +1,15 @@
-import React from 'react';
+import {useState, useContext} from 'react';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import SelectWalletModal from '../ui/ConnectModal';
 import Deposit from '../ui/Deposit';
 import Withdraw from '../ui/Withdraw';
-import Button from 'react-bootstrap/Button';
-import { useWeb3React } from '@web3-react/core';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import Offcanvas from 'react-bootstrap/Offcanvas';
-import Container from 'react-bootstrap/Container';
-import { connectorHooks, getName } from '../../utils/connectors';
+import { Button, Navbar, Nav, Offcanvas, Container } from 'react-bootstrap';
 import { CgProfile } from 'react-icons/cg';
-import { getContract } from '../../utils/contractUtils';
 import { ethers } from 'ethers';
-import { TICKET_ADDRESS, TICKET_ABI } from '../../constants/contracts';
-import { TIK_ADDRESS, TIK_ABI } from '../../constants/contracts';
 import { useNavigate } from 'react-router-dom';
 import useBalances from '../../hooks/useBalance';
+import { Web3Context } from '../App';
 function Header() {
   const navigate = useNavigate();
   function createEvent() {
@@ -27,31 +19,21 @@ function Header() {
 
 
   function becomeOrganizer() {
-    ticketContract.becomeOrganizer();
+    contract.becomeOrganizer();
   }
 
-
-  const { connector } = useWeb3React();
-  const [balance, setBalance] = React.useState(undefined);
-  const [isOrganizer, setIsOrganizer] = React.useState(undefined);
-  const hooks = connectorHooks[getName(connector)];
-  const { useAccount, useAccounts, useIsActive, useProvider } = hooks;
-  const accounts = useAccounts();
-  const account = useAccount();
-  const isActive = useIsActive();
-
-  const provider = useProvider();
-  const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
-  const ticketContract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+  const { connector, provider, account, isActive, accounts, tokenContract, contract } = useContext(Web3Context);
+  const [balance, setBalance] = useState(undefined);
+  const [isOrganizer, setIsOrganizer] = useState(undefined);
   const balances = useBalances(provider, accounts, tokenContract);
   useEffect(() => {
-    if (provider && account && ticketContract) {
-      ticketContract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
+    if (provider && account && contract) {
+      contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
         (status) => {
           setIsOrganizer(status)
         })
     }
-  }, [provider, account, ticketContract])
+  }, [provider, account, contract])
   useEffect(() => {
     if (provider && account && balances?.length) {
       setBalance(balances[0]);
@@ -111,10 +93,10 @@ function Header() {
                   <code className='me-3'>{account}</code>
                   <div className="d-flex align-items-center justify-content-between w-100">
                     <div className='me-2'>
-                      <Deposit tokenContract={tokenContract} provider={provider} accounts={accounts} account={account} setBalance={setBalance}/>
+                      <Deposit setBalance={setBalance}/>
                     </div>
                     <div className='me-1'>
-                      <Withdraw tokenContract={tokenContract} provider={provider} accounts={accounts} account={account} setBalance={setBalance}/>
+                      <Withdraw setBalance={setBalance}/>
                     </div>
                     <code className='me-2'>Balance: {balance} Tik</code>
                   </div>

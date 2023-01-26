@@ -1,22 +1,21 @@
 
 import { Modal, Button } from 'react-bootstrap';
 import { formatEther } from 'ethers/lib/utils';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Image from 'react-bootstrap/Image';
 import QRCode from "react-qr-code";
 import { useNavigate } from 'react-router-dom';
+import { Web3Context } from '../App';
 
 function Ticket({
     ticket,
     event,
     ticketType,
-    tokenURI,
-    contract
 }) {
     const [ticketImage, setTicketImage] = useState(undefined);
     const [show, setShow] = useState(false);
     const navigate = useNavigate();
-
+    const { contract } = useContext(Web3Context);
     function getSouvenir() {
         contract.getSouvenir(ticket.id).then((res) => {
             setShow(false);
@@ -30,12 +29,12 @@ function Ticket({
     }
 
     useEffect(() => {
-        fetch((tokenURI)).then(res => {
+        fetch((ticket.tokenURI)).then(res => {
             res.json().then(metadata => {
                 setTicketImage(metadata.image);
             });
         });
-    }, [ticketImage, tokenURI]);
+    }, [ticketImage, ticket.tokenURI]);
     return (
         <>
         <div role="button" onClick={() => setShow(true)}>

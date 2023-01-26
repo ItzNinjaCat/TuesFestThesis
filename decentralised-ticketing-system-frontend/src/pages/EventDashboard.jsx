@@ -1,15 +1,11 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useQuery } from '@apollo/client';
 import { useNavigate, useParams } from 'react-router-dom';
 import { EVENT_AND_TICKETS_QUERY } from '../utils/subgraphQueries';
 import { Button, Modal } from 'react-bootstrap';
 import Loader from '../components/ui/Loader';
 import { formatEther } from 'ethers/lib/utils';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../utils/connectors';
-import { getContract } from '../utils/contractUtils';
-import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
+import { Web3Context } from '../components/App';
 import {
   XAxis,
   YAxis,
@@ -32,13 +28,8 @@ function EventDashboard() {
     const [totalSales, setTotalSales] = useState(0);
     const [totalProfit, setTotalProfit] = useState(0);
     const [maxSupply, setMaxSupply] = useState(1);
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
     const navigate = useNavigate();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+    const { contract, account, isActive } = useContext(Web3Context);
     const { loading, error, data } = useQuery(EVENT_AND_TICKETS_QUERY, {
         variables: {
             event: String(id)
@@ -47,6 +38,7 @@ function EventDashboard() {
 
     useEffect(() => {
         if (!loading) {
+            if(isActive && data.event.creator.toUpperCase() !== account.toUpperCase()) navigate("/");
             setTicketSales(data.tickets);
             let current = new Date(data.event.createdAt * 1000);
             current.setHours(0, 0, 0, 0);
@@ -76,7 +68,7 @@ function EventDashboard() {
             setMaxSupply(biggestSupply);
             setEvent(data.event);
         }
-    }, [data, loading]);
+    }, [data, loading, isActive]);
 
     useEffect(() => {
         if (ticketTypes !== undefined && ticketSales !== undefined && dates?.length > 0) {
@@ -128,8 +120,9 @@ function EventDashboard() {
     }, [ticketSales, ticketTypes, dates]);
 
     const deleteEvent = () => {
-        const promises = event.ticketTypes.map(async (ticketType) => {
-            return (await contract.deleteTicketType(id, ticketType)).wait();
+        const deletableEvents =  event.ticketTypes.filter((ticketType) => ticketType.deleted === false);
+        const promises = deletableEvents.map(async (ticketType) => {
+            return (await contract.deleteTicketType(id, ticketType.id)).wait();
         });
         Promise.all(promises).then(() => {
             contract.deleteEvent(id);

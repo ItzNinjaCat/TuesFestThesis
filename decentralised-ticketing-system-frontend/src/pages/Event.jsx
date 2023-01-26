@@ -1,24 +1,15 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
-import { getContract } from '../utils/contractUtils';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../utils/connectors';
 import TicketType from '../components/ui/TicketType';
 import { ethers } from 'ethers';
 import Loader from '../components/ui/Loader';
+import { Web3Context } from '../components/App';
 function Event() {
     const [event, setEvent] = useState(undefined);
     const [ticketTypes, setTicketTypes] = useState(undefined);
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
     const navigate = useNavigate();
     const { eventId } = useParams(); 
+    const { provider, account, contract } = useContext(Web3Context);
     useEffect(() => {
         if(!provider || !account) return;
         contract.getEvent(eventId).then((event) => {

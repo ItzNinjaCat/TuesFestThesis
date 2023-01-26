@@ -56,6 +56,7 @@ export const EVENT_AND_TICKETS_QUERY = gql`
                 price
                 maxSupply
                 currentSupply
+                deleted
             }
         }
 
@@ -125,7 +126,7 @@ export const BUY_TICKETS_EVENT_QUERY = gql`
             id
             name
             startTime
-            ticketTypes {
+            ticketTypes(where: { deleted: false }) {
                 id
                 name
                 event {
@@ -145,7 +146,7 @@ export const SELL_TICKETS_QUERY = gql`
                 id
                 name
                 startTime
-                ticketTypes {
+                ticketTypes(where: { deleted: false }) {
                     id
                     name
                     event {
@@ -187,6 +188,39 @@ export const OFFERS_QUERY = gql`
             ticket {
                 id
                 tokenId
+            }
+        }
+    }
+`;
+
+export const EVENT_BY_ID_QUERY = gql`
+    query EventById($id: String!) {
+        event(id: $id) {
+            id
+            creator
+            name
+            description
+            eventStorage
+            location
+            startTime
+            endTime
+        }
+    }
+`;
+
+export const EVENT_WITH_TYPES_BY_ID_QUERY = gql`
+    query EventById($id: String!) {
+        event(id: $id) {
+            id
+            creator
+            ticketTypes(where: { deleted: false }) {
+                id
+                name
+                price
+                maxSupply
+                currentSupply
+                tokenURI
+                souvenirTokenURI
             }
         }
     }

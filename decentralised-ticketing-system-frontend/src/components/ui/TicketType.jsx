@@ -1,18 +1,11 @@
-import React, { useEffect } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Image from 'react-bootstrap/Image';
-import { TICKET_ADDRESS, TICKET_ABI, TIK_ADDRESS, TIK_ABI } from '../../constants/contracts';
-import { getContract } from '../../utils/contractUtils';
-import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../../utils/connectors';
-import { useState } from 'react';
+
+import { Button, Modal, Form, InputGroup, Image } from 'react-bootstrap';
+import { useState, useContext, useEffect } from 'react';
 import { onAttemptToApprove } from '../../utils/contractUtils';
 import { ethers } from 'ethers';
 import useBalances from '../../hooks/useBalance';
 import { parseEther } from 'ethers/lib/utils';
+import { Web3Context } from '../App';
 const TicketType = (({
     eventId,
     ticketTypeId,
@@ -23,14 +16,7 @@ const TicketType = (({
     tokenURI,
     souvenirTokenURI,
 }) => {
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount, useAccounts } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
-    const accounts = useAccounts();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-    const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
+    const { provider, accounts, tokenContract, account, contract } = useContext(Web3Context);
     const balances = useBalances(provider, accounts, tokenContract);
     const [recipeintAddress, setRecipeintAddress] = useState('');
     const [ticketAmountPersonal, setTicketAmountPersonal] = useState(1);

@@ -1,24 +1,20 @@
-import React from "react";
+import {useContext} from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { connectorHooks, getName } from "../utils/connectors";
-import { useWeb3React } from "@web3-react/core";
-import { TICKET_ADDRESS, TICKET_ABI } from "../constants/contracts";
-import { getContract } from "../utils/contractUtils";
 import { useEffect, useState } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
-import { uploadImmutableData } from '../utils/web3.storageEndpoints'
+import { EVENT_BY_ID_QUERY } from "../utils/subgraphQueries";
+import { useQuery } from "@apollo/client";
+import { uploadImmutableData } from '../utils/web3.storageEndpoints';
+import { Web3Context } from "../components/App";
 function EditEvent() {
+    const { account, contract, isActive } = useContext(Web3Context);
+
     const { id } = useParams();
     const navigate = useNavigate();
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
     const [validated, setValidated] = useState(false);
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
+    const [location, setLocation] = useState('');
     const [images, setImages] = useState(undefined);
     const [cid, setCid] = useState(undefined);
     const [startTime, setStartTime] = useState(new Date().toLocaleTimeString([], {
@@ -28,40 +24,32 @@ function EditEvent() {
     const [endTime, setEndTime] = useState(0);
     const [startDate, setStartDate] = useState(new Date().toJSON().slice(0,10).replace(/-/g,'-'));
     const [endDate, setEndDate] = useState(0);
-
+    const { loading, error, data } = useQuery(EVENT_BY_ID_QUERY, {
+        variables: {
+            id: String(id)
+        }
+    });
     useEffect(() => {
-        if (contract !== undefined && account !== undefined) {
-            
-            contract.getEvent(id).then((result) => {
-                if (result[0] !== account) {
-                    navigate('/');
-                }
-                const event = {
-                    id: result[0],
-                    name: result[1],
-                    description: result[2],
-                    eventStorage: result[3],
-                    startTime: result[4],
-                    endTime: result[5],
-                };
-                setCid(event.eventStorage);
-                setName(event.name);
-                setDesc(event.description);
-                setStartTime(new Date(event.startTime * 1000).toLocaleTimeString([], {
+        if (!loading) {
+            if (isActive && data.event.creator.toUpperCase() !== account.toUpperCase()) navigate("/");
+            setCid(data.event.eventStorage);
+            setName(data.event.name);
+            setDesc(data.event.description);
+            setLocation(data.event.location);
+            setStartTime(new Date(data.event.startTime * 1000).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+            }));
+            if (data.event.endTime * 1000 !== 0) {
+                setEndTime(new Date(data.event.endTime * 1000).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                 }));
-                if (event.endTime * 1000 !== 0) {
-                    setEndTime(new Date(event.endTime * 1000).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    }));
-                    setEndDate(new Date(event.endTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
-                }
-                setStartDate(new Date(event.startTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
-            });
+                setEndDate(new Date(data.event.endTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
+            }
+            setStartDate(new Date(data.event.startTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
         }
-    }, [account, id]);
+    }, [loading, data, account, id, isActive]);
 
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
@@ -104,7 +92,7 @@ function EditEvent() {
             else {
                 imagesCid = cid;
             }
-            const tx = await contract.updateEvent(id, name, desc, imagesCid, startDateUNIX, endDateUNIX);
+            const tx = await contract.updateEvent(id, name, desc, imagesCid, location, startDateUNIX, endDateUNIX);
             tx.wait.then(() => console.log("Event updated"));
 
         } 
@@ -186,6 +174,20 @@ function EditEvent() {
                         </Form.Text>
                     </Form.Group>
                 </Row>
+                <Form.Group controlId="eventLocation">
+                    <Form.Label>Event location</Form.Label>
+                    <Form.Control 
+                        type="text"
+                        placeholder="Enter event location"
+                        onChange={(e) => setLocation(e.target.value)}
+                        value={location}
+                        maxLength='100'
+                        required 
+                    />
+                    <Form.Control.Feedback type="invalid">
+                        Please provide an event location.
+                    </Form.Control.Feedback>
+                </Form.Group>
                 <Row className="mb-3">
                     <Form.Group as={Col} controlId="eventStartDate">
                         <Form.Label>Event start date</Form.Label>

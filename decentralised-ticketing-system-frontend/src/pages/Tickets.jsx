@@ -1,13 +1,11 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { TICKET_ADDRESS, TICKET_ABI } from "../constants/contracts";
-import { connectorHooks, getName } from "../utils/connectors";
-import { getContract } from "../utils/contractUtils";
-import { useWeb3React } from "@web3-react/core";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { uploadImmutableData } from "../utils/web3.storageEndpoints";
+import { Web3Context } from "../components/App";
+import { useQuery } from "@apollo/client";
+import { EVENT_WITH_TYPES_BY_ID_QUERY } from "../utils/subgraphQueries";
 
 function Tickets() {
     const { id } = useParams();
@@ -23,50 +21,22 @@ function Tickets() {
         souvenir: "",
     });
     const [selectedTicketId, setSelectedTicketId] = useState("");
-    const { connector } = useWeb3React();
-    const hooks = connectorHooks[getName(connector)];
-    const { useProvider, useAccount } = hooks;
-    const provider = useProvider();
-    const account = useAccount();
-    const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
+    const { loading, data, error } = useQuery(EVENT_WITH_TYPES_BY_ID_QUERY, {
+        variables: {
+            id: id,
+        },
+        pollInterval: 500,
+    });
+    const { account, contract, isActive } = useContext(Web3Context);
     useEffect(() => {
-        if (!provider || !account) return;
-        if(!contract) return;
-        contract.getEvent(id).then((event) => {
-            if(event[0] !== account) navigate("/");
-            return {
-                eventId: id,
-                organizer: event[0],
-                name: event[1],
-                description: event[2],
-                eventStorage: event[3],
-                startTime: event[4],
-                endTime: event[5],
-                ticketTypes: event[6],
-            };
-        }).then(async (event) => {
-            setEvent(event);
-            const ticketTypesPromises = await event.ticketTypes.map(async (ticketTypeId) => {
-                return await contract.getTicketType(id, ticketTypeId).then((ticketType) => {
-                    return { 
-                        id: ticketType.id,
-                        name: ticketType.name,
-                        price: ticketType.price,
-                        currentSupplt: ticketType.currentSupply,
-                        maxSupply: ticketType.maxSupply,
-                        souvenirURI: ticketType.souvenirTokenURI,
-                        tokenURI: ticketType.tokenURI
-                     };
-                }).catch((e) => {
-                    console.log(e.reason);
-                });
-            })
-            Promise.all(ticketTypesPromises).then((types) => {
-                setTicketTypes(types.filter((type) => type !== undefined));
-            });
-        });
+        if (!loading) {
+            if (isActive && account.toUpperCase() !== data.event.creator.toUpperCase()) navigate("/");
+            setEvent(data.event);
+            console.log(data.event.ticketTypes);
+            setTicketTypes(data.event.ticketTypes);            
+        }
 
-    }, [account]);
+    }, [account, loading, isActive, data]);
 
     const setSelected = ((e) => {
         setSelectedTicketId(e.target.value);
@@ -76,7 +46,7 @@ function Tickets() {
             price: formatEther(ticket.price),
             maxSupply: Number(ticket.maxSupply),
             tokenURI: ticket.tokenURI,
-            souvenirURI: ticket.souvenirURI,
+            souvenirURI: ticket.souvenirTokenURI,
             image: "",
             souvenir: "",
         });
@@ -226,8 +196,17 @@ function Tickets() {
                 selectedTicket.image = selectedTicket.tokenURI;
                 selectedTicket.souvenir = selectedTicket.souvenirURI;
             }    
-            contract.updateTicketType(
+            console.log(
                 event.eventId,
+                selectedTicketId,
+                selectedTicket.name,
+                selectedTicket.image,
+                selectedTicket.souvenir,
+                parseEther(String(selectedTicket.price)),
+                selectedTicket.maxSupply
+            );
+            contract.updateTicketType(
+                event.id,
                 selectedTicketId,
                 selectedTicket.name,
                 selectedTicket.image,
@@ -241,7 +220,7 @@ function Tickets() {
     }
 
     const deleteType = async () => {
-        const tx = await contract.deleteTicketType(event.eventId, selectedTicketId);
+        const tx = await contract.deleteTicketType(event.id, selectedTicketId);
         await tx.wait();
     }
 

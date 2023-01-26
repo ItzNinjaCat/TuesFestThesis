@@ -9,7 +9,7 @@ function Events() {
     const [events, setEvents] = useState(undefined);
     const [first, setFirst] = useState(20);
     const [skip, setSkip] = useState(0);
-    const { loading, error, data } = useQuery(EVENTS_QUERY, {
+    const { loading, error, data, fetchMore } = useQuery(EVENTS_QUERY, {
         variables: {
             skip: skip,
             first: first

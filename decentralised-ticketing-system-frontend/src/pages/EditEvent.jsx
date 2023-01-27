@@ -139,8 +139,8 @@ function EditEvent() {
         setImages(e.target.files);
     }
     return (
-        <div className="my-5 d-flex flex-column align-items-center">
-            <h1>Create event</h1>
+        <div className="mt-5 d-flex flex-column align-items-center">
+            <h1>Update event</h1>
             <Form 
                 noValidate
                 validated={validated}

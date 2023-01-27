@@ -5,6 +5,7 @@ import { formatEther } from "ethers/lib/utils";
 import { useQuery } from "@apollo/client";
 import { onAttemptToApprove } from "../../utils/contractUtils";
 import { Web3Context } from "../App";
+import { KnownTypeNamesRule } from "graphql";
 function Offer({ offer }) {
     const [image, setImage] = useState(undefined);
     const { account, contract, tokenContract, setBalanceUpdate } = useContext(Web3Context);
@@ -25,6 +26,17 @@ function Offer({ offer }) {
             });
         }
     }, [data, loading]);
+
+    async function cancelOffer() {
+        contract.cancelOffer(offer.id).then((res) => {
+            console.log(res);
+            res.wait().then((res) => {
+                setBalanceUpdate(true);
+            });
+        }).catch((e) => {
+            alert(e.reason);
+        });
+    }
 
     async function acceptOffer() {
         if(offer.sellOffer === true){
@@ -66,9 +78,17 @@ function Offer({ offer }) {
                 <span>Ticket: {offer.ticketType?.name}</span>
             </p>
             <p className='desc-text'>Price: {formatEther(offer.price)}</p>
+            {account === undefined ? null :
             <div className="d-flex justify-content-center">
-                <Button onClick={acceptOffer}>Accept offer</Button>
+                {
+                    (offer.buyOffer && offer.buyer.toUpperCase() === account.toUpperCase() )||
+                    (offer.sellOffer && offer.seller.toUpperCase() === account.toUpperCase()) ?
+                        <Button onClick={cancelOffer} variant="danger">Cancel offer</Button>
+                        : <Button onClick={acceptOffer}>Accept offer</Button>
+
+                }
             </div>
+            }
         </div>
     );
 }

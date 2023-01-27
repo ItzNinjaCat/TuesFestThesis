@@ -15,20 +15,7 @@ const connectors = [
     [coinbaseWallet, coinbaseWalletHooks],
 ];
 const client = new ApolloClient({
-    cache: new InMemoryCache(
-        {
-            typePolicies: {
-                fields: {
-                    tickets: {
-                        keyArgs: false,
-                        merge(existing = [], incoming) {
-                            return [...existing, ...incoming];
-                        },
-                    },
-                },
-            },
-        }
-    ),
+    cache: new InMemoryCache(),
     uri: SUBGRAPH_URL,
 });
 

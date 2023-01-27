@@ -35,10 +35,11 @@ function CreateEvent() {
         return ticketTypes.indexOf(ticket);
     }
     useEffect(() => {
+        console.log(isActive, account, contract);
         if(validated === true){
             return;
         }
-        if (isActive && !account) {
+        if (isActive && account === undefined) {
             navigate('/');
         }
         else if (isActive) {

@@ -19,7 +19,9 @@ function Header() {
 
 
   function becomeOrganizer() {
-    contract.becomeOrganizer();
+    contract.becomeOrganizer().catch((e) => {
+      alert(e.reason);
+    });
   }
 
   const { connector, provider, account, isActive, balance, contract } = useContext(Web3Context);

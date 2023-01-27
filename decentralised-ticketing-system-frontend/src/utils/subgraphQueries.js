@@ -88,19 +88,13 @@ export const EVENTS_BY_CREATOR_QUERY = gql`
 `;
 
 export const TICKETS_BY_OWNER_QUERY = gql`
-    query TicketsByOwner(
-        $owner: String!
-        $firstTicket: Int!
-        $skipTicket: Int!
-        $firstSouvenir: Int!
-        $skipSouvenir: Int!
-    ) {
+    query TicketsByOwner($owner: String!, $first: Int!, $skip: Int!) {
         tickets(
             orderBy: tokenId
             orderDirection: desc
             where: { owner: $owner, usable: true }
-            first: $firstTicket
-            skip: $skipTicket
+            first: $first
+            skip: $skip
         ) {
             id
             owner
@@ -124,7 +118,12 @@ export const TICKETS_BY_OWNER_QUERY = gql`
                 currentSupply
             }
         }
-        souvenirs(where: { owner: $owner }, first: $firstSouvenir, skip: $skipSouvenir) {
+    }
+`;
+
+export const SOUVENIRS_BY_OWNER_QUERY = gql`
+    query SouvenirsByOwner($owner: String!, $first: Int!, $skip: Int!) {
+        souvenirs(where: { owner: $owner }, first: $first, skip: $skip) {
             id
             tokenId
             tokenURI
@@ -176,9 +175,55 @@ export const SELL_TICKETS_QUERY = gql`
     }
 `;
 
-export const OFFERS_QUERY = gql`
-    query Offers {
-        offers(where: { deleted: false }) {
+export const BUY_OFFERS_QUERY = gql`
+    query Offers($first: Int!, $skip: Int!) {
+        offers(
+            first: $first,
+            skip: $skip,
+            where: {
+                deleted: false,
+                buyOffer: true,
+                event_: { startTime_gt: ${Math.floor(Date.now() / 1000)} }
+            }
+        ) {
+            id
+            buyer
+            seller
+            buyOffer
+            sellOffer
+            price
+            event {
+                id
+                name
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                tokenURI
+            }
+            ticket {
+                id
+                tokenId
+            }
+        }
+    }
+`;
+
+export const SELL_OFFERS_QUERY = gql`
+    query Offers($first: Int!, $skip: Int!) {
+        offers(
+            first: $first,
+            skip: $skip,
+            where: {
+                deleted: false,
+                sellOffer: true,
+                event_: { startTime_gt: ${Math.floor(Date.now() / 1000)} }
+            }
+        ) {
             id
             buyer
             seller
@@ -226,6 +271,30 @@ export const EVENT_WITH_TYPES_BY_ID_QUERY = gql`
         event(id: $id) {
             id
             creator
+            ticketTypes(where: { deleted: false }) {
+                id
+                name
+                price
+                maxSupply
+                currentSupply
+                tokenURI
+                souvenirTokenURI
+            }
+        }
+    }
+`;
+
+export const EVENT_BY_ID_WITH_TICKETS_QUERY = gql`
+    query EventById($id: String!) {
+        event(id: $id) {
+            id
+            creator
+            name
+            description
+            eventStorage
+            location
+            startTime
+            endTime
             ticketTypes(where: { deleted: false }) {
                 id
                 name

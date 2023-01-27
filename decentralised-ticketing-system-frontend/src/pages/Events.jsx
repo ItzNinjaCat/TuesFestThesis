@@ -5,7 +5,7 @@ import { EVENTS_QUERY } from '../utils/subgraphQueries';
 import EventCard from '../components/ui/EventCard';
 import "../style/style.scss";
 import Loader from '../components/ui/Loader';
-import InfiniteScroll from 'react-infinite-scroller';
+import InfiniteScroll from '@alexcambose/react-infinite-scroll';
 
 function Events() {
     const [events, setEvents] = useState(undefined);

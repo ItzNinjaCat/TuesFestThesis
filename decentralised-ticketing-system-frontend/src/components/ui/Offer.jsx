@@ -7,7 +7,7 @@ import { onAttemptToApprove } from "../../utils/contractUtils";
 import { Web3Context } from "../App";
 function Offer({ offer }) {
     const [image, setImage] = useState(undefined);
-    const { account, contract, tokenContract } = useContext(Web3Context);
+    const { account, contract, tokenContract, setBalanceUpdate } = useContext(Web3Context);
     const { loading, data } = useQuery(TICKETS_QUERY, {
         variables: {
             owner: account,
@@ -31,18 +31,24 @@ function Offer({ offer }) {
             const signature = await onAttemptToApprove(contract, tokenContract, account, formatEther(offer.price), +new Date() + 60 * 60);
             contract.acceptSellOffer(offer.id, signature.deadline, signature.v, signature.r, signature.s).then((res) => {
                 console.log(res);
+                res.wait().then((res) => {
+                    setBalanceUpdate(true);
+                });
             }).catch((e) => {
                 alert(e.reason);
             });
         }
         else if(offer.buyOffer === true){
-            const ticketAvailable = data.tickets.find((t) => t.owner === account && t.usable === true);
+            const ticketAvailable = data.tickets.find((t) => t.owner.toUpperCase() === account.toUpperCase() && t.usable === true);
             if(ticketAvailable === undefined){
                 alert("You don't have any ticket available for this offer");
                 return;
             }
             contract.acceptBuyOffer(offer.id, ticketAvailable.id).then((res) => {
                 console.log(res);
+                res.wait().then((res) => {
+                    setBalanceUpdate(true);
+                });
             }).catch((e) => {
                 alert(e.reason);
             });

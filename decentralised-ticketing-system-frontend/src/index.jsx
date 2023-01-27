@@ -8,8 +8,6 @@ import { coinbaseWallet, hooks as coinbaseWalletHooks } from './utils/coinbaseWa
 import { hooks as metaMaskHooks, metaMask } from './utils/metaMaskConnector';
 import { hooks as walletConnectHooks, walletConnect } from './utils/walletConnectConnector';
 import { SUBGRAPH_URL } from './constants/contracts';
-const dotenv = require('dotenv');
-dotenv.config();
 
 const connectors = [
     [metaMask, metaMaskHooks],
@@ -17,7 +15,20 @@ const connectors = [
     [coinbaseWallet, coinbaseWalletHooks],
 ];
 const client = new ApolloClient({
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache(
+        {
+            typePolicies: {
+                fields: {
+                    tickets: {
+                        keyArgs: false,
+                        merge(existing = [], incoming) {
+                            return [...existing, ...incoming];
+                        },
+                    },
+                },
+            },
+        }
+    ),
     uri: SUBGRAPH_URL,
 });
 

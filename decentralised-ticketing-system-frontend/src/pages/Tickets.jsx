@@ -118,7 +118,7 @@ function Tickets() {
                 const ticketMetadata = {
                     name: selectedTicket.name,
                     description: `This is a ${selectedTicket.name} ticket for ${event.name}`,
-                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.image.name}`),
+                    image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.image.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${event.id}`),
                     attributes: [{
                         price: selectedTicket.price,
@@ -129,7 +129,7 @@ function Tickets() {
                 const souvenirMetadata = {
                     name: `${selectedTicket.name} Souvenir`,
                     description: `This is a ${selectedTicket.name} souvenir for ${event.name}`,
-                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.souvenir.name}`),
+                    image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.souvenir.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${event.id}`),
                     attributes: [{
                         ticketPrice: selectedTicket.price,
@@ -144,8 +144,8 @@ function Tickets() {
                     new File([ticketBlob], `${selectedTicket.name}_metadata.json`),
                     new File([souvenirBlob], `${selectedTicket.name}_souvenir_metadate.json`)
                 ]);
-                selectedTicket.image = encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${cid}/${selectedTicket.name}_metadata.json`);
-                selectedTicket.souvenir = encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${cid}/${selectedTicket.name}_souvenir_metadate.json`);
+                selectedTicket.image = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${selectedTicket.name}_metadata.json`);
+                selectedTicket.souvenir = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${selectedTicket.name}_souvenir_metadate.json`);
             }
             else if (selectedTicket.image !== "") {
                 const ticketImagesCid = await uploadImmutableData([selectedTicket.image]);
@@ -153,7 +153,7 @@ function Tickets() {
                 const ticketMetadata = {
                     name: selectedTicket.name,
                     description: `This is a ${selectedTicket.name} ticket for ${event.name}`,
-                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.image.name}`),
+                    image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.image.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${event.id}`),
                     attributes: [{
                         price: selectedTicket.price,
@@ -166,7 +166,7 @@ function Tickets() {
                 const cid = await uploadImmutableData([
                     new File([ticketBlob], `${selectedTicket.name}_metadata.json`)
                 ]);
-                selectedTicket.image = encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${cid}/${selectedTicket.name}_metadata.json`);
+                selectedTicket.image = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${selectedTicket.name}_metadata.json`);
                 selectedTicket.souvenir = selectedTicket.souvenirURI;
             }
             else if (selectedTicket.souvenir !== "") {
@@ -175,7 +175,7 @@ function Tickets() {
                 const souvenirMetadata = {
                     name: `${selectedTicket.name} Souvenir`,
                     description: `This is a ${selectedTicket.name} souvenir for ${event.name}`,
-                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.souvenir.name}`),
+                    image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.souvenir.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${event.id}`),
                     attributes: [{
                         ticketPrice: selectedTicket.price,
@@ -189,7 +189,7 @@ function Tickets() {
                 ]);
 
                 selectedTicket.image = selectedTicket.tokenURI;
-                selectedTicket.souvenir = encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${cid}/${selectedTicket.name}_souvenir_metadate.json`);
+                selectedTicket.souvenir = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${selectedTicket.name}_souvenir_metadate.json`);
             }
             else {
                 selectedTicket.image = selectedTicket.tokenURI;

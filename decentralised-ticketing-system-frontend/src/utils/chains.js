@@ -19,11 +19,11 @@ const CELO = {
 export const CHAINS = {
     1: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://mainnet.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
-            process.env.REACT_APP_ALCHEMY_KEY
-                ? `https://eth-mainnet.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_KEY}`
+            import.meta.env.VITE_ALCHEMY_KEY
+                ? `https://eth-mainnet.alchemyapi.io/v2/${import.meta.env.VITE_ALCHEMY_KEY}`
                 : '',
             'https://cloudflare-eth.com',
         ].filter(url => url !== ''),
@@ -31,32 +31,32 @@ export const CHAINS = {
     },
     3: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://ropsten.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://ropsten.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
         ].filter(url => url !== ''),
         name: 'Ropsten',
     },
     4: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://rinkeby.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://rinkeby.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
         ].filter(url => url !== ''),
         name: 'Rinkeby',
     },
     5: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://goerli.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://goerli.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
         ].filter(url => url !== ''),
         name: 'Görli',
     },
     42: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://kovan.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://kovan.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
         ].filter(url => url !== ''),
         name: 'Kovan',
@@ -64,8 +64,8 @@ export const CHAINS = {
     // Optimism
     10: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://optimism-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://optimism-mainnet.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
             'https://mainnet.optimism.io',
         ].filter(url => url !== ''),
@@ -75,8 +75,8 @@ export const CHAINS = {
     },
     69: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://optimism-kovan.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://optimism-kovan.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
             'https://kovan.optimism.io',
         ].filter(url => url !== ''),
@@ -87,8 +87,8 @@ export const CHAINS = {
     // Arbitrum
     42161: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://arbitrum-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://arbitrum-mainnet.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
             'https://arb1.arbitrum.io/rpc',
         ].filter(url => url !== ''),
@@ -98,8 +98,8 @@ export const CHAINS = {
     },
     421611: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://arbitrum-rinkeby.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://arbitrum-rinkeby.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
             'https://rinkeby.arbitrum.io/rpc',
         ].filter(url => url !== ''),
@@ -110,8 +110,8 @@ export const CHAINS = {
     // Polygon
     137: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://polygon-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://polygon-mainnet.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
             'https://polygon-rpc.com',
         ].filter(url => url !== ''),
@@ -121,8 +121,8 @@ export const CHAINS = {
     },
     80001: {
         urls: [
-            process.env.REACT_APP_INFURA_KEY
-                ? `https://polygon-mumbai.infura.io/v3/${process.env.REACT_APP_INFURA_KEY}`
+            import.meta.env.VITE_INFURA_KEY
+                ? `https://polygon-mumbai.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`
                 : '',
         ].filter(url => url !== ''),
         name: 'Polygon Mumbai',

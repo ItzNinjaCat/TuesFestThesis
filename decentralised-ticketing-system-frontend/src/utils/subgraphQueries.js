@@ -34,6 +34,7 @@ export const TICKETS_QUERY = gql`
             id
             owner
             tokenURI
+            usable
         }
     }
 `;
@@ -72,8 +73,8 @@ export const EVENT_AND_TICKETS_QUERY = gql`
 `;
 
 export const EVENTS_BY_CREATOR_QUERY = gql`
-    query EventsByCreator($creator: String!) {
-        events(where: { creator: $creator, deleted: false }) {
+    query EventsByCreator($creator: String, $first: Int!, $skip: Int!) {
+        events(where: { creator: $creator, deleted: false }, first: $first, skip: $skip) {
             id
             creator
             name
@@ -94,7 +95,13 @@ export const TICKETS_BY_OWNER_QUERY = gql`
         $firstSouvenir: Int!
         $skipSouvenir: Int!
     ) {
-        tickets(where: { owner: $owner, usable: true }, first: $firstTicket, skip: $skipTicket) {
+        tickets(
+            orderBy: tokenId
+            orderDirection: desc
+            where: { owner: $owner, usable: true }
+            first: $firstTicket
+            skip: $skipTicket
+        ) {
             id
             owner
             tokenId

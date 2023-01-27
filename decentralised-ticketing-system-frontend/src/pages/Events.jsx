@@ -5,55 +5,45 @@ import { EVENTS_QUERY } from '../utils/subgraphQueries';
 import EventCard from '../components/ui/EventCard';
 import "../style/style.scss";
 import Loader from '../components/ui/Loader';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import InfiniteScroll from 'react-infinite-scroller';
 
 function Events() {
     const [events, setEvents] = useState(undefined);
     const [first, setFirst] = useState(20);
-    const [skip, setSkip] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const [initialLoad, setInitialLoad] = useState(true);
     const { loading, error, data, fetchMore } = useQuery(EVENTS_QUERY, {
         variables: {
-            skip: skip,
+            skip: 0,
             first: first
         }
     });
+
+    const loadMore = () => {
+        fetchMore({
+            variables: {
+                skip: events.length,
+                first: first
+            }
+        }).then((res) => {
+
+            if (res.data.events.length < first) setHasMore(false);
+            setEvents([...events, ...res.data.events]);
+        });
+    };
+
     useEffect(() => {
-        if (!loading && !error) {
+        if (!loading && initialLoad) {
             if (data.events.length < first) setHasMore(false);
+            setInitialLoad(false);
             setEvents(data.events);
         }
     }, [loading, data]);
     if(loading || events === undefined) return <Loader/>;
     if (error) return <p>Error: {error.message}</p>;
     return (
-            <InfiniteScroll
-                dataLength={events.length}
-                next={() => {
-                    fetchMore({
-                        variables: {
-                            skip: skip + events.length,
-                            first: first    
-                        },
-                        updateQuery: (prev, { fetchMoreResult }) => {
-                            if (!fetchMoreResult) {
-                                return prev;
-                            }
-                            setSkip(skip + fetchMoreResult.events.length);      
-                            return Object.assign({}, prev, {    
-                                events: [...prev.events, ...fetchMoreResult.events]
-                            });
-                        }
-                    });
-                }}
-                hasMore={hasMore}
-                loader={<h4>Loading...</h4>}
-                endMessage={
-                    <p style={{ textAlign: 'center' }}>
-                    <b>Yay! You have seen it all</b>
-                    </p>
-                }
-            >  
+        
+        <InfiniteScroll hasMore={hasMore} loadMore={loadMore} initialLoad={false} noMore={false}>
             <div id="eventHolder" className='d-flex justify-content-center flex-wrap m-5'>
                 {
                     events?.map((event, index) => {

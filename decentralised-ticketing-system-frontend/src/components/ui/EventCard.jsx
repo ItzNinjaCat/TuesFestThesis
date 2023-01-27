@@ -7,7 +7,7 @@ async function fetchImageUrls(storageBytes, setImageUrls) {
     const tmp = await getData(storageBytes);
     const imageFiles = await tmp.files();
     const imageURLs = imageFiles.map((file) => {
-        return `${process.env.REACT_APP_W3LINK_URL}/${storageBytes}/${file.name}`;
+        return `${import.meta.env.VITE_W3LINK_URL}/${storageBytes}/${file.name}`;
     });
     setImageUrls(imageURLs);
 }

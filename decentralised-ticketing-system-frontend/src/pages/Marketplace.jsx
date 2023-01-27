@@ -10,7 +10,10 @@ function Marketplace() {
   const [offerType, setOfferType] = useState('buy');
   const [buyOffers, setBuyOffers] = useState([]);
   const [sellOffers, setSellOffers] = useState([]);
-  const { data, loading } = useQuery(OFFERS_QUERY);
+  const { data, loading } = useQuery(OFFERS_QUERY,
+    {
+      pollInterval: 500,
+    });
   useEffect(() => {
     if (!loading) {  
       setBuyOffers(data.offers.filter(offer => offer.buyOffer === true));

@@ -43,7 +43,9 @@ function CreateOfferModal() {
       if (!eventsSellLoading && offerType === 'sell') { 
         const eventList = [];
         eventsSellData.tickets.forEach((ticket) => {
+          if (!eventList.find((event) => event.id === ticket.event.id)){
             eventList.push(ticket.event);
+          }
         });
           setEvents(eventList);
           setTickets(eventsSellData.tickets);
@@ -164,6 +166,7 @@ function CreateOfferModal() {
                 value={selectedEvent}
                 onChange={(e) => selectEvent(e.target.value)}
                 required
+                disabled={events?.length === 0}
                 >
                     <option value="" disabled hidden>Choose here</option>
                     {

@@ -93,7 +93,7 @@ function CreateEvent() {
                 const ticketMetadata = {
                     name: ticket.name,
                     description: `This is a ${ticket.name} ticket for ${name}`,
-                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`),
+                    image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
                     attributes: [{
                         price: ticket.price,
@@ -105,7 +105,7 @@ function CreateEvent() {
                 const souvenirMetadata = {
                     name: `${ticket.name} Souvenir`,
                     description: `This is a ${ticket.name} souvenir for ${name}`,
-                    image: encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`),
+                    image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
                     attributes: [{
                         ticketPrice: ticket.price,
@@ -130,8 +130,8 @@ function CreateEvent() {
                             eventId,
                             ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
                             ticket.name,
-                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_metadata.json`),
-                            encodeURI(`${process.env.REACT_APP_W3LINK_URL}/${responses[index]}/${ticket.name}_souvenir_metadate.json`),
+                            encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${responses[index]}/${ticket.name}_metadata.json`),
+                            encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${responses[index]}/${ticket.name}_souvenir_metadate.json`),
                             ethers.utils.parseEther(String(ticket.price)),
                             ticket.quantity, {
                                  gasLimit: 500000

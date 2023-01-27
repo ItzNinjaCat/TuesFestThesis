@@ -1,6 +1,6 @@
 import { Web3Storage } from 'web3.storage';
 
-const storage = new Web3Storage({ token: process.env.REACT_APP_WEB3_STORAGE_API_KEY });
+const storage = new Web3Storage({ token: import.meta.env.VITE_WEB3_STORAGE_API_KEY });
 
 // export const uploadMutableData = async files => {
 //     const name = await Name.create();

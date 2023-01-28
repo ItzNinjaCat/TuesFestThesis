@@ -7,7 +7,7 @@ import { useQuery } from "@apollo/client";
 import { uploadImmutableData } from '../utils/web3.storageEndpoints';
 import { Web3Context } from "../components/App";
 function EditEvent() {
-    const { account, contract, isActive } = useContext(Web3Context);
+    const { account, contract } = useContext(Web3Context);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -31,8 +31,21 @@ function EditEvent() {
     });
     useEffect(() => {
         if (!loading) {
-            if (isActive && data.event.creator.toUpperCase() !== account.toUpperCase()) navigate("/");
-            setCid(data.event.eventStorage);
+            try{
+                console.log(data.event.creator.toUpperCase() !== account.toUpperCase());
+                if(data.event.creator.toUpperCase() !== account.toUpperCase()){
+                    navigate('/');
+                }
+            }catch(e){
+                console.log(e);
+                navigate('/');
+            }
+        }
+    }, [loading, data, account]);
+
+
+    useEffect(() => {
+        if (!loading) {
             setName(data.event.name);
             setDesc(data.event.description);
             setLocation(data.event.location);
@@ -49,7 +62,7 @@ function EditEvent() {
             }
             setStartDate(new Date(data.event.startTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
         }
-    }, [loading, data, account, id, isActive]);
+    }, [loading, data, id]);
 
     const handleSubmit = async (e) => {
         const form = e.currentTarget;

@@ -288,8 +288,13 @@ const TicketType = (({
                         Available: {Number(currentSupply)}
                     </span>
                 </p>
-                <Button onClick={handleShowPersonal} className="me-6">Buy</Button>
-                <Button onClick={handleShowGift}>Gift</Button>
+                {
+                account !== undefined ?
+                <>
+                    <Button onClick={handleShowPersonal} className="me-6">Buy</Button>
+                    <Button onClick={handleShowGift}>Gift</Button>
+                </> : null
+                }
             </div>
             {ticketImage !== undefined ? <Image src={ticketImage} fluid rounded className='m-4'/> : null}
 

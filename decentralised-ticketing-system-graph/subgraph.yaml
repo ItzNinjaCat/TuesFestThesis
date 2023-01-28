@@ -6,7 +6,7 @@ dataSources:
     name: TicketGenerator
     network: goerli
     source:
-      address: "0xbc7D3F59396a6087dd23AD88F4B39236E4373ed7"
+      address: "0x8B5A0Ee3032C534ea32C1BabB28194935E1017a7"
       abi: TicketGenerator
     mapping:
       kind: ethereum/events

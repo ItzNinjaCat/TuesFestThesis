@@ -7,7 +7,7 @@ import { uploadImmutableData } from '../utils/web3.storageEndpoints'
 import { Web3Context } from '../components/App';
 function CreateEvent() {
     const navigate = useNavigate();
-    const { provider, account, contract, isActive } = useContext(Web3Context);
+    const { provider, account, contract } = useContext(Web3Context);
     const [validated, setValidated] = useState(false);
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
@@ -35,21 +35,17 @@ function CreateEvent() {
         return ticketTypes.indexOf(ticket);
     }
     useEffect(() => {
-        console.log(isActive, account, contract);
         if(validated === true){
             return;
         }
-        if (isActive && account === undefined) {
-            navigate('/');
-        }
-        else if (isActive) {
         contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
             (status) => {
                 if (!status) {
                     navigate('/');
                 }
+            }).catch((err) => {
+                navigate('/');
             })
-        }
     }, [provider, account, contract])
     const handleSubmit = async (e) => {
         const form = e.currentTarget;

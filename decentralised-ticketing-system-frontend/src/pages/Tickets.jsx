@@ -28,21 +28,33 @@ function Tickets() {
         souvenir: "",
     });
     const [selectedTicketId, setSelectedTicketId] = useState("");
-    const { loading, data, error } = useQuery(EVENT_WITH_TYPES_BY_ID_QUERY, {
+    const { loading, data } = useQuery(EVENT_WITH_TYPES_BY_ID_QUERY, {
         variables: {
             id: id,
         }
     });
-    const { account, contract, isActive } = useContext(Web3Context);
+    const { account, contract } = useContext(Web3Context);
     useEffect(() => {
         if (!loading) {
-            if (isActive && account.toUpperCase() !== data.event.creator.toUpperCase()) navigate("/");
+            try{
+                console.log(data.event.creator.toUpperCase() !== account.toUpperCase());
+                if(data.event.creator.toUpperCase() !== account.toUpperCase()){
+                    navigate('/');
+                }
+            }catch(e){
+                console.log(e);
+                navigate('/');
+            }
+        }
+    }, [loading, data, account]);
+    useEffect(() => {
+        if (!loading) {
             setEvent(data.event);
             console.log(data.event.ticketTypes);
             setTicketTypes(data.event.ticketTypes);            
         }
 
-    }, [account, loading, isActive, data]);
+    }, [loading, data]);
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);

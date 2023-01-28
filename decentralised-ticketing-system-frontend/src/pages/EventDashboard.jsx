@@ -29,7 +29,7 @@ function EventDashboard() {
     const [totalProfit, setTotalProfit] = useState(0);
     const [maxSupply, setMaxSupply] = useState(1);
     const navigate = useNavigate();
-    const { contract, account, isActive } = useContext(Web3Context);
+    const { contract, account } = useContext(Web3Context);
     const { loading, error, data } = useQuery(EVENT_AND_TICKETS_QUERY, {
         variables: {
             event: String(id)
@@ -38,7 +38,20 @@ function EventDashboard() {
 
     useEffect(() => {
         if (!loading) {
-            if(isActive && data.event.creator.toUpperCase() !== account.toUpperCase()) navigate("/");
+            try{
+                console.log(data.event.creator.toUpperCase() !== account.toUpperCase());
+                if(data.event.creator.toUpperCase() !== account.toUpperCase()){
+                    navigate('/');
+                }
+            }catch(e){
+                console.log(e);
+                navigate('/');
+            }
+        }
+    }, [loading, data, account]);
+
+    useEffect(() => {
+        if (!loading) {
             setTicketSales(data.tickets);
             let current = new Date(data.event.createdAt * 1000);
             current.setHours(0, 0, 0, 0);
@@ -68,7 +81,7 @@ function EventDashboard() {
             setMaxSupply(biggestSupply);
             setEvent(data.event);
         }
-    }, [data, loading, isActive]);
+    }, [data, loading]);
 
     useEffect(() => {
         if (ticketTypes !== undefined && ticketSales !== undefined && dates?.length > 0) {

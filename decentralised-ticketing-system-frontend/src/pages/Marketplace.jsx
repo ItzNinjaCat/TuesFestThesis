@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import CreateOfferModal from '../components/ui/CreateOfferModal';
 import { useQuery } from '@apollo/client';
@@ -6,6 +6,7 @@ import { BUY_OFFERS_QUERY, SELL_OFFERS_QUERY } from '../utils/subgraphQueries';
 import Offer from '../components/ui/Offer';
 import Loader from '../components/ui/Loader';
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
+import { Web3Context } from '../components/App';
 
 function Marketplace() {
   const [offerType, setOfferType] = useState('buy');
@@ -15,6 +16,7 @@ function Marketplace() {
   const [hasMoreSellOffers, setHasMoreSellOffers] = useState(true);
   const [initialLoadBuyOffers, setInitialLoadBuyOffers] = useState(true);
   const [initialLoadSellOffers, setInitialLoadSellOffers] = useState(true);
+  const {account } = useContext(Web3Context);
   const { data: dataBuy, loading: loadingBuy, fetchMore: fetchMoreBuy } = useQuery(BUY_OFFERS_QUERY, {
     variables: {
       skip: 0,
@@ -68,12 +70,12 @@ function Marketplace() {
       }
     });
   };
-
+  if((loadingBuy && initialLoadBuyOffers) || (loadingSell && initialLoadSellOffers)) return <Loader />;
   return (
     <div className="container my-5">
       <div className='d-flex justify-content-between'>
-        <h1>Marketplace</h1>
-        <CreateOfferModal/>
+        <h2>Marketplace</h2>
+        {account !== undefined? <CreateOfferModal/> : null}
       </div>
       <div className="mt-5">
           <ButtonGroup className="d-flex">
@@ -96,15 +98,13 @@ function Marketplace() {
               checked={offerType === 'sell'}
             >Sell offers</ToggleButton>
         </ButtonGroup>
-        {((loadingBuy && initialLoadBuyOffers) || (loadingSell && initialLoadSellOffers)) ? <Loader />
-          : (
             <div>
               {
                 offerType === 'buy' ? 
-                  <div className='d-flex justify-content-center flex-wrap mt-5'>
                     <InfiniteScroll
                     hasMore={hasMoreBuyOffers} loadMore={loadMoreBuyOffers} initialLoad={false} noMore={false}
                     >
+                  <div className='d-flex justify-content-center flex-wrap mt-5'>
                   {
                     buyOffers?.map((off, index) => {
                       if (index % 4 === 0) {
@@ -123,13 +123,13 @@ function Marketplace() {
                       return null;
                     })
                       } 
-                    </InfiniteScroll>
                   </div>
+                    </InfiniteScroll>
                   : 
-                  <div className='d-flex justify-content-center flex-wrap mt-5'>
                     <InfiniteScroll
                     hasMore={hasMoreSellOffers} loadMore={loadMoreSellOffers} initialLoad={false} noMore={false}
                     >
+                  <div className='d-flex justify-content-center flex-wrap mt-5'>
                     {
                       sellOffers?.map((off, index) => {
                         if (index % 4 === 0) {
@@ -148,12 +148,10 @@ function Marketplace() {
                         return null;
                       })
                       }
-                      </InfiniteScroll>
                   </div>
+                      </InfiniteScroll>
               }
               </div>
-        )
-      }
       </div>
     </div>
   );

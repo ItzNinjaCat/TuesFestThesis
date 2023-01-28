@@ -49,13 +49,17 @@ function UserProfile() {
 
     useEffect(() => {
         if(isActive && account !== address) navigate("/");
-        if (!loadingTickets && initialLoadTickets) {
+        if(!isActive && !loadingTickets && initialLoadTickets && account === undefined) navigate("/");
+        if(!isActive && !loadingSouvenirs && initialLoadSouvenirs && account === undefined) navigate("/");
+    }, [isActive, account, address, loadingTickets, loadingSouvenirs]);
 
+    useEffect(() => {
+        if (!loadingTickets && initialLoadTickets) {
             if (dataTickets.tickets.length < firstTicket) setHasMoreTickets(false);
             setInitialLoadTickets(false);
             setTickets([...tickets, ...dataTickets.tickets]);
         }
-    }, [isActive, account, address, loadingTickets, tab]);
+    }, [address, loadingTickets, tab]);
 
     useEffect(() => {
         if(isActive && account !== address) navigate("/");
@@ -96,7 +100,11 @@ function UserProfile() {
     if (errorTickets) return <p>Error: {errorTickets.message}</p>;
     if (errorSouvenirs) return <p>Error: {errorSouvenirs.message}</p>;
     return (
-        <div>
+    <div className="container my-3">
+      <div className='d-flex justify-content-center'>
+        <h1>User profile</h1>
+      </div>
+      <div className="mt-5">
             <ButtonGroup className="d-flex">
                 <ToggleButton
                 type="radio"
@@ -173,6 +181,7 @@ function UserProfile() {
                 </InfiniteScroll>
                 }
                 </div>
+            </div>
     );
 }
 

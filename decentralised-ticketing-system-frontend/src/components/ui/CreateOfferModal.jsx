@@ -48,13 +48,20 @@ function CreateOfferModal() {
           }
         });
           setEvents(eventList);
+          console.log(eventsSellData);
           setTickets(eventsSellData.tickets);
     }
   }, [eventsSellLoading, offerType]);
 
   const selectEvent = (eventId) => {
     setSelectedEvent(eventId);
+    if(offerType === 'buy'){
+      console.log("here");
       setTypes(events.find((event) => event.id === eventId).ticketTypes);
+    }
+    else{
+      setTypes([...new Set(tickets.filter((ticket) => ticket.event.id === eventId).map((ticket) => ticket.ticketType))]);
+    }
     setSelectedTicket("");
     setSelectedTicketId("");
     setPrice("");
@@ -125,7 +132,7 @@ function CreateOfferModal() {
           <ButtonGroup className="d-flex">
             <ToggleButton
               type="radio"
-              variant="secondary"
+              variant="light"
               onClick={() => {
                 setSelectedEvent("");
                 setSelectedTicket("");
@@ -138,7 +145,7 @@ function CreateOfferModal() {
             >Buy offer</ToggleButton>
             <ToggleButton
                 type="radio"
-                variant="secondary"
+                variant="light"
                 onClick={() => {
                     setSelectedEvent("");
                     setSelectedTicket("");
@@ -187,8 +194,7 @@ function CreateOfferModal() {
                     <option value="" disabled hidden>Choose here</option>
                     {
                     types.map((ticket) => ( 
-                      ticket?.event.id === selectedEvent ?
-                      <option key={ticket.id} value={ticket.id}>{ticket.name}</option> : null
+                      <option key={ticket.id} value={ticket.id}>{ticket.name}</option>
                       ))
                     }
               </Form.Select>

@@ -17,6 +17,7 @@ function EditEvent() {
     const [location, setLocation] = useState('');
     const [images, setImages] = useState(undefined);
     const [cid, setCid] = useState(undefined);
+    const [isAuthorised, setIsAuthorised] = useState(false);
     const [startTime, setStartTime] = useState(new Date().toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
@@ -24,17 +25,22 @@ function EditEvent() {
     const [endTime, setEndTime] = useState(0);
     const [startDate, setStartDate] = useState(new Date().toJSON().slice(0,10).replace(/-/g,'-'));
     const [endDate, setEndDate] = useState(0);
-    const { loading, error, data } = useQuery(EVENT_BY_ID_QUERY, {
+    const { loading, data } = useQuery(EVENT_BY_ID_QUERY, {
         variables: {
             id: String(id)
         }
     });
     useEffect(() => {
+        if (isAuthorised) {
+            return;
+        }
         if (!loading) {
             try{
-                console.log(data.event.creator.toUpperCase() !== account.toUpperCase());
-                if(data.event.creator.toUpperCase() !== account.toUpperCase()){
+                if(data.event.creator !== account.toLowerCase()){
                     navigate('/');
+                }
+                else {
+                    setIsAuthorised(true);
                 }
             }catch(e){
                 console.log(e);
@@ -61,6 +67,7 @@ function EditEvent() {
                 setEndDate(new Date(data.event.endTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
             }
             setStartDate(new Date(data.event.startTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
+            setCid(data.event.eventStorage);
         }
     }, [loading, data, id]);
 

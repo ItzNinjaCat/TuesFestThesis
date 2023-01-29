@@ -176,13 +176,14 @@ export const SELL_TICKETS_QUERY = gql`
 `;
 
 export const BUY_OFFERS_QUERY = gql`
-    query Offers($first: Int!, $skip: Int!) {
+    query Offers($first: Int!, $skip: Int!, $account: String!) {
         offers(
             first: $first,
             skip: $skip,
             where: {
                 deleted: false,
                 buyOffer: true,
+                buyer_not: $account,
                 event_: { startTime_gt: ${Math.floor(Date.now() / 1000)} }
             }
         ) {
@@ -214,13 +215,14 @@ export const BUY_OFFERS_QUERY = gql`
 `;
 
 export const SELL_OFFERS_QUERY = gql`
-    query Offers($first: Int!, $skip: Int!) {
+    query Offers($first: Int!, $skip: Int!, $account: String!) {
         offers(
             first: $first,
             skip: $skip,
             where: {
                 deleted: false,
                 sellOffer: true,
+                seller_not: $account,
                 event_: { startTime_gt: ${Math.floor(Date.now() / 1000)} }
             }
         ) {
@@ -303,6 +305,74 @@ export const EVENT_BY_ID_WITH_TICKETS_QUERY = gql`
                 currentSupply
                 tokenURI
                 souvenirTokenURI
+            }
+        }
+    }
+`;
+
+export const USER_SELL_OFFERS_QUERY = gql`
+    query UserSellOffers($account: String!, $first: Int!, $skip: Int!) {
+        offers(
+            first: $first
+            skip: $skip
+            where: { deleted: false, sellOffer: true, seller: $account }
+        ) {
+            id
+            buyer
+            seller
+            buyOffer
+            sellOffer
+            price
+            event {
+                id
+                name
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                tokenURI
+            }
+            ticket {
+                id
+                tokenId
+            }
+        }
+    }
+`;
+
+export const USER_BUY_OFFERS_QUERY = gql`
+    query UserBuyOffers($account: String!, $first: Int!, $skip: Int!) {
+        offers(
+            first: $first
+            skip: $skip
+            where: { deleted: false, buyOffer: true, buyer: $account }
+        ) {
+            id
+            buyer
+            seller
+            buyOffer
+            sellOffer
+            price
+            event {
+                id
+                name
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                tokenURI
+            }
+            ticket {
+                id
+                tokenId
             }
         }
     }

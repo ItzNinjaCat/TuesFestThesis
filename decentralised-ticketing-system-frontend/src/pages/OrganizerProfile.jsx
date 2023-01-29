@@ -11,13 +11,12 @@ function OrganizerProfile() {
     const { address } = useParams();
     const { account, isActive } = useContext(Web3Context);
     const [initialLoad, setInitialLoad] = useState(true);
-    const [first, setFirst] = useState(20);
     const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
     const { loading, error, data, fetchMore } = useQuery(EVENTS_BY_CREATOR_QUERY, {
         variables: {
             creator: String(address),
-            first: first,
+            first: 20,
             skip: 0
         }
     });
@@ -26,12 +25,11 @@ function OrganizerProfile() {
         fetchMore({
             variables: {
                 creator: String(address),
-                first: first,
+                first: 20,
                 skip: events.length
             }
         }).then((res) => {
-            console.log(res.data.events.length, first);
-            if (res.data.events.length < first) setHasMore(false);
+            if (res.data.events.length < 20) setHasMore(false);
             setEvents([...events, ...res.data.events]);
         });
     };
@@ -39,7 +37,7 @@ function OrganizerProfile() {
     useEffect(() => {
         if  (isActive && account !== address) navigate("/");
         if (!loading && initialLoad) {
-            if (data.events.length < first) setHasMore(false);
+            if (data.events.length < 20) setHasMore(false);
             setInitialLoad(false);
             setEvents(data.events);
         }

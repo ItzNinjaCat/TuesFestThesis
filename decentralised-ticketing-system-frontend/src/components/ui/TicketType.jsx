@@ -45,6 +45,9 @@ const TicketType = (({
                 signature.s,
             )
             handleClose();
+            setTicketAmountGift(1);
+            setTicketAmountPersonal(1);
+            setRecipeintAddress('');
             tx.wait().then(() => {
                 const ticketSale = Array(Number(amount)).fill(0).map(async () => {
                     return await (await contract.buyTicket(
@@ -58,9 +61,6 @@ const TicketType = (({
                 });
                 Promise.all(ticketSale).then(() => {
                 setSuccessAmount(amount);
-                setTicketAmountGift(1);
-                setTicketAmountPersonal(1);
-                setRecipeintAddress('');
                 setBalanceUpdate(true);
                 handleShowSuccess();
                 });

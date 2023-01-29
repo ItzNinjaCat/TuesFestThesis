@@ -15,7 +15,23 @@ const connectors = [
     [coinbaseWallet, coinbaseWalletHooks],
 ];
 const client = new ApolloClient({
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache(
+        {
+            typePolicies: {
+                fields: {
+                    offers: {
+                        keyArgs: ["buyer", "seller"],
+                    },
+                    tickets: {
+                        keyArgs: ["owner"],
+                    },
+                    souvenirs: {
+                        keyArgs: ["owner"],
+                    },
+                },
+            },
+        }
+    ),
     uri: SUBGRAPH_URL,
 });
 

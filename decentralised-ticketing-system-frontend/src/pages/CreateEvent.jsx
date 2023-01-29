@@ -21,6 +21,7 @@ function CreateEvent() {
     const [startDate, setStartDate] = useState(new Date().toJSON().slice(0,10).replace(/-/g,'-'));
     const [endDate, setEndDate] = useState(0);
     const [ticketTypes, setTicketTypes] = useState([0]);
+    const [hasRole, setHasRole] = useState(false);
     const [ticketInputFields, setTicketInputFields] = useState([
         { 
             name: '', 
@@ -35,13 +36,16 @@ function CreateEvent() {
         return ticketTypes.indexOf(ticket);
     }
     useEffect(() => {
-        if(validated === true){
+        if(validated || hasRole){
             return;
         }
         contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
             (status) => {
                 if (!status) {
                     navigate('/');
+                }
+                else {
+                    setHasRole(true);
                 }
             }).catch((err) => {
                 navigate('/');
@@ -92,11 +96,11 @@ function CreateEvent() {
                     description: `This is a ${ticket.name} ticket for ${name}`,
                     image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
-                    attributes: [{
+                    attributes: {
                         price: ticket.price,
                         quantity: ticket.quantity,
                         createdAt: creationTime
-                    }]
+                    }
                 }
                 ticketCids.push(ticketImagesCid);
                 const souvenirMetadata = {
@@ -104,11 +108,11 @@ function CreateEvent() {
                     description: `This is a ${ticket.name} souvenir for ${name}`,
                     image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
-                    attributes: [{
+                    attributes: {
                         ticketPrice: ticket.price,
                         quantity: ticket.quantity,
                         createdAt: creationTime
-                    }]
+                    }
                 }
                 const ticketBlob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
                 const souvenirBlob = new Blob([JSON.stringify(souvenirMetadata)], { type: 'application/json' });

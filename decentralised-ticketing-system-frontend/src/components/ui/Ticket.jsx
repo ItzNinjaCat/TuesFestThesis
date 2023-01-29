@@ -12,7 +12,7 @@ function Ticket({
     event,
     ticketType,
 }) {
-    const [ticketImage, setTicketImage] = useState(undefined);
+    const [ticketMetadata, setTicketMetadata] = useState(undefined);
     const [show, setShow] = useState(false);
     const navigate = useNavigate();
     const { contract } = useContext(Web3Context);
@@ -31,14 +31,14 @@ function Ticket({
     useEffect(() => {
         fetch((ticket.tokenURI)).then(res => {
             res.json().then(metadata => {
-                setTicketImage(metadata.image);
+                setTicketMetadata(metadata);
             });
         });
-    }, [ticketImage, ticket.tokenURI]);
+    }, [ticket.tokenURI]);
     return (
         <>
         <div role="button" onClick={() => setShow(true)}>
-            <Image src={ticketImage} fluid rounded />
+            <Image src={ticketMetadata?.image} fluid rounded />
             <p className='desc-text d-flex justify-content-between'>
                 <span>Event: {event?.name}</span>
                 <span>Id: {Number(ticket?.id)}</span>
@@ -46,25 +46,25 @@ function Ticket({
             <p className='desc-text d-flex justify-content-between'>
                 <span>Name: {ticketType?.name}</span>
                 <span>{event === undefined ? null : new Date(event?.startTime * 1000).toLocaleString().slice(0, -3)}</span>
-            </p>
-            {(ticketType !== undefined) ?
-                <p className='desc-text d-flex justify-content-between'>
-                    <span>Price: {formatEther(ticketType.price)}</span>
-                    <span>Supply: {Number(ticketType.maxSupply)}</span>
                 </p>
-            : null}
+                {ticketMetadata !== undefined ? 
+            <p className='desc-text d-flex justify-content-between'>
+                <span>Price: {(ticketMetadata?.attributes.price)}</span>
+                <span>Total tickets: {Number(ticketMetadata?.attributes.quantity)}</span>
+            </p> : null}
         </div>
         <Modal
             show={show}
             onHide={() => setShow(false)}
             centered
             keyboard={false}
+            dialogClassName='ticket-modal-w'
         >
         <Modal.Header closeButton>
           <Modal.Title>Ticket information</Modal.Title>
         </Modal.Header>
                 <Modal.Body>
-                    <div className='d-flex justify-content-center align-items-center'>
+                    <div className='d-flex justify-content-center align-items-center me-4'>
                         <div className='d-flex flex-column'>
                             <div className='mb-8'>
                                 <p>Event name: {event?.name}</p>

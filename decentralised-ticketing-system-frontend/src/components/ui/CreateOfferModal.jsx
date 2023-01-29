@@ -29,7 +29,7 @@ function CreateOfferModal() {
       timestamp: String(new Date().getTime())
     }
   });
-  const { loading : eventsSellLoading, data: eventsSellData, error: eventSellError } = useQuery(SELL_TICKETS_QUERY, {
+  const { loading : eventsSellLoading, data: eventsSellData } = useQuery(SELL_TICKETS_QUERY, {
     variables: {
       owner: account
     }

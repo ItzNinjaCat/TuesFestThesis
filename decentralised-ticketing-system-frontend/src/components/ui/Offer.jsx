@@ -5,7 +5,6 @@ import { formatEther } from "ethers/lib/utils";
 import { useQuery } from "@apollo/client";
 import { onAttemptToApprove } from "../../utils/contractUtils";
 import { Web3Context } from "../App";
-import { KnownTypeNamesRule } from "graphql";
 function Offer({ offer }) {
     const [image, setImage] = useState(undefined);
     const { account, contract, tokenContract, setBalanceUpdate } = useContext(Web3Context);
@@ -51,7 +50,7 @@ function Offer({ offer }) {
             });
         }
         else if(offer.buyOffer === true){
-            const ticketAvailable = data.tickets.find((t) => t.owner.toUpperCase() === account.toUpperCase() && t.usable === true);
+            const ticketAvailable = data.tickets.find((t) => t.owner === account.toLowerCase() && t.usable === true);
             if(ticketAvailable === undefined){
                 alert("You don't have any ticket available for this offer");
                 return;
@@ -69,6 +68,10 @@ function Offer({ offer }) {
     }
     return (
         <div className="m-3">
+            {offer.event.startTime < Math.floor(+new Date() / 1000) ?
+                <div className="d-flex justify-content-center">
+                    <p className="text-danger">Expired</p>
+                </div> : null}
             <Image src={image} fluid rounded />
             <p className='desc-text d-flex justify-content-between'>
                 <span>Event: {offer.event?.name}</span>
@@ -76,13 +79,13 @@ function Offer({ offer }) {
             </p>
             <p className='desc-text d-flex justify-content-between'>
                 <span>Ticket: {offer.ticketType?.name}</span>
+                <span>Price: {formatEther(offer.price)}</span>
             </p>
-            <p className='desc-text'>Price: {formatEther(offer.price)}</p>
             {account === undefined ? null :
             <div className="d-flex justify-content-center">
                 {
-                    (offer.buyOffer && offer.buyer.toUpperCase() === account.toUpperCase() )||
-                    (offer.sellOffer && offer.seller.toUpperCase() === account.toUpperCase()) ?
+                    (offer.buyOffer && offer.buyer === account.toLowerCase() )||
+                    (offer.sellOffer && offer.seller === account.toLowerCase()) ?
                         <Button onClick={cancelOffer} variant="danger">Cancel offer</Button>
                         : <Button onClick={acceptOffer}>Accept offer</Button>
 

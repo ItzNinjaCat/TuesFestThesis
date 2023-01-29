@@ -175,6 +175,11 @@ export function handleBuyTicket(event: BuyTicket): void {
   entity.tokenURI = event.params.tokenURI;
   entity.timestamp = event.block.timestamp;
   entity.save();
+  let ticketType = TicketType.load(entity.ticketType);
+  if (ticketType !== null) {
+    ticketType.currentSupply = ticketType.currentSupply.minus(BigInt.fromI32(1));
+    ticketType.save();
+  }
 }
 export function handleTransferTicket(event: TransferTicket): void {
   let entity = Ticket.load(event.params.tokenId.toHex());

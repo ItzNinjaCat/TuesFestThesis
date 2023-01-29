@@ -8,7 +8,6 @@ import { Button, Navbar, Nav, Offcanvas, Container } from 'react-bootstrap';
 import { CgProfile } from 'react-icons/cg';
 import { ethers } from 'ethers';
 import { useNavigate } from 'react-router-dom';
-import useBalance from '../../hooks/useBalance';
 import { Web3Context } from '../App';
 function Header() {
   const navigate = useNavigate();

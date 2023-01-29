@@ -20,6 +20,7 @@ function Tickets() {
     const [newMaxSupply, setNewMaxSupply] = useState("");
     const [newTokenURI, setNewTokenURI] = useState("");
     const [newSouvenirURI, setNewSouvenirURI] = useState("");
+    const [isAuthorised, setIsAuthorised] = useState(false);
     const [selectedTicket, setSelectedTicket] = useState({
         name: "",
         price: "",
@@ -35,11 +36,16 @@ function Tickets() {
     });
     const { account, contract } = useContext(Web3Context);
     useEffect(() => {
+        if (isAuthorised) {
+            return;
+        }
         if (!loading) {
             try{
-                console.log(data.event.creator.toUpperCase() !== account.toUpperCase());
-                if(data.event.creator.toUpperCase() !== account.toUpperCase()){
+                if(data.event.creator !== account.toLowerCase()){
                     navigate('/');
+                }
+                else {
+                    setIsAuthorised(true);
                 }
             }catch(e){
                 console.log(e);
@@ -243,11 +249,11 @@ function Tickets() {
                     description: `This is a ${selectedTicket.name} souvenir for ${event.name}`,
                     image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.souvenir.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${event.id}`),
-                    attributes: [{
+                    attributes: {
                         ticketPrice: selectedTicket.price,
                         quantity: selectedTicket.maxSupply,
                         createdAt: creationTime
-                    }]
+                    }
                 }
                 const ticketBlob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
                 const souvenirBlob = new Blob([JSON.stringify(souvenirMetadata)], { type: 'application/json' });
@@ -267,11 +273,11 @@ function Tickets() {
                     description: `This is a ${selectedTicket.name} ticket for ${event.name}`,
                     image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.image.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${event.id}`),
-                    attributes: [{
+                    attributes: {
                         price: selectedTicket.price,
                         quantity: selectedTicket.maxSupply,
                         createdAt: creationTime
-                    }]
+                    }
                 }
                 const ticketBlob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
 

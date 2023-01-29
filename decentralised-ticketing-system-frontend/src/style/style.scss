@@ -3,6 +3,7 @@
 @import 'bootstrap.scss';
 @import 'typography.scss';
 @import 'layout.scss';
+@import "/node_modules/react-image-gallery/styles/scss/image-gallery.scss";
 
 .event-card{
     border-radius: 4%;
@@ -43,4 +44,24 @@
     line-height: 1.6667;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     color: #999;
+}
+
+.offers-modal-w{
+    width: 90vw !important;
+    max-width: 90vw !important;
+    height: 80vh !important;
+    max-height: 80vh !important;
+}
+
+.image-gallery-image{
+    border-radius: 0.5rem !important;
+}
+
+.image-gallery-slide{
+    border-radius: 0.5rem !important;
+}
+
+.ticket-modal-w {
+    width: 50vw !important;
+    max-width: 50vw !important;
 }

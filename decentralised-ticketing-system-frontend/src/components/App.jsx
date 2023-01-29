@@ -20,7 +20,7 @@ import { TIK_ADDRESS, TIK_ABI } from '../constants/contracts';
 import { getContract } from '../utils/contractUtils';
 import useBalance from '../hooks/useBalance';
 
-const Web3Context = createContext();
+const Web3Context = createContext({}  );
 
 function App() {
   const [balanceUpdate, setBalanceUpdate] = useState(false);

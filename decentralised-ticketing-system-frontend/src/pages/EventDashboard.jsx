@@ -29,6 +29,7 @@ function EventDashboard() {
     const [totalProfit, setTotalProfit] = useState(0);
     const [maxSupply, setMaxSupply] = useState(1);
     const navigate = useNavigate();
+    const [isAuthorised, setIsAuthorised] = useState(false);
     const { contract, account } = useContext(Web3Context);
     const { loading, error, data } = useQuery(EVENT_AND_TICKETS_QUERY, {
         variables: {
@@ -37,11 +38,16 @@ function EventDashboard() {
     });
 
     useEffect(() => {
+        if (isAuthorised) {
+            return;
+        }
         if (!loading) {
-            try{
-                console.log(data.event.creator.toUpperCase() !== account.toUpperCase());
-                if(data.event.creator.toUpperCase() !== account.toUpperCase()){
+            try {
+                if(data.event.creator !== account.toLowerCase()){
                     navigate('/');
+                }
+                else {
+                    setIsAuthorised(true);
                 }
             }catch(e){
                 console.log(e);
@@ -146,7 +152,7 @@ function EventDashboard() {
     if (error) return <p>Error: {error.message}</p>;
     return (
         <>
-                <div className="d-flex mt-8 justify-content-around">
+                <div className="d-flex mt-4 justify-content-around">
                     <div className="d-flex justify-content-center align-items-center flex-column">
                         <h1>{event.name}</h1>
                         <BarChart
@@ -190,7 +196,7 @@ function EventDashboard() {
                         </div>
                     </div> 
                 </div>
-            <div className="d-flex justify-content-center align-items-center flex-column mt-6">
+            <div className="d-flex justify-content-center align-items-center flex-column mt-4">
                 <h2>Event details</h2>
                 <div className="d-flex align-items-start flex-column">
                     <p>Start time: {new Date(event.startTime * 1000).toLocaleString()}</p>

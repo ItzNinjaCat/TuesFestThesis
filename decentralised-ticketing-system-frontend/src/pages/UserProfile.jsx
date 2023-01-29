@@ -5,15 +5,13 @@ import Ticket from '../components/ui/Ticket';
 import { useParams, useNavigate } from 'react-router-dom';
 import "../style/style.scss";
 import Loader from '../components/ui/Loader';
-import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Tabs, Tab } from 'react-bootstrap';
 import { Web3Context } from '../components/App';
 import Souvenir from '../components/ui/Souvenir';
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
 function UserProfile() {
     const [tickets, setTickets] = useState([]);
     const [souvenirs, setSouvenirs] = useState([]);
-    const [firstTicket, setFirstTicket] = useState(20);
-    const [firstSouvenir, setFirstSouvenir] = useState(20);
     const [hasMoreTickets, setHasMoreTickets] = useState(true);
     const [hasMoreSouvenirs, setHasMoreSouvenirs] = useState(true);
     const [initialLoadTickets, setInitialLoadTickets] = useState(true);
@@ -29,7 +27,7 @@ function UserProfile() {
     } = useQuery(TICKETS_BY_OWNER_QUERY, {
         variables: {
             owner: String(address),
-            first: firstTicket,
+            first: 20,
             skip: 0,
         }
     });
@@ -40,7 +38,7 @@ function UserProfile() {
     } = useQuery(SOUVENIRS_BY_OWNER_QUERY, {
         variables: {
             owner: String(address),
-            first: firstSouvenir,
+            first: 20,
             skip: 0,
         }
     });
@@ -48,37 +46,40 @@ function UserProfile() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(isActive && account !== address) navigate("/");
-        if(!isActive && !loadingTickets && initialLoadTickets && account === undefined) navigate("/");
-        if(!isActive && !loadingSouvenirs && initialLoadSouvenirs && account === undefined) navigate("/");
+        if (isActive && account !== address) {
+            navigate(`/user/${account}`);
+            setHasMoreSouvenirs(true);
+            setHasMoreTickets(true);
+        } 
+        // if(!isActive && !loadingTickets && initialLoadTickets && account === undefined) navigate("/");
+        // if(!isActive && !loadingSouvenirs && initialLoadSouvenirs && account === undefined) navigate("/");
     }, [isActive, account, address, loadingTickets, loadingSouvenirs]);
 
     useEffect(() => {
-        if (!loadingTickets && initialLoadTickets) {
-            if (dataTickets.tickets.length < firstTicket) setHasMoreTickets(false);
+        if (!loadingTickets) {
+            if (dataTickets.tickets.length < 20) setHasMoreTickets(false);
             setInitialLoadTickets(false);
-            setTickets([...tickets, ...dataTickets.tickets]);
+            setTickets(dataTickets.tickets);
         }
-    }, [address, loadingTickets, tab]);
+    }, [address, loadingTickets]);
 
     useEffect(() => {
-        if(isActive && account !== address) navigate("/");
-        if (!loadingSouvenirs && initialLoadSouvenirs) {
-            if (dataSouvenirs.souvenirs.length < firstSouvenir) setHasMoreSouvenirs(false);
+        if (!loadingSouvenirs) {
+            if (dataSouvenirs.souvenirs.length < 20) setHasMoreSouvenirs(false);
             setInitialLoadSouvenirs(false);
-            setSouvenirs([...souvenirs, ...dataSouvenirs.souvenirs]);
+            setSouvenirs(dataSouvenirs.souvenirs);
         }
-    }, [isActive, account, address, loadingSouvenirs, tab]);
+    }, [address, loadingSouvenirs]);
 
     const loadMoreTickets = () => {
         fetchMoreTicekts({
             variables: {
                 owner: String(address),
-                first: firstTicket,
+                first: 20,
                 skip: tickets.length,
             }
         }).then((res) => {
-            if (res.data.tickets.length < firstTicket) setHasMoreTickets(false);
+            if (res.data.tickets.length < 20) setHasMoreTickets(false);
             setTickets([...tickets, ...res.data.tickets]);
         });
     };
@@ -87,11 +88,11 @@ function UserProfile() {
         fetchMoreSouvenirs({
             variables: {
                 owner: String(address),
-                first: firstTicket,
+                first: 20,
                 skip: tickets.length,
             }
         }).then((res) => {
-            if (res.data.souvenirs.length < firstSouvenir) setHasMoreSouvenirs(false);
+            if (res.data.souvenirs.length < 20) setHasMoreSouvenirs(false);
             setSouvenirs([...souvenirs, ...res.data.souvenirs]);
         });
     };
@@ -100,32 +101,18 @@ function UserProfile() {
     if (errorTickets) return <p>Error: {errorTickets.message}</p>;
     if (errorSouvenirs) return <p>Error: {errorSouvenirs.message}</p>;
     return (
-    <div className="container my-3">
-      <div className='d-flex justify-content-center'>
+        <>
+      <div className='d-flex justify-content-center mb-4'>
         <h1>User profile</h1>
       </div>
-      <div className="mt-5">
-            <ButtonGroup className="d-flex">
-                <ToggleButton
-                type="radio"
-                variant="light"
-                    onClick={() => setTab('tickets')}
-            checked={tab === 'tickets'}
-            >Tickets</ToggleButton>
-                <ToggleButton
-                type="radio"
-                variant="light"
-                    onClick={() => {
-                    setTab('souvenirs');
-                }
-                }
-                checked={tab === 'souvenirs'}
-                >Souvenirs</ToggleButton>
-            </ButtonGroup>
-                {
-                tab === 'tickets' ?
-                    <InfiniteScroll hasMore={hasMoreTickets} loadMore={loadMoreTickets} initialLoadTickets={false} noMore={false}>
-                    <div className='d-flex justify-content-center flex-wrap mt-10'>
+                <Tabs
+                    activeKey={tab}
+                    onSelect={(k) => setTab(k)}
+                    fill
+                >
+                    <Tab eventKey="tickets" title="Tickets">
+                        <InfiniteScroll hasMore={hasMoreTickets} loadMore={loadMoreTickets}  initialLoad={false}  noMore={false}>
+                        <div className='d-flex justify-content-center flex-wrap mt-10'>
                         {
                             tickets.map((t, index) => {
                                 if (index % 4 === 0) {
@@ -154,8 +141,9 @@ function UserProfile() {
                         }
                         </div>
                         </InfiniteScroll>
-                    : 
-                    <InfiniteScroll hasMore={hasMoreSouvenirs} loadMore={loadMoreSouvenirs} initialLoadSouvenirs={false} noMore={false}>
+                    </Tab>
+                    <Tab eventKey="souvenirs" title="Souvenirs">
+                    <InfiniteScroll hasMore={hasMoreSouvenirs} loadMore={loadMoreSouvenirs}  initialLoad={false}  noMore={false}>
                         <div className='d-flex justify-content-center flex-wrap mt-10'>
                             {
                                 souvenirs.map((s, index) => {
@@ -179,9 +167,9 @@ function UserProfile() {
                             }
                 </div>
                 </InfiniteScroll>
-                }
-                </div>
-            </div>
+                </Tab>
+                </Tabs>
+            </>
     );
 }
 

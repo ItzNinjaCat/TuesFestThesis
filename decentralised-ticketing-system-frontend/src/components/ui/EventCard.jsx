@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import Image from 'react-bootstrap/Image'
 import { getData } from '../../utils/web3.storageEndpoints';
 
-async function fetchImageUrls(storageBytes, setImageUrls) {
-    const tmp = await getData(storageBytes);
-    const imageFiles = await tmp.files();
-    const imageURLs = imageFiles.map((file) => {
-        return `${import.meta.env.VITE_W3LINK_URL}/${storageBytes}/${file.name}`;
+function fetchImageUrls(storageBytes, setImageUrls) {
+    getData(storageBytes).then(res => {
+        res.files().then(files => {
+            setImageUrls(files.map((file) => {
+                return `${import.meta.env.VITE_W3LINK_URL}/${storageBytes}/${file.name}`;
+            }));
+        });
     });
-    setImageUrls(imageURLs);
 }
 
 function EventCard({
@@ -42,16 +43,18 @@ function EventCard({
                         ${(new Date(startTime * 1000)).toLocaleTimeString().slice(0, -3)} 
                         ${`
                             ${
-                            ((endTime * 1000 === 0) ? '' : 
+                        ((endTime * 1000 === 0) ? '' : 
+                            (new Date(endTime * 1000).toLocaleDateString() !== new Date(startTime * 1000).toLocaleDateString()) ?
                                 ` - ${(new Date(endTime * 1000)).toLocaleDateString()}  
-                                ${(new Date(endTime * 1000)).toLocaleTimeString().slice(0,-3)}
-                            `)
+                                ${(new Date(endTime * 1000)).toLocaleTimeString().slice(0, -3)}` : 
+                                ` - ${(new Date(endTime * 1000)).toLocaleTimeString().slice(0, -3)}`
+                        )
                             }
                         `}
                             
                         `
                     }
-                            </p>
+                </p>
             </div>
             </>
         )

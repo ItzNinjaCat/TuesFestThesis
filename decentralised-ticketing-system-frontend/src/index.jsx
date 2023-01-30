@@ -28,6 +28,9 @@ const client = new ApolloClient({
                     souvenirs: {
                         keyArgs: ["owner"],
                     },
+                    organizers: {
+                        keyArgs: ["account"],
+                    },
                 },
             },
         }

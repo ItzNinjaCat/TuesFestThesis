@@ -18,7 +18,18 @@ function Header() {
 
 
   function becomeOrganizer() {
-    contract.becomeOrganizer().catch((e) => {
+    contract.becomeOrganizer().then(res => {
+      res.wait().then((res) => {
+        alert('You are now an organizer');
+        setIsOrganizer(true);
+      });
+    }).catch((e) => {
+      alert(e.reason);
+    });
+  }
+
+  function ownerWithdraw() {
+    contract.ownerWithdraw().catch((e) => {
       alert(e.reason);
     });
   }
@@ -26,12 +37,17 @@ function Header() {
   const { connector, provider, account, isActive, balance, contract } = useContext(Web3Context);
   
   const [isOrganizer, setIsOrganizer] = useState(undefined);
+  const [isOwner, setIsOwner] = useState(undefined);
   useEffect(() => {
     if (provider && account && contract) {
       contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
         (status) => {
           setIsOrganizer(status)
-        })
+        });
+      contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('OWNER_ROLE')), account).then(
+        (status) => {
+          setIsOwner(status)
+        });
     }
   }, [provider, account, contract])
   useEffect(() => {
@@ -69,13 +85,14 @@ function Header() {
                 <Nav.Link href="/marketplace">Marketplace</Nav.Link>
               </Nav>
             {
-              account !== undefined && isOrganizer !== undefined ?
+              account !== undefined && isOrganizer !== undefined && isOwner !== undefined ?
                 
                 (
                   isOrganizer ? 
                   <div>
                     <Button className="me-3" onClick={createEvent}>Create event</Button>
                     <Button onClick={organizerProfile}>Your events</Button>
+                    {isOwner ? <Button className="ms-3" onClick={ownerWithdraw}>Withdraw fees</Button> : null}
                   </div>
                   : 
                   <Button onClick={becomeOrganizer}>Become an organizer</Button>

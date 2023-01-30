@@ -1,28 +1,32 @@
 
-import { Modal, Button } from 'react-bootstrap';
-import { formatEther } from 'ethers/lib/utils';
+import { Modal } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import Image from 'react-bootstrap/Image';
-import { useNavigate } from 'react-router-dom';
 
 function Souvenir({
     souvenir
 }) {
-    const [souvenirImage, setSouvenirImage] = useState(undefined);
+    const [souvenirMetadata, setSouvenirMetadata] = useState(undefined);
     const [show, setShow] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetch((souvenir.tokenURI)).then(res => {
             res.json().then(metadata => {
-                setSouvenirImage(metadata.image);
+                setSouvenirMetadata(metadata);
             });
         });
-    }, [souvenirImage, souvenir.tokenURI]);
+    }, [souvenir.tokenURI]);
     return (
         <>
         <div role="button" onClick={() => setShow(true)}>
-            <Image src={souvenirImage} fluid rounded />
+                <Image src={souvenirMetadata?.image} fluid rounded />
+            <p className='desc-text d-flex justify-content-between'>
+                <span>Event: {souvenir.ticket.event?.name}</span>
+                <span>Id: {Number(souvenir?.id)}</span>
+            </p>
+            <p className='desc-text d-flex justify-content-between'>
+                <span>Name: {souvenirMetadata?.name}</span>
+            </p>
         </div>
         <Modal
             show={show}
@@ -31,13 +35,15 @@ function Souvenir({
             keyboard={false}
         >
         <Modal.Header closeButton>
-          <Modal.Title>Ticket information</Modal.Title>
+          <Modal.Title>Souvenir information</Modal.Title>
         </Modal.Header>
                 <Modal.Body>
                     <div className='d-flex justify-content-center align-items-center'>
-                        <div className='d-flex flex-column'>
-                            <div className='mb-8'>
-                            </div>
+                        <div className='d-flex flex-column m-5'>
+                                <p>Event name: {souvenir.ticket.event?.name}</p>
+                                <p>Ticket name: {souvenir.ticket.ticketType?.name}</p>
+                                <p>Souvenir name: {souvenirMetadata?.name}</p>
+                                <p>Souvenir description: {souvenirMetadata?.description}</p>
                     </div>
                     </div>
                 </Modal.Body>

@@ -33,8 +33,9 @@ type Ticket @entity {
     owner: Bytes!
     deleted: Boolean!
     souvenirMinted: Boolean!
-    souvenir: Souvenir @derivedFrom(field: "ticket")
+    souvenir: Souvenir
     usable: Boolean!
+    used: Boolean!
     tokenId: BigInt!
     tokenURI: String!
     timestamp: BigInt!
@@ -60,4 +61,9 @@ type Offer @entity {
     sellOffer: Boolean!
     deadline: BigInt
     deleted: Boolean!
+}
+
+type Organizer @entity {
+    id: ID!
+    account: Bytes!
 }

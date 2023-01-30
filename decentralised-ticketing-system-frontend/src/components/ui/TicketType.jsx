@@ -17,8 +17,8 @@ const TicketType = (({
 }) => {
     const { tokenContract, account, contract, balance, setBalanceUpdate } = useContext(Web3Context);
     const [recipeintAddress, setRecipeintAddress] = useState('');
-    const [ticketAmountPersonal, setTicketAmountPersonal] = useState(1);
-    const [ticketAmountGift, setTicketAmountGift] = useState(1);
+    const [ticketAmountPersonal, setTicketAmountPersonal] = useState(0);
+    const [ticketAmountGift, setTicketAmountGift] = useState(0);
     const [showPersonal, setShowPersonal] = useState(false);
     const [showGift, setShowGift] = useState(false);
     const [ showSuccessPersonal, setShowSuccessPersonal ] = useState(false);
@@ -45,8 +45,8 @@ const TicketType = (({
                 signature.s,
             )
             handleClose();
-            setTicketAmountGift(1);
-            setTicketAmountPersonal(1);
+            setTicketAmountGift(0);
+            setTicketAmountPersonal(0);
             setRecipeintAddress('');
             tx.wait().then(() => {
                 const ticketSale = Array(Number(amount)).fill(0).map(async () => {
@@ -77,15 +77,52 @@ const TicketType = (({
                 signature.s,
             );
             handleClose();
+            setTicketAmountGift(0);
+            setTicketAmountPersonal(0);
+            setRecipeintAddress('');
             tx.wait().then(() => {
                 setSuccessAmount(amount);
-                setTicketAmountGift(1);
-                setTicketAmountPersonal(1);
-                setRecipeintAddress('');
                 setBalanceUpdate(true);
                 handleShowSuccess();
             });
         }
+        // New Function signature for when changes to the contract are made
+        // const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount), +new Date() + 60 * 60);
+        // handleClose();
+        // setTicketAmountGift(0);
+        // setTicketAmountPersonal(0);
+        // setRecipeintAddress('');
+        // contract.buyTicket(
+        //             eventId,
+        //             ticketTypeId,
+        //             recipient,
+        //             signature.deadline,
+        //             signature.v,
+        //             signature.r,
+        //             signature.s,
+        // ).then((res) => {
+        //     console.log(res);
+        //     res.wait().then(() => {
+        //         const ticketSale = Array(Number(amount - 1)).fill(0).map(async () => {
+                        
+        //             return await (await contract.buyTicket(
+        //                 eventId,
+        //                 ticketTypeId,
+        //                 recipient,
+        //                 0, 0,
+        //                 '0x0000000000000000000000000000000000000000000000000000000000000000',
+        //                 '0x0000000000000000000000000000000000000000000000000000000000000000',
+        //             )).wait();
+        //         });
+        //         Promise.all(ticketSale).then(() => {
+        //             setSuccessAmount(amount);
+        //             setBalanceUpdate(true);
+        //             handleShowSuccess();
+        //         });
+        //     });
+        // }).catch((e) => {
+        //     alert(e.reason);
+        // });
     });
 
     const changeTicketAmountPersonal = ((event) => {
@@ -124,7 +161,7 @@ const TicketType = (({
         const form = event.currentTarget;
         if (
             form.checkValidity() === false ||
-            ticketAmountGift <= 0 || ticketAmountGift > currentSupply
+            Number(ticketAmountPersonal) <= 0 || Number(ticketAmountPersonal) > Number(currentSupply)
         ) {
             event.preventDefault();
             event.stopPropagation();
@@ -208,21 +245,25 @@ const TicketType = (({
                                 </Form.Control.Feedback>
                             </InputGroup>
                         </Form.Group>
-                        <Button variant="primary" type="submit">
-                            Submit
-                        </Button>
+                        <div className="d-flex justify-content-center">
+                            <Button variant="primary" type="submit">
+                                Submit
+                            </Button>
+                        </div>
                     </Form>
-                    <p
-                    style ={{
-                        fontSize: "16px",
-                        fontFamily: "monospace",
-                        fontWeight: "bold"
-                    }}
-                    >
-                        Total cost : {(Number(price * ticketAmountGift))} TIK
-                        <br />
-                        New balance : {(Number(balance) - Number(price * ticketAmountGift))} TIK
-                    </p>
+                    <div className='d-flex justify-content-center'>
+                        <p
+                        style ={{
+                            fontSize: "16px",
+                            fontFamily: "monospace",
+                            fontWeight: "bold"
+                        }}
+                        >
+                            Total cost : {(Number(price * ticketAmountGift))} TIK
+                            <br />
+                            New balance : {(Number(balance) - Number(price * ticketAmountGift))} TIK
+                        </p>
+                    </div>
                 </Modal.Body>
             </Modal>
             <Modal
@@ -278,7 +319,7 @@ const TicketType = (({
             </Modal>
             <div>
                 <div className='d-flex justify-content-center'>
-                    <h3>{name}</h3>
+                    <h4>{name}</h4>
                 </div>
                 <p className='desc-text d-flex justify-content-between'>
                     <span>
@@ -290,13 +331,13 @@ const TicketType = (({
                 </p>
                 {
                 account !== undefined ?
-                <>
-                    <Button onClick={handleShowPersonal} className="me-6">Buy</Button>
+                <div className="d-flex justify-content-between">
+                    <Button onClick={handleShowPersonal} >Buy</Button>
                     <Button onClick={handleShowGift}>Gift</Button>
-                </> : null
+                </div> : null
                 }
+                {ticketImage !== undefined ? <Image src={ticketImage} fluid rounded className='mt-3'/> : null}
             </div>
-            {ticketImage !== undefined ? <Image src={ticketImage} fluid rounded className='m-4'/> : null}
 
         <Modal
             show={showSuccessPersonal}
@@ -306,19 +347,21 @@ const TicketType = (({
             <Modal.Header closeButton>
             <Modal.Title>Success</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
-                <p
-                style ={{
-                    fontSize: "16px",
-                    fontFamily: "monospace",
-                    fontWeight: "bold"
-                }}
-                >
-                    You have successfully purchased {successAmount} {name} ticket/s for {eventName}!
-                </p>
-                <Button variant="primary" onClick={handleCloseSuccessPersonal}>
-                    Continue
-                </Button>
+                <Modal.Body>
+                <div className="d-flex flex-column align-items-center">
+                    <p
+                    style ={{
+                        fontSize: "16px",
+                        fontFamily: "monospace",
+                        fontWeight: "bold"
+                    }}
+                    >
+                        You have successfully purchased {successAmount} {name} ticket/s for {eventName}!
+                    </p>
+                    <Button variant="primary" onClick={handleCloseSuccessPersonal}>
+                        Continue
+                    </Button>
+                </div>
             </Modal.Body>
         </Modal>
         <Modal

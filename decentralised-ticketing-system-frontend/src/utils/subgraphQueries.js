@@ -87,12 +87,12 @@ export const EVENTS_BY_CREATOR_QUERY = gql`
     }
 `;
 
-export const TICKETS_BY_OWNER_QUERY = gql`
+export const ALL_TICKETS_BY_OWNER_QUERY = gql`
     query TicketsByOwner($owner: String!, $first: Int!, $skip: Int!) {
         tickets(
             orderBy: tokenId
             orderDirection: desc
-            where: { owner: $owner, usable: true }
+            where: { owner: $owner }
             first: $first
             skip: $skip
         ) {
@@ -100,6 +100,9 @@ export const TICKETS_BY_OWNER_QUERY = gql`
             owner
             tokenId
             tokenURI
+            usable
+            used
+            souvenirMinted
             event {
                 id
                 creator
@@ -128,6 +131,14 @@ export const SOUVENIRS_BY_OWNER_QUERY = gql`
             tokenId
             tokenURI
             owner
+            ticket {
+                event {
+                    name
+                }
+                ticketType {
+                    name
+                }
+            }
         }
     }
 `;
@@ -373,6 +384,162 @@ export const USER_BUY_OFFERS_QUERY = gql`
             ticket {
                 id
                 tokenId
+            }
+        }
+    }
+`;
+
+export const IS_ORGANIZER_QUERY = gql`
+    query IsOrganizer($account: String!) {
+        organizers(where: { account: $account }) {
+            id
+        }
+    }
+`;
+
+export const USED_TICKETS_BY_OWNER_QUERY = gql`
+    query TicketsByOwner($owner: String!, $first: Int!, $skip: Int!) {
+        tickets(
+            orderBy: tokenId
+            orderDirection: desc
+            where: { owner: $owner, usable: false, used: true }
+            first: $first
+            skip: $skip
+        ) {
+            id
+            owner
+            tokenId
+            tokenURI
+            usable
+            used
+            souvenirMinted
+            event {
+                id
+                creator
+                name
+                description
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                price
+                maxSupply
+                currentSupply
+            }
+        }
+    }
+`;
+
+export const USED_NOT_MINTED_TICKETS_BY_OWNER_QUERY = gql`
+    query TicketsByOwner($owner: String!, $first: Int!, $skip: Int!) {
+        tickets(
+            orderBy: tokenId
+            orderDirection: desc
+            where: { owner: $owner, usable: false, used: true, souvenirMinted: false }
+            first: $first
+            skip: $skip
+        ) {
+            id
+            owner
+            tokenId
+            tokenURI
+            usable
+            used
+            souvenirMinted
+            event {
+                id
+                creator
+                name
+                description
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                price
+                maxSupply
+                currentSupply
+            }
+        }
+    }
+`;
+
+export const CURRENT_TICKETS_BY_OWNER_QUERY = gql`
+    query TicketsByOwner($owner: String!, $first: Int!, $skip: Int!) {
+        tickets(
+            orderBy: tokenId
+            orderDirection: desc
+            where: { owner: $owner, usable: true, used: false, souvenirMinted: false }
+            first: $first
+            skip: $skip
+        ) {
+            id
+            owner
+            tokenId
+            tokenURI
+            usable
+            used
+            souvenirMinted
+            event {
+                id
+                creator
+                name
+                description
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                price
+                maxSupply
+                currentSupply
+            }
+        }
+    }
+`;
+
+export const OFFERED_TICKETS_BY_OWNER_QUERY = gql`
+    query TicketsByOwner($owner: String!, $first: Int!, $skip: Int!) {
+        tickets(
+            orderBy: tokenId
+            orderDirection: desc
+            where: { owner: $owner, usable: false, used: false, souvenirMinted: false }
+            first: $first
+            skip: $skip
+        ) {
+            id
+            owner
+            tokenId
+            tokenURI
+            usable
+            used
+            souvenirMinted
+            event {
+                id
+                creator
+                name
+                description
+                eventStorage
+                location
+                startTime
+                endTime
+            }
+            ticketType {
+                id
+                name
+                price
+                maxSupply
+                currentSupply
             }
         }
     }

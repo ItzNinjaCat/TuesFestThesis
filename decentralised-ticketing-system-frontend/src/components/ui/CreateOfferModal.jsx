@@ -48,7 +48,6 @@ function CreateOfferModal() {
           }
         });
           setEvents(eventList);
-          console.log(eventsSellData);
           setTickets(eventsSellData.tickets);
     }
   }, [eventsSellLoading, offerType]);
@@ -56,7 +55,6 @@ function CreateOfferModal() {
   const selectEvent = (eventId) => {
     setSelectedEvent(eventId);
     if(offerType === 'buy'){
-      console.log("here");
       setTypes(events.find((event) => event.id === eventId).ticketTypes);
     }
     else{

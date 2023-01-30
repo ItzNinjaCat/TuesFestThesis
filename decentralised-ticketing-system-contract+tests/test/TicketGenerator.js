@@ -121,7 +121,9 @@ describe("NFT generator", function () {
       });
       it("Should revert because user is not an organizer and cannot an event", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
-        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, "Sofia", 0, 0)).to.be.revertedWith("Only event organizers can call this function");
+        await expect(ticketGenerator.connect(addr1).createEvent(eventId, testName, testDescription, testCid, "Sofia", 0, 0))
+          .to.be.revertedWith(
+            `AccessControl: account ${addr1.address.toLowerCase()} is missing role 0x4d2e7a1e3f5dd6e203f087b15756ccf0e4ccd947fe1b639a38540089a1e47f63`);
       });
       it("Should revert because event already exists", async function () {
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
@@ -182,6 +184,8 @@ describe("NFT generator", function () {
 
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
+        await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("1") });
+        await ticketGenerator.connect(owner).becomeOrganizer();
         await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, "Sofia", 0, 0);
         await expect(ticketGenerator.connect(addr1).createTicketType(
           eventId,
@@ -191,13 +195,17 @@ describe("NFT generator", function () {
           "https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU",
           1,
           100,
-        )).to.be.revertedWith("Only event organizers can call this function");
+        )).to.be.revertedWith(
+            `AccessControl: account ${addr1.address.toLowerCase()} is missing role 0x4d2e7a1e3f5dd6e203f087b15756ccf0e4ccd947fe1b639a38540089a1e47f63`);
+      });
       });
       it("Should revert because user is not an organizer and cannot create a ticket type", async function () {
         await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
         
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
+        await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("1") });
+        await ticketGenerator.connect(owner).becomeOrganizer();
         await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, "Sofia", 0, 0);
         await expect(ticketGenerator.connect(addr1).createTicketType(
           eventId,
@@ -298,7 +306,8 @@ describe("NFT generator", function () {
       it("Should mint a souvenir", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("4.0") });
+        await ticketGenerator.connect(owner).becomeOrganizer();
         await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, "Sofia", 0, 0);
         await ticketGenerator.connect(owner).createTicketType(
           eventId,
@@ -328,7 +337,8 @@ describe("NFT generator", function () {
       it("Should create a sell offer", async function () {
         const eventId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('eventId'));
         const ticketTypeId = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ticketTypeId'));
-        await ticketGenerator.connect(owner).grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), addr1.address);
+        await ticketGenerator.connect(owner).deposit({ value: ethers.utils.parseEther("4.0") });
+        await ticketGenerator.connect(owner).becomeOrganizer();
         await ticketGenerator.connect(owner).createEvent(eventId, testName, testDescription, testCid, "Sofia", 0, 0);
         await ticketGenerator.connect(owner).createTicketType(
           eventId,
@@ -389,5 +399,4 @@ describe("NFT generator", function () {
         expect(balanceBefore.sub(balanceAfterWithdraw)).to.equal(ethers.utils.parseEther("0.001"));
       });
     });
-  });
 });

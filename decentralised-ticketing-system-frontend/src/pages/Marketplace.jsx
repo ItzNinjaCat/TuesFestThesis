@@ -8,6 +8,7 @@ import Loader from '../components/ui/Loader';
 import UserOffersModal from '../components/ui/UserOffersModal';
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
 import { Web3Context } from '../components/App';
+import { ethers } from 'ethers';
 
 function Marketplace() {
   const [offerType, setOfferType] = useState('buy');
@@ -15,25 +16,24 @@ function Marketplace() {
   const [sellOffers, setSellOffers] = useState([]);
   const [hasMoreBuyOffers, setHasMoreBuyOffers] = useState(true);
   const [hasMoreSellOffers, setHasMoreSellOffers] = useState(true);
-  const {account } = useContext(Web3Context);
-  const { data: dataBuy, loading: loadingBuy, fetchMore: fetchMoreBuy } = useQuery(BUY_OFFERS_QUERY, {
+  const { account } = useContext(Web3Context);
+  const { data: dataBuy, loading: loadingBuy, fetchMore: fetchMoreBuy, error } = useQuery(BUY_OFFERS_QUERY, {
     variables: {
       skip: 0,
       first: 20,
-      account: account?.toLowerCase()
+      account: account === undefined ? String(ethers.constants.AddressZero) : String(account?.toLowerCase())
     }
   });
   const { data: dataSell, loading: loadingSell, fetchMore: fetchMoreSell } = useQuery(SELL_OFFERS_QUERY, {
     variables: {
       skip: 0,
       first: 20,
-      account: account?.toLowerCase()
+      account: account === undefined ? String(ethers.constants.AddressZero) : String(account?.toLowerCase())
     }
   });
 
   useEffect(() => {
     if (!loadingBuy) {
-      console.log(dataBuy.offers);
       setBuyOffers(dataBuy.offers);
     }
   }, [dataBuy, loadingBuy, offerType, account]);
@@ -90,6 +90,8 @@ function Marketplace() {
           fill
         >
           <Tab eventKey="buy" title="Buy Offers">
+            {
+              offerType === 'buy' ?
             <InfiniteScroll
             hasMore={hasMoreBuyOffers} loadMore={loadMoreBuyOffers} initialLoad={false} noMore={false}
             >
@@ -113,9 +115,12 @@ function Marketplace() {
             })
               } 
           </div>
-            </InfiniteScroll>
+          </InfiniteScroll> : null 
+            }
           </Tab>
           <Tab eventKey="sell" title="Sell Offers">
+            {
+              offerType === 'sell' ?
              <InfiniteScroll
                     hasMore={hasMoreSellOffers} loadMore={loadMoreSellOffers} initialLoad={false} noMore={false}
                     >
@@ -139,7 +144,8 @@ function Marketplace() {
                       })
                       }
                   </div>
-              </InfiniteScroll>
+                </InfiniteScroll> : null
+                }
           </Tab>
         </Tabs> 
         </div>

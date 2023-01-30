@@ -16,7 +16,7 @@ function Event() {
     
     useEffect(() => {
         if (!loading) {
-            console.log(data);
+            console.log(data.event);
             getData(data.event.eventStorage).then((res) =>{
                 res.files().then((files) => {
                     setImageUrls(files.map((file) => {
@@ -46,7 +46,7 @@ function Event() {
                             slideDuration={300}
                         />
                     </div>
-                : null};
+                : null}
                 </div>
             <div className='d-flex flex-column align-items-center'>
             <h3>Event Information</h3>

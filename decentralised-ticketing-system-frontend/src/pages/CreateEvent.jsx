@@ -1,13 +1,22 @@
 import { useEffect, useState, useContext } from 'react';
 import {ethers} from 'ethers';
-import { Button, Form, Row, Col } from 'react-bootstrap';
+import { Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import TicketInfo from '../components/ui/TicketInfo';
 import { useNavigate } from 'react-router-dom';
 import { uploadImmutableData } from '../utils/web3.storageEndpoints'
 import { Web3Context } from '../components/App';
+import Loader from '../components/ui/Loader';
+import { IS_ORGANIZER_QUERY } from '../utils/subgraphQueries';
+import { useQuery } from '@apollo/client';
 function CreateEvent() {
     const navigate = useNavigate();
-    const { provider, account, contract } = useContext(Web3Context);
+    const [show, setShow] = useState(false);
+    const { account, contract } = useContext(Web3Context);
+    const { loading, data } = useQuery(IS_ORGANIZER_QUERY, {
+        variables: {
+            account: String(account)
+        }
+    });
     const [validated, setValidated] = useState(false);
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
@@ -17,11 +26,12 @@ function CreateEvent() {
         hour: '2-digit',
         minute: '2-digit',
     }));
-    const [endTime, setEndTime] = useState(0);
+    const [endTime, setEndTime] = useState('');
     const [startDate, setStartDate] = useState(new Date().toJSON().slice(0,10).replace(/-/g,'-'));
-    const [endDate, setEndDate] = useState(0);
+    const [endDate, setEndDate] = useState('');
     const [ticketTypes, setTicketTypes] = useState([0]);
     const [hasRole, setHasRole] = useState(false);
+    const [eventId, setEventId] = useState('');
     const [ticketInputFields, setTicketInputFields] = useState([
         { 
             name: '', 
@@ -32,25 +42,28 @@ function CreateEvent() {
         }
     ]);
 
+    const handleShow = () => setShow(true);
+    const handleClose = () => {
+        setShow(false);
+        navigate(`/events/${eventId}`);
+    }
+
     const getTypeIndex = (ticket) => {
         return ticketTypes.indexOf(ticket);
     }
     useEffect(() => {
-        if(validated || hasRole){
+        if (validated || hasRole) {
             return;
         }
-        contract.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes('ORGANIZER_ROLE')), account).then(
-            (status) => {
-                if (!status) {
-                    navigate('/');
-                }
-                else {
-                    setHasRole(true);
-                }
-            }).catch((err) => {
+        if (!loading) {
+            if (data.organizers.length > 0) {
+                setHasRole(true);
+            }
+            else {
                 navigate('/');
-            })
-    }, [provider, account, contract])
+            }
+        }
+    }, [loading, account, data]);
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
         if (form.checkValidity() === false) {
@@ -69,25 +82,25 @@ function CreateEvent() {
             startDateUNIX.setMinutes(startTimeSplit[1]);
             startDateUNIX = startDateUNIX.getTime() / 1000;
             let endDateUNIX = 0;
-            if (endDate !== 0 && endTime !== 0) {
+            if (endDate !== '' && endTime !== '') {
                 const endTimeSplit = endTime.split(':');
                 endDateUNIX = new Date(`${endDate}T00:00`)
                 endDateUNIX.setHours(endTimeSplit[0]);
                 endDateUNIX.setMinutes(endTimeSplit[1]);
                 endDateUNIX = endDateUNIX.getTime() / 1000;
             }
-            else if (endTime !== 0) {
+            else if (endTime !== '') {
                 const endTimeSplit = endTime.split(':');
                 endDateUNIX = new Date(`${startDate}T00:00`)
                 endDateUNIX.setHours(endTimeSplit[0]);
                 endDateUNIX.setMinutes(endTimeSplit[1]);
                 endDateUNIX = endDateUNIX.getTime() / 1000;
             }
-            else if (endDate !== 0) {
+            else if (endDate !== '') {
                 endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
             }
             const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name]));
-            console.log(eventId);
+            setEventId(eventId);
             const ticketCids = [];
             const ticketPromises = ticketInputFields.map(async ticket => {
                 const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir])
@@ -139,13 +152,21 @@ function CreateEvent() {
                         });
                     });
                     Promise.all(ticketTypes).then((types) => {
-                        // navigate(`/events/${eventId}`);
+                        Promise.all(types.map((type) => {
+                            return type.wait();
+                        })).then(() => {
+                            handleShow();
+                        });
                     });
                 })
             });
         } 
     }
     const changeStartDate = (e) => {
+        if (e.target.value === '') {
+            setStartDate(new Date().toJSON().slice(0,10).replace(/-/g,'-'));
+            return;
+        }
         setStartDate(e.target.value);
         if(new Date(`${startDate}T00:00`).getTime() > new Date(`${endDate}T00:00`).getTime()) {
             setEndDate(0);
@@ -202,6 +223,7 @@ function CreateEvent() {
         setTicketInputFields(values);
     }
 
+    if (loading && !hasRole) return <Loader />;
 
     return (
         <div className="my-5 d-flex flex-column align-items-center">
@@ -336,6 +358,33 @@ function CreateEvent() {
                         </Button>
                     </div>
             </Form>
+            <Modal
+                show={show}
+                centered
+                onHide={handleClose}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Success</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <div className="d-flex flex-column align-items-center">
+                        <p
+                        style ={{
+                            fontSize: "16px",
+                            fontFamily: "monospace",
+                            fontWeight: "bold"
+                        }}
+                        >
+                            Event created successfully
+                        </p>
+                        <Button variant="primary" onClick={handleClose}>
+                            Continue
+                        </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
             </div>
     );
 }

@@ -87,62 +87,68 @@ function UserOffersModal() {
                     onSelect={(k) => setOfferType(k)}
                     fill
                     >
-                    <Tab eventKey="buy" title="Buy Offers">
-                        <InfiniteScroll
-                        hasMore={hasMoreBuyOffers} loadMore={loadMoreBuyOffers} initialLoad={false} noMore={false}
-                        >
-                    <div className='d-flex justify-content-center flex-wrap mt-5'>
-                    {
-                        buyOffers?.map((off, index) => {
-                        if (index % 4 === 0) {
-                            return (
-                            <div key={index} className='row w-75 d-flex justify-content-start'>
-                                {
-                                buyOffers.slice(index, index + 4).map((offer) =>
-                                    <div key={offer.id} className='w-25 col-3 d-flex flex-wrap text-wrap ticket-card'>
-                                    <Offer key={offer.id} offer={offer} />
-                                    </div>
-                                )
-                                }
-                            </div>
-                            )
-                        }
-                        return null;
-                        })
-                        } 
-                    </div>
-                        </InfiniteScroll>
-                    </Tab>
-                    <Tab eventKey="sell" title="Sell Offers">
-                        <InfiniteScroll
-                                hasMore={hasMoreSellOffers} loadMore={loadMoreSellOffers} initialLoad={false} noMore={false}
-                                >
+                      <Tab eventKey="buy" title="Buy Offers">
+                        {
+                          offerType === 'buy' ?
+                          <InfiniteScroll
+                            hasMore={hasMoreBuyOffers} loadMore={loadMoreBuyOffers} initialLoad={false} noMore={false}
+                          >
                             <div className='d-flex justify-content-center flex-wrap mt-5'>
-                                {
-                                sellOffers?.map((off, index) => {
-                                    if (index % 4 === 0) {
+                              {
+                                buyOffers?.map((off, index) => {
+                                  if (index % 4 === 0) {
                                     return (
-                                        <div key={index} className='row w-75 d-flex justify-content-start'>
+                                      <div key={index} className='row w-75 d-flex justify-content-start'>
                                         {
-                                            sellOffers.slice(index, index + 4).map((offer) =>
+                                          buyOffers.slice(index, index + 4).map((offer) =>
                                             <div key={offer.id} className='w-25 col-3 d-flex flex-wrap text-wrap ticket-card'>
-                                                <Offer key={offer.id} offer={offer} />
+                                              <Offer key={offer.id} offer={offer} />
                                             </div>
-                                            )
+                                          )
                                         }
-                                        </div>
+                                      </div>
                                     )
+                                  }
+                                  return null;
+                                })
+                              }
+                            </div>
+                          </InfiniteScroll> : null
+                          }
+                      </Tab>
+                      <Tab eventKey="sell" title="Sell Offers">
+                        {
+                          offerType === 'sell' ?
+                            <InfiniteScroll
+                              hasMore={hasMoreSellOffers} loadMore={loadMoreSellOffers} initialLoad={false} noMore={false}
+                            >
+                              <div className='d-flex justify-content-center flex-wrap mt-5'>
+                                {
+                                  sellOffers?.map((off, index) => {
+                                    if (index % 4 === 0) {
+                                      return (
+                                        <div key={index} className='row w-75 d-flex justify-content-start'>
+                                          {
+                                            sellOffers.slice(index, index + 4).map((offer) =>
+                                              <div key={offer.id} className='w-25 col-3 d-flex flex-wrap text-wrap ticket-card'>
+                                                <Offer key={offer.id} offer={offer} />
+                                              </div>
+                                            )
+                                          }
+                                        </div>
+                                      )
                                     }
                                     return null;
-                                })
+                                  })
                                 }
-                            </div>
-                        </InfiniteScroll>
-                    </Tab>
-                    </Tabs> 
+                              </div>
+                            </InfiniteScroll> : null
+                        }
+                      </Tab>
+                  </Tabs> 
                 </Modal.Body>
-            </Modal>
-            <Button variant="primary" onClick={() => setShow(true)}>Your Offers</Button>
+              </Modal>
+              <Button variant="primary" onClick={() => setShow(true)}>Your Offers</Button>
         </>
     );
 }

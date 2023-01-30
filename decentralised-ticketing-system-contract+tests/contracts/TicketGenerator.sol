@@ -62,8 +62,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         bytes32 eventId,
         bytes32 ticketTypeId,
         uint256 tokenId,
-        string tokenURI,
-        uint256 eventStartTime
+        string tokenURI
     );
 
     event GenerateSouvenir(
@@ -123,6 +122,8 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
 
     event UseTicket(address indexed sender, uint256 ticketId);
 
+    event BecomeOrganizer(address indexed account);
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     SouvenirGenerator private souvenirGenerator;
@@ -155,14 +156,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         _;
     }
 
-    modifier onlyOrganizer() {
-        require(
-            hasRole(ORGANIZER_ROLE, msg.sender),
-            "Only event organizers can call this function"
-        );
-        _;
-    }
-
     modifier ticketExists(uint256 _tokenId) {
         require(_exists(_tokenId), "Ticket does not exist");
         _;
@@ -188,33 +181,24 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         souvenirGenerator = SouvenirGenerator(_souvenirGeneratorAddress);
         token = TIK(_tokenAddress);
         _setupRole(OWNER_ROLE, msg.sender);
-        _setupRole(ORGANIZER_ROLE, msg.sender);
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function setTIKContract(address _tokenAddress) external {
-        require(
-            hasRole(OWNER_ROLE, msg.sender),
-            "Only owner can call this function"
-        );
+    function setTIKContract(
+        address _tokenAddress
+    ) external onlyRole(OWNER_ROLE) {
         token = TIK(_tokenAddress);
     }
 
     function setSouvenirGeneratorContract(
         address _souvenirGeneratorAddress
-    ) external {
-        require(
-            hasRole(OWNER_ROLE, msg.sender),
-            "Only owner can call this function"
-        );
+    ) external onlyRole(OWNER_ROLE) {
         souvenirGenerator = SouvenirGenerator(_souvenirGeneratorAddress);
     }
 
-    function setOrganizerDeposit(uint256 _organizerDeposit) external {
-        require(
-            hasRole(OWNER_ROLE, msg.sender),
-            "Only owner can call this function"
-        );
+    function setOrganizerDeposit(
+        uint256 _organizerDeposit
+    ) external onlyRole(OWNER_ROLE) {
         organizerDeposit = _organizerDeposit;
     }
 
@@ -236,7 +220,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         string memory location,
         uint256 startTime,
         uint256 endTime
-    ) external onlyOrganizer {
+    ) external onlyRole(ORGANIZER_ROLE) {
         require(events[_eventId].id == 0, "Event already exists");
         eventIds.push(_eventId);
         events[_eventId].id = _eventId;
@@ -267,7 +251,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         string memory location,
         uint256 startTime,
         uint256 endTime
-    ) external eventExists(_eventId) onlyOrganizer {
+    ) external eventExists(_eventId) onlyRole(ORGANIZER_ROLE) {
         require(
             events[_eventId].organizer == msg.sender,
             "Only organizer can edit event"
@@ -292,7 +276,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
 
     function deleteEvent(
         bytes32 _eventId
-    ) external eventExists(_eventId) onlyOrganizer {
+    ) external eventExists(_eventId) onlyRole(ORGANIZER_ROLE) {
         require(
             events[_eventId].organizer == msg.sender,
             "Only organizer can remove event"
@@ -313,7 +297,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         string memory _souvenirTokenURI,
         uint256 _price,
         uint256 _maxSupply
-    ) external eventExists(_eventId) onlyOrganizer {
+    ) external eventExists(_eventId) onlyRole(ORGANIZER_ROLE) {
         require(
             events[_eventId].organizer == msg.sender,
             "Only the organizer of this event can create ticket type"
@@ -372,7 +356,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         external
         eventExists(_eventId)
         ticketTypeExists(_eventId, _ticketTypeId)
-        onlyOrganizer
+        onlyRole(ORGANIZER_ROLE)
     {
         Structs.Event storage _event = events[_eventId];
         require(
@@ -405,6 +389,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         return newItemId;
     }
 
+    // Can be removed when changes are made to the buyTicket function(but isn't for running tests on the contract)
     function ticketPurchasePermit(
         uint256 amount,
         uint256 deadline,
@@ -422,7 +407,8 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         uint256 deadline,
         uint8 v,
         bytes32 r,
-        bytes32 s
+        bytes32 s,
+        // uint256 amount should be added to the function signature
     )
         external
         eventExists(_eventId)
@@ -441,7 +427,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             token.permit(
                 msg.sender,
                 address(this),
-                ticketType.price,
+                ticketType.price, // should be updated to amount
                 deadline,
                 v,
                 r,
@@ -466,6 +452,8 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         ticket.ticketTypeId = _ticketTypeId;
         ticket.owner = _recipient;
         ticket.usable = true;
+        ticket.souvenirMinted = false;
+        ticket.used = false;
         tickets[tokenId] = ticket;
         ticketIds.push(tokenId);
         emit BuyTicket(
@@ -474,8 +462,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             ticket.eventId, // Stack too deep error workoaround
             ticket.ticketTypeId, // Stack too deep error workoaround
             tokenId,
-            ticketType.tokenURI,
-            _event.startTime
+            ticketType.tokenURI
         );
         return tokenId;
     }
@@ -490,7 +477,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     {
         Structs.Ticket memory ticket = tickets[_ticketId];
         require(!ticket.souvenirMinted, "Souvenir already minted");
-        require(!ticket.usable, "Ticket still hasn't been used");
+        require(ticket.used, "Ticket still hasn't been used");
         uint256 souvenirId = souvenirGenerator.generateSouvenir(
             msg.sender,
             events[ticket.eventId]
@@ -529,12 +516,11 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         token.burn(msg.sender, organizerDeposit);
         _setupRole(ORGANIZER_ROLE, msg.sender);
         withdrawableBalance += organizerDeposit;
-        // emit BecomeOrganizer(msg.sender);
+        emit BecomeOrganizer(msg.sender);
     }
 
     // rewrite this function
-    function ownerWithdraw() external {
-        require(hasRole(OWNER_ROLE, msg.sender), "Caller is not an owner");
+    function ownerWithdraw() external onlyRole(OWNER_ROLE) {
         require(withdrawableBalance > 0, "Not enough to be withdrawn");
         bool success = payable(msg.sender).send(withdrawableBalance);
         require(success, "send failed");
@@ -594,7 +580,10 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         );
     }
 
-    function acceptBuyOffer(bytes32 id, uint256 ticketId) external offerExists(id) {
+    function acceptBuyOffer(
+        bytes32 id,
+        uint256 ticketId
+    ) external offerExists(id) {
         Structs.Offer storage offer = offers[id];
         require(offer.buyer != msg.sender, "Cannot buy your own ticket");
         require(
@@ -677,7 +666,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         offer.buyer = msg.sender;
         tickets[offer.ticketId].usable = true;
         tickets[offer.ticketId].owner = offer.buyer;
-        emit AcceptSellOffer (
+        emit AcceptSellOffer(
             id,
             offer.seller,
             msg.sender,
@@ -690,7 +679,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         delete offers[id];
     }
 
-    function cancelOffer(bytes32 id) external  offerExists(id){
+    function cancelOffer(bytes32 id) external offerExists(id) {
         Structs.Offer storage offer = offers[id];
         require(
             (offer.buyer == msg.sender && offer.buyOffer == true) ||
@@ -703,9 +692,8 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         emit CancelOffer(id, msg.sender);
     }
 
-
-    function useTicket(uint256 _ticketId) external onlyOrganizer {
-        require(tickets[_ticketId].usable, "Ticket not usable");
+    function useTicket(uint256 _ticketId) external onlyRole(ORGANIZER_ROLE) {
+        require(!tickets[_ticketId].used, "Ticket is already used");
         require(
             events[tickets[_ticketId].eventId].organizer == msg.sender,
             "Not the organizer"
@@ -721,6 +709,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
             "Event has not started"
         );
         tickets[_ticketId].usable = false;
+        tickets[_ticketId].used = true;
         emit UseTicket(msg.sender, _ticketId);
     }
 }

@@ -177,6 +177,19 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "BecomeOrganizer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "buyer",
         "type": "address"
       },
@@ -209,12 +222,6 @@
         "internalType": "string",
         "name": "tokenURI",
         "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "eventStartTime",
-        "type": "uint256"
       }
     ],
     "name": "BuyTicket",
@@ -510,7 +517,8 @@
           },
           { "internalType": "address", "name": "owner", "type": "address" },
           { "internalType": "bool", "name": "souvenirMinted", "type": "bool" },
-          { "internalType": "bool", "name": "usable", "type": "bool" }
+          { "internalType": "bool", "name": "usable", "type": "bool" },
+          { "internalType": "bool", "name": "used", "type": "bool" }
         ],
         "indexed": false,
         "internalType": "struct Structs.Ticket",

@@ -5,6 +5,7 @@ import {
   AcceptSellOffer,
   Approval,
   ApprovalForAll,
+  BecomeOrganizer,
   BuyTicket,
   CancelOffer,
   CreateBuyOffer,
@@ -169,14 +170,25 @@ export function createApprovalForAllEvent(
   return approvalForAllEvent
 }
 
+export function createBecomeOrganizerEvent(account: Address): BecomeOrganizer {
+  let becomeOrganizerEvent = changetype<BecomeOrganizer>(newMockEvent())
+
+  becomeOrganizerEvent.parameters = new Array()
+
+  becomeOrganizerEvent.parameters.push(
+    new ethereum.EventParam("account", ethereum.Value.fromAddress(account))
+  )
+
+  return becomeOrganizerEvent
+}
+
 export function createBuyTicketEvent(
   buyer: Address,
   owner: Address,
   eventId: Bytes,
   ticketTypeId: Bytes,
   tokenId: BigInt,
-  tokenURI: string,
-  eventStartTime: BigInt
+  tokenURI: string
 ): BuyTicket {
   let buyTicketEvent = changetype<BuyTicket>(newMockEvent())
 
@@ -205,12 +217,6 @@ export function createBuyTicketEvent(
   )
   buyTicketEvent.parameters.push(
     new ethereum.EventParam("tokenURI", ethereum.Value.fromString(tokenURI))
-  )
-  buyTicketEvent.parameters.push(
-    new ethereum.EventParam(
-      "eventStartTime",
-      ethereum.Value.fromUnsignedBigInt(eventStartTime)
-    )
   )
 
   return buyTicketEvent

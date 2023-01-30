@@ -154,6 +154,24 @@ export class ApprovalForAll__Params {
   }
 }
 
+export class BecomeOrganizer extends ethereum.Event {
+  get params(): BecomeOrganizer__Params {
+    return new BecomeOrganizer__Params(this);
+  }
+}
+
+export class BecomeOrganizer__Params {
+  _event: BecomeOrganizer;
+
+  constructor(event: BecomeOrganizer) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class BuyTicket extends ethereum.Event {
   get params(): BuyTicket__Params {
     return new BuyTicket__Params(this);
@@ -189,10 +207,6 @@ export class BuyTicket__Params {
 
   get tokenURI(): string {
     return this._event.parameters[5].value.toString();
-  }
-
-  get eventStartTime(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
   }
 }
 
@@ -527,6 +541,10 @@ export class GenerateSouvenirTicketStruct extends ethereum.Tuple {
 
   get usable(): boolean {
     return this[6].toBoolean();
+  }
+
+  get used(): boolean {
+    return this[7].toBoolean();
   }
 }
 

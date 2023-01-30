@@ -33,6 +33,7 @@ library Structs {
         address owner;
         bool souvenirMinted;
         bool usable;
+        bool used;
     }
 
     struct Offer {

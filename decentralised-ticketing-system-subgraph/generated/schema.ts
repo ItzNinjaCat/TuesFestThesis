@@ -365,6 +365,15 @@ export class Ticket extends Entity {
     this.set("usable", Value.fromBoolean(value));
   }
 
+  get used(): boolean {
+    let value = this.get("used");
+    return value!.toBoolean();
+  }
+
+  set used(value: boolean) {
+    this.set("used", Value.fromBoolean(value));
+  }
+
   get tokenId(): BigInt {
     let value = this.get("tokenId");
     return value!.toBigInt();
@@ -612,5 +621,46 @@ export class Offer extends Entity {
 
   set deleted(value: boolean) {
     this.set("deleted", Value.fromBoolean(value));
+  }
+}
+
+export class Organizer extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Organizer entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Organizer must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Organizer", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Organizer | null {
+    return changetype<Organizer | null>(store.get("Organizer", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): Bytes {
+    let value = this.get("account");
+    return value!.toBytes();
+  }
+
+  set account(value: Bytes) {
+    this.set("account", Value.fromBytes(value));
   }
 }

@@ -9,13 +9,12 @@ import InfiniteScroll from '@alexcambose/react-infinite-scroll';
 
 function Events() {
     const [events, setEvents] = useState(undefined);
-    const [first, setFirst] = useState(20);
     const [hasMore, setHasMore] = useState(true);
     const [initialLoad, setInitialLoad] = useState(true);
     const { loading, error, data, fetchMore } = useQuery(EVENTS_QUERY, {
         variables: {
             skip: 0,
-            first: first
+            first: 20
         }
     });
 
@@ -23,18 +22,18 @@ function Events() {
         fetchMore({
             variables: {
                 skip: events.length,
-                first: first
+                first: 20
             }
         }).then((res) => {
 
-            if (res.data.events.length < first) setHasMore(false);
+            if (res.data.events.length < 20) setHasMore(false);
             setEvents([...events, ...res.data.events]);
         });
     };
 
     useEffect(() => {
         if (!loading && initialLoad) {
-            if (data.events.length < first) setHasMore(false);
+            if (data.events.length < 20) setHasMore(false);
             setInitialLoad(false);
             setEvents(data.events);
         }

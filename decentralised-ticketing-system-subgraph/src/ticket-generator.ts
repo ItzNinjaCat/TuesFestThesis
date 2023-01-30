@@ -5,6 +5,7 @@ import {
   AcceptSellOffer,
   Approval,
   ApprovalForAll,
+  BecomeOrganizer,
   BuyTicket,
   CancelOffer,
   CreateBuyOffer,
@@ -25,7 +26,7 @@ import {
   UseTicket,
   Withdraw
 } from "../generated/TicketGenerator/TicketGenerator"
-import { Event, Ticket, TicketType, Souvenir, Offer } from "../generated/schema"
+import { Event, Ticket, TicketType, Souvenir, Offer, Organizer } from "../generated/schema"
 
 export function handleCreateEvent(event: CreateEvent): void {
   let entity = new Event(event.params.eventId.toHex());
@@ -171,6 +172,7 @@ export function handleBuyTicket(event: BuyTicket): void {
   entity.deleted = false;
   entity.souvenirMinted = false;
   entity.usable = true;
+  entity.used = false;
   entity.tokenId = event.params.tokenId;
   entity.tokenURI = event.params.tokenURI;
   entity.timestamp = event.block.timestamp;
@@ -192,22 +194,30 @@ export function handleUseTicket(event: UseTicket): void {
   let entity = Ticket.load(event.params.ticketId.toHex());
   if (entity !== null) {
     entity.usable = false;
+    entity.used = true;
     entity.save();
   }
 }
 
 export function handleGenerateSouvenir(event: GenerateSouvenir): void {
   let entity = new Souvenir(event.params.tokenId.toHex());
-  entity.ticket = event.params.ticket.id.toHex();
   entity.owner = event.params.owner;
+  entity.tokenId = event.params.tokenId;
   entity.tokenURI = event.params.tokenURI;
   entity.save();
 
   let ticket = Ticket.load(event.params.ticket.id.toHex());
   if (ticket !== null) {
     ticket.souvenirMinted = true;
+    ticket.souvenir = entity.id;
     ticket.save();
   }
+}
+
+export function handleBecomeOrganizer(event: BecomeOrganizer): void {
+  let entity = new Organizer(event.params.account.toHex());
+  entity.account = event.params.account;
+  entity.save();
 }
 
 export function handleApproval(event: Approval): void {}

@@ -9,12 +9,13 @@ function useBalance(isActive, provider, account, tokenContract, balanceUpdate, s
             tokenContract.balanceOf(account).then(bal => {
                 if (stale) return;
                 setBalance(formatEther(bal));
+                setBalanceUpdate(false);
             });
             return () => {
                 stale = true;
                 setBalance(undefined);
+                setBalanceUpdate(false);
             };
-            setBalanceUpdate(false);
         }
     }, [provider, account, isActive, balanceUpdate]);
     return balance;

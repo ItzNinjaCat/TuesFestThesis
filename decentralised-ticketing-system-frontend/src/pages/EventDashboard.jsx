@@ -38,7 +38,7 @@ function EventDashboard() {
     });
 
     useEffect(() => {
-        if (isAuthorised) {
+        if (isAuthorised && data.event.creator === account?.toLowerCase()) {
             return;
         }
         if (!loading) {
@@ -65,7 +65,7 @@ function EventDashboard() {
             end.setHours(0, 0, 0, 0);
             const tmpDates = [];
             const tmpChartData = [];
-            while (current.getTime() < end.getTime()) {
+            while (current.getTime() <= end.getTime()) {
                 tmpDates.push(new Date(current));
                 tmpChartData.push({
                     name: current.getDate() + "." + (current.getMonth() + 1) + "." + current.getFullYear().toString().substr(-2)

@@ -36,7 +36,7 @@ function Tickets() {
     });
     const { account, contract } = useContext(Web3Context);
     useEffect(() => {
-        if (isAuthorised) {
+        if (isAuthorised && data.event.creator === account?.toLowerCase()) {
             return;
         }
         if (!loading) {
@@ -56,7 +56,6 @@ function Tickets() {
     useEffect(() => {
         if (!loading) {
             setEvent(data.event);
-            console.log(data.event.ticketTypes);
             setTicketTypes(data.event.ticketTypes);            
         }
 

@@ -1,14 +1,15 @@
 import {useContext} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Form, Row, Col, Button, Modal } from "react-bootstrap";
 import { EVENT_BY_ID_QUERY } from "../utils/subgraphQueries";
 import { useQuery } from "@apollo/client";
 import { uploadImmutableData } from '../utils/web3.storageEndpoints';
 import { Web3Context } from "../components/App";
+import Loader from "../components/ui/Loader";
 function EditEvent() {
     const { account, contract } = useContext(Web3Context);
-
+    const [show, setShow] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
@@ -30,8 +31,15 @@ function EditEvent() {
             id: String(id)
         }
     });
+
+    const handleShow = () => setShow(true);
+    const handleClose = () => {
+        setShow(false);
+        navigate(`/events/${id}/dashboard`);
+    }
+
     useEffect(() => {
-        if (isAuthorised) {
+        if (isAuthorised && data.event.creator === account.toLowerCase()) {
             return;
         }
         if (!loading) {
@@ -113,7 +121,7 @@ function EditEvent() {
                 imagesCid = cid;
             }
             const tx = await contract.updateEvent(id, name, desc, imagesCid, location, startDateUNIX, endDateUNIX);
-            tx.wait.then(() => console.log("Event updated"));
+            tx.wait().then(() => handleShow());
 
         } 
     }
@@ -158,6 +166,7 @@ function EditEvent() {
         e.target.files = items.files;
         setImages(e.target.files);
     }
+    if (loading) return <Loader />;
     return (
         <div className="mt-5 d-flex flex-column align-items-center">
             <h1>Update event</h1>
@@ -269,12 +278,37 @@ function EditEvent() {
                             Please provide an event description.
                         </Form.Control.Feedback>
                     </Form.Group>
-                    <div className="d-flex justify-content-between">
+                    <div className="d-flex justify-content-between mt-5">
                         <Button variant="primary" type="submit">
                             Submit
                         </Button>
                     </div>
             </Form>
+            <Modal
+                show={show}
+                onHide={handleClose}
+                backdrop="static"
+                keyboard={false}
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Event updated</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        <p
+                            style ={{
+                                fontSize: "16px",
+                                fontFamily: "monospace",
+                                fontWeight: "bold"
+                            }}
+                        >
+                            Event has been updated successfully
+                        </p>
+                        <Button variant="primary" onClick={handleClose}>Continue</Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 }

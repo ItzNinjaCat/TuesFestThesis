@@ -29,7 +29,7 @@ function EventDashboard() {
     const [totalProfit, setTotalProfit] = useState(0);
     const [maxSupply, setMaxSupply] = useState(1);
     const navigate = useNavigate();
-    const [isAuthorised, setIsAuthorised] = useState(false);
+    const [acc, setAcc] = useState(undefined);
     const { contract, account } = useContext(Web3Context);
     const { loading, error, data } = useQuery(EVENT_AND_TICKETS_QUERY, {
         variables: {
@@ -38,16 +38,16 @@ function EventDashboard() {
     });
 
     useEffect(() => {
-        if (isAuthorised && data.event.creator === account?.toLowerCase()) {
+        if (acc !== undefined && acc === account?.toLowerCase()) {
             return;
         }
         if (!loading) {
             try {
-                if(data.event.creator !== account.toLowerCase()){
+                if(data.event.creator !== account?.toLowerCase()){
                     navigate('/');
                 }
                 else {
-                    setIsAuthorised(true);
+                    setAcc(data.event.creator);
                 }
             }catch(e){
                 console.log(e);

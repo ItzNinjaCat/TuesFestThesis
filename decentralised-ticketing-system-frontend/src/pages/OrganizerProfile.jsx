@@ -6,11 +6,13 @@ import Loader from '../components/ui/Loader';
 import EventCard from '../components/ui/EventCard';
 import { Web3Context } from '../components/App';
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
+
 function OrganizerProfile() {
     const [events, setEvents] = useState(undefined);
     const { address } = useParams();
     const { account, isActive } = useContext(Web3Context);
     const [initialLoad, setInitialLoad] = useState(true);
+    const [isAuthorised, setIsAuthorised] = useState(undefined);
     const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
     const { loading, error, data, fetchMore } = useQuery(EVENTS_BY_CREATOR_QUERY, {
@@ -35,7 +37,20 @@ function OrganizerProfile() {
     };
 
     useEffect(() => {
-        if  (isActive && account !== address) navigate("/");
+        if(!isActive && !loading && (initialLoad || isAuthorised !== undefined) && account === undefined) navigate("/");
+        if (isActive && account !== address ) {
+            navigate(`/organizer/${account}`);
+            setInitialLoad(true);
+        } 
+        if (!loading) {
+            if (error) navigate("/");
+            else if(!data.organizers.length) navigate("/");
+        }
+        if (isActive && account === address) {
+            setIsAuthorised(true);
+        }
+    }, [isActive, account, address, loading]);
+    useEffect(() => {
         if (!loading && initialLoad) {
             if (data.events.length < 20) setHasMore(false);
             setInitialLoad(false);

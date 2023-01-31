@@ -12,7 +12,7 @@ function CreateEvent() {
     const navigate = useNavigate();
     const [show, setShow] = useState(false);
     const { account, contract } = useContext(Web3Context);
-    const { loading, data } = useQuery(IS_ORGANIZER_QUERY, {
+    const { loading, error, data } = useQuery(IS_ORGANIZER_QUERY, {
         variables: {
             account: String(account)
         }
@@ -52,11 +52,14 @@ function CreateEvent() {
         return ticketTypes.indexOf(ticket);
     }
     useEffect(() => {
-        if (validated || hasRole) {
+        if (validated) {
             return;
         }
         if (!loading) {
-            if (data.organizers.length > 0) {
+            if (error) {
+                navigate('/');
+            }
+            else if (data.organizers.length > 0) {
                 setHasRole(true);
             }
             else {

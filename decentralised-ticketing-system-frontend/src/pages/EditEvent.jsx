@@ -18,7 +18,7 @@ function EditEvent() {
     const [location, setLocation] = useState('');
     const [images, setImages] = useState(undefined);
     const [cid, setCid] = useState(undefined);
-    const [isAuthorised, setIsAuthorised] = useState(false);
+    const [acc, setAcc] = useState(undefined);
     const [startTime, setStartTime] = useState(new Date().toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
@@ -39,16 +39,16 @@ function EditEvent() {
     }
 
     useEffect(() => {
-        if (isAuthorised && data.event.creator === account.toLowerCase()) {
+        if (acc !== undefined && acc === account?.toLowerCase()) {
             return;
         }
         if (!loading) {
-            try{
-                if(data.event.creator !== account.toLowerCase()){
+            try {
+                if(data.event.creator !== account?.toLowerCase()){
                     navigate('/');
                 }
                 else {
-                    setIsAuthorised(true);
+                    setAcc(data.event.creator);
                 }
             }catch(e){
                 console.log(e);

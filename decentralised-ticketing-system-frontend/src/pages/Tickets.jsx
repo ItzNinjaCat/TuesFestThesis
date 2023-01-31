@@ -20,7 +20,7 @@ function Tickets() {
     const [newMaxSupply, setNewMaxSupply] = useState("");
     const [newTokenURI, setNewTokenURI] = useState("");
     const [newSouvenirURI, setNewSouvenirURI] = useState("");
-    const [isAuthorised, setIsAuthorised] = useState(false);
+    const [acc, setAcc] = useState(undefined);
     const [selectedTicket, setSelectedTicket] = useState({
         name: "",
         price: "",
@@ -36,16 +36,16 @@ function Tickets() {
     });
     const { account, contract } = useContext(Web3Context);
     useEffect(() => {
-        if (isAuthorised && data.event.creator === account?.toLowerCase()) {
+        if (acc !== undefined && acc === account?.toLowerCase()) {
             return;
         }
         if (!loading) {
-            try{
-                if(data.event.creator !== account.toLowerCase()){
+            try {
+                if(data.event.creator !== account?.toLowerCase()){
                     navigate('/');
                 }
                 else {
-                    setIsAuthorised(true);
+                    setAcc(data.event.creator);
                 }
             }catch(e){
                 console.log(e);

@@ -20,6 +20,7 @@ function UserProfile() {
     const [souvenirs, setSouvenirs] = useState([]);
     const [hasMoreSouvenirs, setHasMoreSouvenirs] = useState(true);
     const [initialLoadSouvenirs, setInitialLoadSouvenirs] = useState(true);
+    const [isAuthorised, setIsAuthorised] = useState(undefined);
     const [tab, setTab] = useState('tickets');
     const [ticketTab, setTicketTab] = useState('current');
     const { account, contract, isActive } = useContext(Web3Context);
@@ -39,10 +40,13 @@ function UserProfile() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(!isActive && !loadingSouvenirs && initialLoadSouvenirs && account === undefined) navigate("/");
+        if(!isActive && !loadingSouvenirs && (initialLoadSouvenirs || isAuthorised !== undefined) && account === undefined) navigate("/");
         if (isActive && account !== address ) {
             navigate(`/user/${account}`);
         } 
+        if (isActive && account === address) {
+            setIsAuthorised(true);
+        }
     }, [isActive, account, address, loadingSouvenirs]);
 
 

@@ -84,6 +84,11 @@ export const EVENTS_BY_CREATOR_QUERY = gql`
             startTime
             endTime
         }
+
+        organizers(where: { account: $creator }) {
+            id
+            account
+        }
     }
 `;
 

@@ -62,19 +62,6 @@ contract SouvenirGenerator is Ownable, ERC721URIStorage {
         return _mintNFT(recipient, tokenURI);
     }
 
-    function safeTransferFrom(address, address, uint256) public pure override {
-        revert("You can't transfer souvenirs");
-    }
-
-    function safeTransferFrom(
-        address,
-        address,
-        uint256,
-        bytes memory
-    ) public pure override {
-        revert("You can't transfer souvenirs");
-    }
-
     function transferFrom(address, address, uint256) public pure override {
         revert("You can't transfer souvenirs");
     }

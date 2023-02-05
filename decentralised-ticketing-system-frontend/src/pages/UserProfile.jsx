@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext }  from 'react';
+import { useState, useEffect }  from 'react';
 import { useQuery } from '@apollo/client';
 import {
     ALL_TICKETS_BY_OWNER_QUERY,
@@ -13,7 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import "../style/style.scss";
 import Loader from '../components/ui/Loader';
 import { Tabs, Tab } from 'react-bootstrap';
-import { Web3Context } from '../components/App';
+import { useWeb3Context } from "../hooks/useWeb3Context";
 import Souvenir from '../components/ui/Souvenir';
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
 function UserProfile() {
@@ -23,7 +23,7 @@ function UserProfile() {
     const [isAuthorised, setIsAuthorised] = useState(undefined);
     const [tab, setTab] = useState('tickets');
     const [ticketTab, setTicketTab] = useState('current');
-    const { account, contract, isActive } = useContext(Web3Context);
+    const { account, contract, isActive } = useWeb3Context();
     const { address } = useParams();
     const {
         loading: loadingSouvenirs,

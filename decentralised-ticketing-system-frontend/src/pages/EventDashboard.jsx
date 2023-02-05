@@ -1,11 +1,11 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { useNavigate, useParams } from 'react-router-dom';
 import { EVENT_AND_TICKETS_QUERY } from '../utils/subgraphQueries';
 import { Button, Modal } from 'react-bootstrap';
 import Loader from '../components/ui/Loader';
 import { formatEther } from 'ethers/lib/utils';
-import { Web3Context } from '../components/App';
+import { useWeb3Context } from "../hooks/useWeb3Context";
 import {
   XAxis,
   YAxis,
@@ -30,7 +30,7 @@ function EventDashboard() {
     const [maxSupply, setMaxSupply] = useState(1);
     const navigate = useNavigate();
     const [acc, setAcc] = useState(undefined);
-    const { contract, account } = useContext(Web3Context);
+    const { contract, account } = useWeb3Context();
     const { loading, error, data } = useQuery(EVENT_AND_TICKETS_QUERY, {
         variables: {
             event: String(id)

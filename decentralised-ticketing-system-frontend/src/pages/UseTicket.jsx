@@ -1,6 +1,6 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Web3Context } from '../components/App';
+import { useWeb3Context } from "../hooks/useWeb3Context";
 import Loader from '../components/ui/Loader';
 
 
@@ -8,7 +8,7 @@ function UseTicket() {
     const [error, setError] = useState(undefined);
     const [success, setSuccess] = useState(undefined);
     const { id } = useParams();
-    const { account, provider, contract } = useContext(Web3Context);
+    const { account, provider, contract } = useWeb3Context();
     useEffect(() => {
         if (!provider || !account) return;
         contract.useTicket(id).then((tx) => {

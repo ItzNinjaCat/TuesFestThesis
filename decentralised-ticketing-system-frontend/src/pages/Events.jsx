@@ -33,6 +33,7 @@ function Events() {
 
     useEffect(() => {
         if (!loading && initialLoad) {
+            console.log(data);
             if (data.events.length < 20) setHasMore(false);
             setInitialLoad(false);
             setEvents(data.events);

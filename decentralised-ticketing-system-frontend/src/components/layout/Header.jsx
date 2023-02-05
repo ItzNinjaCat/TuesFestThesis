@@ -1,4 +1,4 @@
-import {useState, useContext} from 'react';
+import {useState} from 'react';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import SelectWalletModal from '../ui/ConnectModal';
@@ -8,7 +8,7 @@ import { Button, Navbar, Nav, Offcanvas, Container } from 'react-bootstrap';
 import { CgProfile } from 'react-icons/cg';
 import { ethers } from 'ethers';
 import { useNavigate } from 'react-router-dom';
-import { Web3Context } from '../App';
+import { useWeb3Context } from "../../hooks/useWeb3Context";
 function Header() {
   const navigate = useNavigate();
   function createEvent() {
@@ -34,7 +34,7 @@ function Header() {
     });
   }
 
-  const { connector, provider, account, isActive, balance, contract } = useContext(Web3Context);
+  const { connector, provider, account, isActive, balance, contract } = useWeb3Context();
   
   const [isOrganizer, setIsOrganizer] = useState(undefined);
   const [isOwner, setIsOwner] = useState(undefined);

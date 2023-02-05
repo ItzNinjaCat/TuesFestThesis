@@ -1,11 +1,10 @@
 
 import { Modal, Button } from 'react-bootstrap';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'react-bootstrap/Image';
 import QRCode from "react-qr-code";
 import { useNavigate } from 'react-router-dom';
-import { Web3Context } from '../App';
-
+import { useWeb3Context } from "../../hooks/useWeb3Context";
 function Ticket({
     ticket,
     event,
@@ -14,7 +13,7 @@ function Ticket({
     const [ticketMetadata, setTicketMetadata] = useState(undefined);
     const [show, setShow] = useState(false);
     const navigate = useNavigate();
-    const { contract } = useContext(Web3Context);
+    const { contract } = useWeb3Context();
     function getSouvenir() {
         contract.getSouvenir(ticket.id).then((res) => {
             setShow(false);

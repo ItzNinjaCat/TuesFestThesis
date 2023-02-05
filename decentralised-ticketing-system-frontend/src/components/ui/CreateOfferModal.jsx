@@ -1,14 +1,13 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Modal, Form, ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { BUY_TICKETS_EVENT_QUERY, SELL_TICKETS_QUERY } from '../../utils/subgraphQueries';
 import { useQuery } from '@apollo/client';
-import { useEffect, useContext } from 'react';
 import { randomBytes } from 'ethers/lib/utils';
 import { ethers } from 'ethers';
 import { onAttemptToApprove } from "../../utils/contractUtils";
 import { parseEther } from "ethers/lib/utils";
-import { Web3Context } from "../App";
+import { useWeb3Context } from "../../hooks/useWeb3Context";
 
 function CreateOfferModal() {
     const [show, setShow] = useState(false);
@@ -21,7 +20,7 @@ function CreateOfferModal() {
     const [tickets, setTickets] = useState({});
     const [price, setPrice] = useState("");
     const [validated, setValidated] = useState(false);
-    const { account, contract, tokenContract } = useContext(Web3Context);
+    const { account, contract, tokenContract } = useWeb3Context();
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const { loading : eventsBuyLoading, data: eventsBuyData } = useQuery(BUY_TICKETS_EVENT_QUERY, {

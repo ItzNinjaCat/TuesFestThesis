@@ -1,26 +1,25 @@
-import { createContext, useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Home from '../pages/Home';
-import UserProfile from '../pages/UserProfile';
-import OrganizerProfile from '../pages/OrganizerProfile';
-import Events from '../pages/Events';
-import Event from '../pages/Event';
-import CreateEvent from '../pages/CreateEvent';
-import Header from './layout/Header';
-import Marketplace from '../pages/Marketplace';
-import EventDashboard from '../pages/EventDashboard';
-import EditEvent from '../pages/EditEvent';
-import Tickets from '../pages/Tickets';
-import useScrollDirection from '../hooks/useScrollDirection';
-import UseTicket from '../pages/UseTicket';
+import Home from './pages/Home';
+import UserProfile from './pages/UserProfile';
+import OrganizerProfile from './pages/OrganizerProfile';
+import Events from './pages/Events';
+import Event from './pages/Event';
+import CreateEvent from './pages/CreateEvent';
+import Header from './components/layout/Header';
+import Marketplace from './pages/Marketplace';
+import EventDashboard from './pages/EventDashboard';
+import EditEvent from './pages/EditEvent';
+import Tickets from './pages/Tickets';
+import useScrollDirection from './hooks/useScrollDirection';
+import UseTicket from './pages/UseTicket';
 import { useWeb3React } from '@web3-react/core';
-import { connectorHooks, getName } from '../utils/connectors';
-import { TICKET_ADDRESS, TICKET_ABI } from '../constants/contracts';
-import { TIK_ADDRESS, TIK_ABI } from '../constants/contracts';
-import { getContract } from '../utils/contractUtils';
-import useBalance from '../hooks/useBalance';
-
-const Web3Context = createContext({}  );
+import { connectorHooks, getName } from './utils/connectors';
+import { TICKET_ADDRESS, TICKET_ABI } from './constants/contracts';
+import { TIK_ADDRESS, TIK_ABI } from './constants/contracts';
+import { getContract } from './utils/contractUtils';
+import useBalance from './hooks/useBalance';
+import { Web3ContextProvider } from './hooks/useWeb3Context';
 
 function App() {
   const [balanceUpdate, setBalanceUpdate] = useState(false);
@@ -36,7 +35,7 @@ function App() {
   const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
   const balance = (useBalance(isActive, provider, account, tokenContract, balanceUpdate, setBalanceUpdate));
   return (
-    <Web3Context.Provider
+    <Web3ContextProvider
       value={{ connector, provider, account, isActive, accounts, tokenContract, contract, balance, setBalanceUpdate }}>
     <BrowserRouter>
       <div className="wrapper">
@@ -60,9 +59,7 @@ function App() {
         </div>
       </div>
       </BrowserRouter>
-    </Web3Context.Provider>
+    </Web3ContextProvider>
   );
 }
-
-export { Web3Context };
 export default App;

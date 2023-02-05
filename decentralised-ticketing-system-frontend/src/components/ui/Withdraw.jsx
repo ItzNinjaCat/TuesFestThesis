@@ -1,13 +1,13 @@
 import { ethers } from 'ethers';
 import { Button, Modal, Form } from 'react-bootstrap';
-import { useState, useContext } from 'react';
-import { Web3Context } from '../App';
+import { useState } from 'react';
+import { useWeb3Context } from "../../hooks/useWeb3Context";
 function Withdraw() {
     const [validated, setValidated] = useState(false);
     const [show, setShow] = useState(false);
     const [withdrawAmount, setWithdrawAmount] = useState(0);
     const [showSuccess, setShowSuccess] = useState(false);
-    const { contract, balance, setBalanceUpdate } = useContext(Web3Context);
+    const { contract, balance, setBalanceUpdate } = useWeb3Context();
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
   const handleCloseSuccess = () => {

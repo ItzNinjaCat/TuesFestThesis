@@ -1,10 +1,10 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Form, Row, Col, Button, Modal } from "react-bootstrap";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { ethers } from "ethers";
 import { uploadImmutableData } from "../utils/web3.storageEndpoints";
-import { Web3Context } from "../components/App";
+import { useWeb3Context } from "../hooks/useWeb3Context";
 import { useQuery } from "@apollo/client";
 import { EVENT_WITH_TYPES_BY_ID_QUERY } from "../utils/subgraphQueries";
 
@@ -34,7 +34,7 @@ function Tickets() {
             id: id,
         }
     });
-    const { account, contract } = useContext(Web3Context);
+    const { account, contract } = useWeb3Context();
     useEffect(() => {
         if (acc !== undefined && acc === account?.toLowerCase()) {
             return;

@@ -1,16 +1,16 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { EVENTS_BY_CREATOR_QUERY } from '../utils/subgraphQueries';
 import Loader from '../components/ui/Loader';
 import EventCard from '../components/ui/EventCard';
-import { Web3Context } from '../components/App';
+import { useWeb3Context } from "../hooks/useWeb3Context";
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
 
 function OrganizerProfile() {
     const [events, setEvents] = useState(undefined);
     const { address } = useParams();
-    const { account, isActive } = useContext(Web3Context);
+    const { account, isActive } = useWeb3Context();
     const [initialLoad, setInitialLoad] = useState(true);
     const [isAuthorised, setIsAuthorised] = useState(undefined);
     const [hasMore, setHasMore] = useState(true);

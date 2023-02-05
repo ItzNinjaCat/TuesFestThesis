@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 import CreateOfferModal from '../components/ui/CreateOfferModal';
 import { useQuery } from '@apollo/client';
@@ -7,7 +7,7 @@ import Offer from '../components/ui/Offer';
 import Loader from '../components/ui/Loader';
 import UserOffersModal from '../components/ui/UserOffersModal';
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
-import { Web3Context } from '../components/App';
+import { useWeb3Context } from "../hooks/useWeb3Context";
 import { ethers } from 'ethers';
 
 function Marketplace() {
@@ -16,7 +16,7 @@ function Marketplace() {
   const [sellOffers, setSellOffers] = useState([]);
   const [hasMoreBuyOffers, setHasMoreBuyOffers] = useState(true);
   const [hasMoreSellOffers, setHasMoreSellOffers] = useState(true);
-  const { account } = useContext(Web3Context);
+  const { account } = useWeb3Context();
   const { data: dataBuy, loading: loadingBuy, fetchMore: fetchMoreBuy, error } = useQuery(BUY_OFFERS_QUERY, {
     variables: {
       skip: 0,

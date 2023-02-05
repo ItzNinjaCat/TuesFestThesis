@@ -1,10 +1,10 @@
 
 import { Button, Modal, Form, InputGroup, Image } from 'react-bootstrap';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { onAttemptToApprove } from '../../utils/contractUtils';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
-import { Web3Context } from '../App';
+import { useWeb3Context } from "../../hooks/useWeb3Context";
 const TicketType = (({
     eventId,
     ticketTypeId,
@@ -15,7 +15,7 @@ const TicketType = (({
     tokenURI,
     souvenirTokenURI,
 }) => {
-    const { tokenContract, account, contract, balance, setBalanceUpdate } = useContext(Web3Context);
+    const { tokenContract, account, contract, balance, setBalanceUpdate } = useWeb3Context();
     const [recipeintAddress, setRecipeintAddress] = useState('');
     const [ticketAmountPersonal, setTicketAmountPersonal] = useState(0);
     const [ticketAmountGift, setTicketAmountGift] = useState(0);

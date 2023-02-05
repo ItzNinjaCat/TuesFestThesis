@@ -1,14 +1,13 @@
-import {useContext} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Form, Row, Col, Button, Modal } from "react-bootstrap";
 import { EVENT_BY_ID_QUERY } from "../utils/subgraphQueries";
 import { useQuery } from "@apollo/client";
 import { uploadImmutableData } from '../utils/web3.storageEndpoints';
-import { Web3Context } from "../components/App";
+import { useWeb3Context } from "../hooks/useWeb3Context";
 import Loader from "../components/ui/Loader";
 function EditEvent() {
-    const { account, contract } = useContext(Web3Context);
+    const { account, contract } = useWeb3Context();
     const [show, setShow] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();

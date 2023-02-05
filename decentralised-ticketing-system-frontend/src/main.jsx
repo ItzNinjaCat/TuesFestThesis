@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './components/App';
+import App from './App';
 import './style/style.scss';
 import { Web3ReactProvider } from '@web3-react/core';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';

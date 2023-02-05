@@ -1,13 +1,13 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Button, Tabs, Tab } from 'react-bootstrap';
-import { Web3Context } from '../App';
+import { useWeb3Context } from "../../hooks/useWeb3Context";
 import { USER_SELL_OFFERS_QUERY, USER_BUY_OFFERS_QUERY } from '../../utils/subgraphQueries';
 import { useQuery } from '@apollo/client';
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
 import Offer from './Offer';
 function UserOffersModal() {
     const [show, setShow] = useState(false);
-    const { account } = useContext(Web3Context);
+    const { account } = useWeb3Context();
     const [buyOffers, setBuyOffers] = useState([]);
     const [sellOffers, setSellOffers] = useState([]);
     const [hasMoreBuyOffers, setHasMoreBuyOffers] = useState(true);

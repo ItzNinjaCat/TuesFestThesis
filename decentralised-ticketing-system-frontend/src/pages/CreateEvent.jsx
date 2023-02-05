@@ -1,17 +1,17 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import {ethers} from 'ethers';
 import { Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import TicketInfo from '../components/ui/TicketInfo';
 import { useNavigate } from 'react-router-dom';
 import { uploadImmutableData } from '../utils/web3.storageEndpoints'
-import { Web3Context } from '../components/App';
+import { useWeb3Context } from "../hooks/useWeb3Context";
 import Loader from '../components/ui/Loader';
 import { IS_ORGANIZER_QUERY } from '../utils/subgraphQueries';
 import { useQuery } from '@apollo/client';
 function CreateEvent() {
     const navigate = useNavigate();
     const [show, setShow] = useState(false);
-    const { account, contract } = useContext(Web3Context);
+    const { account, contract } = useWeb3Context();
     const { loading, error, data } = useQuery(IS_ORGANIZER_QUERY, {
         variables: {
             account: String(account)

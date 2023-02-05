@@ -36,20 +36,23 @@ const TicketType = (({
     const handleCloseSuccessGift = () => setShowSuccessGift(false);
     const buyTickets = (async (recipient, amount, handleClose, handleShowSuccess) => {
         const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount), +new Date() + 60 * 60);
-        if (amount > 1) {
-            const tx = await contract.ticketPurchasePermit(
-                parseEther(String(price * amount)),
-                signature.deadline,
-                signature.v,
-                signature.r,
-                signature.s,
-            )
-            handleClose();
-            setTicketAmountGift(0);
-            setTicketAmountPersonal(0);
-            setRecipeintAddress('');
-            tx.wait().then(() => {
-                const ticketSale = Array(Number(amount)).fill(0).map(async () => {
+        handleClose();
+        setTicketAmountGift(0);
+        setTicketAmountPersonal(0);
+        setRecipeintAddress('');
+        contract.buyTicket(
+                    eventId,
+                    ticketTypeId,
+                    recipient,
+                    signature.deadline,
+                    signature.v,
+                    signature.r,
+                    signature.s,
+        ).then((res) => {
+            console.log(res);
+            res.wait().then(() => {
+                const ticketSale = Array(Number(amount - 1)).fill(0).map(async () => {
+                        
                     return await (await contract.buyTicket(
                         eventId,
                         ticketTypeId,
@@ -60,69 +63,14 @@ const TicketType = (({
                     )).wait();
                 });
                 Promise.all(ticketSale).then(() => {
-                setSuccessAmount(amount);
-                setBalanceUpdate(true);
-                handleShowSuccess();
+                    setSuccessAmount(amount);
+                    setBalanceUpdate(true);
+                    handleShowSuccess();
                 });
             });
-        }
-        else {
-            const tx = await contract.buyTicket(
-                eventId,
-                ticketTypeId,
-                recipient,
-                signature.deadline,
-                signature.v,
-                signature.r,
-                signature.s,
-            );
-            handleClose();
-            setTicketAmountGift(0);
-            setTicketAmountPersonal(0);
-            setRecipeintAddress('');
-            tx.wait().then(() => {
-                setSuccessAmount(amount);
-                setBalanceUpdate(true);
-                handleShowSuccess();
-            });
-        }
-        // New Function signature for when changes to the contract are made
-        // const signature = await onAttemptToApprove(contract, tokenContract, account, String(price * amount), +new Date() + 60 * 60);
-        // handleClose();
-        // setTicketAmountGift(0);
-        // setTicketAmountPersonal(0);
-        // setRecipeintAddress('');
-        // contract.buyTicket(
-        //             eventId,
-        //             ticketTypeId,
-        //             recipient,
-        //             signature.deadline,
-        //             signature.v,
-        //             signature.r,
-        //             signature.s,
-        // ).then((res) => {
-        //     console.log(res);
-        //     res.wait().then(() => {
-        //         const ticketSale = Array(Number(amount - 1)).fill(0).map(async () => {
-                        
-        //             return await (await contract.buyTicket(
-        //                 eventId,
-        //                 ticketTypeId,
-        //                 recipient,
-        //                 0, 0,
-        //                 '0x0000000000000000000000000000000000000000000000000000000000000000',
-        //                 '0x0000000000000000000000000000000000000000000000000000000000000000',
-        //             )).wait();
-        //         });
-        //         Promise.all(ticketSale).then(() => {
-        //             setSuccessAmount(amount);
-        //             setBalanceUpdate(true);
-        //             handleShowSuccess();
-        //         });
-        //     });
-        // }).catch((e) => {
-        //     alert(e.reason);
-        // });
+        }).catch((e) => {
+            alert(e.reason);
+        });
     });
 
     const changeTicketAmountPersonal = ((event) => {

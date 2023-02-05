@@ -5,5 +5,5 @@
 ```
  ## Usage
 ```
-  yarn start
+  yarn dev
 ```

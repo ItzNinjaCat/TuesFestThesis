@@ -549,3 +549,22 @@ export const OFFERED_TICKETS_BY_OWNER_QUERY = gql`
         }
     }
 `;
+
+export const RECENT_EVENTS_QUERY = gql`
+    query RecentEvents{
+        events(
+            orderBy: createdAt, 
+            orderDirection: desc, 
+            first: 20
+        where: { deleted: false, startTime_gt: ${Math.floor(Date.now() / 1000)} }) {
+            id
+            creator
+            name
+            description
+            eventStorage
+            location
+            startTime
+            endTime
+        }
+    }
+`;

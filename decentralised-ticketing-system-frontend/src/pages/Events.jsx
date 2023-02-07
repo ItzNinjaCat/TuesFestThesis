@@ -1,4 +1,3 @@
-import React from 'react';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { EVENTS_QUERY } from '../utils/subgraphQueries';
@@ -42,7 +41,10 @@ function Events() {
     if(loading || events === undefined) return <Loader/>;
     if (error) return <p>Error: {error.message}</p>;
     return (
-        
+        <>
+        <div className='d-flex justify-content-center mb-4'>
+          <h1>Current events</h1>
+        </div>
         <InfiniteScroll hasMore={hasMore} loadMore={loadMore} initialLoad={false} noMore={false}>
             <div id="eventHolder" className='d-flex justify-content-center flex-wrap m-5'>
                 {
@@ -77,6 +79,7 @@ function Events() {
                 }
             </div>
         </InfiniteScroll>
+        </>
   );
 }
 

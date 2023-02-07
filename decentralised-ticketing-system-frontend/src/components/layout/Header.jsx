@@ -30,7 +30,9 @@ function Header() {
 
   function ownerWithdraw() {
     contract.ownerWithdraw().catch((e) => {
-      alert(e.reason);
+      if(e.reason !== undefined){
+        alert(e.reason);
+      }
     });
   }
 

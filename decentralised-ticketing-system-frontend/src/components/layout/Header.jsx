@@ -83,8 +83,8 @@ function Header() {
               <Nav
                 className="d-flex align-items-center"
               >
-                <Nav.Link href="/events">Events</Nav.Link>
-                <Nav.Link href="/marketplace">Marketplace</Nav.Link>
+                <Nav.Link href="events">Events</Nav.Link>
+                <Nav.Link href="marketplace">Marketplace</Nav.Link>
               </Nav>
             {
               account !== undefined && isOrganizer !== undefined && isOwner !== undefined ?

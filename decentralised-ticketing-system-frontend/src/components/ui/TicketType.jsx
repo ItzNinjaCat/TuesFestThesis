@@ -82,7 +82,7 @@ const TicketType = (({
     });
 
     const changeRecipientAddress = ((event) => {
-        setRecipeintAddress(event.target.value);
+        setRecipeintAddress(event.target.value.trim());
     });
 
     const handleSubmitGift = ((event) => {

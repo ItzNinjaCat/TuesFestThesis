@@ -242,7 +242,7 @@ function CreateEvent() {
                         <Form.Control 
                             type="text"
                             placeholder="Enter event name"
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => setName(e.target.value.trim())}
                             value={name}
                             maxLength='30'
                             required 
@@ -273,7 +273,7 @@ function CreateEvent() {
                     <Form.Control 
                         type="text"
                         placeholder="Enter event location"
-                        onChange={(e) => setLocation(e.target.value)}
+                        onChange={(e) => setLocation(e.target.value.trim())}
                         value={location}
                         maxLength='100'
                         required 

@@ -361,7 +361,7 @@ function Tickets() {
                     <Form.Control 
                         type="text"
                         placeholder="Ticket name"
-                        onChange={(e) => setSelectedTicket({ ...selectedTicket, name: e.target.value })}
+                        onChange={(e) => setSelectedTicket({ ...selectedTicket, name: e.target.value.trim() })}
                         value={selectedTicket?.name}
                         maxLength='25'    
                         required 
@@ -461,7 +461,7 @@ function Tickets() {
                     <Form.Control 
                         type="text"
                         placeholder="Ticket name"
-                        onChange={(e) => setNewName(e.target.value)}
+                        onChange={(e) => setNewName(e.target.value.trim())}
                         value={newName}
                         maxLength='25'    
                         required 

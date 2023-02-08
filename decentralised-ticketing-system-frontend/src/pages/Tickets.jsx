@@ -281,17 +281,17 @@ function Tickets() {
                 const ticketBlob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
 
                 const cid = await uploadImmutableData([
-                    new File([ticketBlob], `${selectedTicket.name}_metadata.json`)
+                    new File([ticketBlob], `${selectedTicket.name.trim()}_metadata.json`)
                 ]);
-                selectedTicket.image = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${selectedTicket.name}_metadata.json`);
+                selectedTicket.image = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${selectedTicket.name.trim()}_metadata.json`);
                 selectedTicket.souvenir = selectedTicket.souvenirURI;
             }
             else if (selectedTicket.souvenir !== "") {
                 const ticketImagesCid = await uploadImmutableData([selectedTicket.souvenir]);
                 const creationTime = new Date().getTime() / 1000;
                 const souvenirMetadata = {
-                    name: `${selectedTicket.name} Souvenir`,
-                    description: `This is a ${selectedTicket.name} souvenir for ${event.name}`,
+                    name: `${selectedTicket.name.trim()} Souvenir`,
+                    description: `This is a ${selectedTicket.name.trim()} souvenir for ${event.name.trim()}`,
                     image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${selectedTicket.souvenir.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${event.id}`),
                     attributes: [{
@@ -302,11 +302,11 @@ function Tickets() {
                 }
                 const souvenirBlob = new Blob([JSON.stringify(souvenirMetadata)], { type: 'application/json' });
                 const cid = await uploadImmutableData([
-                    new File([souvenirBlob], `${selectedTicket.name}_souvenir_metadate.json`)
+                    new File([souvenirBlob], `${selectedTicket.name.trim()}_souvenir_metadate.json`)
                 ]);
 
                 selectedTicket.image = selectedTicket.tokenURI;
-                selectedTicket.souvenir = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${selectedTicket.name}_souvenir_metadate.json`);
+                selectedTicket.souvenir = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${selectedTicket.name.trim()}_souvenir_metadate.json`);
             }
             else {
                 selectedTicket.image = selectedTicket.tokenURI;
@@ -315,7 +315,7 @@ function Tickets() {
             contract.updateTicketType(
                 event.id,
                 selectedTicketId,
-                selectedTicket.name,
+                selectedTicket.name.trim(),
                 selectedTicket.image,
                 selectedTicket.souvenir,
                 parseEther(String(selectedTicket.price)),
@@ -361,7 +361,7 @@ function Tickets() {
                     <Form.Control 
                         type="text"
                         placeholder="Ticket name"
-                        onChange={(e) => setSelectedTicket({ ...selectedTicket, name: e.target.value.trim() })}
+                        onChange={(e) => setSelectedTicket({ ...selectedTicket, name: e.target.value})}
                         value={selectedTicket?.name}
                         maxLength='25'    
                         required 
@@ -461,7 +461,7 @@ function Tickets() {
                     <Form.Control 
                         type="text"
                         placeholder="Ticket name"
-                        onChange={(e) => setNewName(e.target.value.trim())}
+                        onChange={(e) => setNewName(e.target.value)}
                         value={newName}
                         maxLength='25'    
                         required 

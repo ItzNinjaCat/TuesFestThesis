@@ -9,7 +9,7 @@ function TicketInfo({
     }) {
     const setTicketName = (e) => {
         const values = [...ticketInputFields];
-        values[index].name = e.target.value.trim();
+        values[index].name = e.target.value;
         setTicketInputFields(values);
     }
 

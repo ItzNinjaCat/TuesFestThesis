@@ -102,14 +102,14 @@ function CreateEvent() {
             else if (endDate !== '') {
                 endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
             }
-            const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name]));
+            const eventId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [name.trim()]));
             setEventId(eventId);
             const ticketCids = [];
             const ticketPromises = ticketInputFields.map(async ticket => {
                 const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir])
                 const ticketMetadata = {
-                    name: ticket.name,
-                    description: `This is a ${ticket.name} ticket for ${name}`,
+                    name: ticket.name.trim(),
+                    description: `This is a ${ticket.name.trim()} ticket for ${name.trim()}`,
                     image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
                     attributes: {
@@ -120,8 +120,8 @@ function CreateEvent() {
                 }
                 ticketCids.push(ticketImagesCid);
                 const souvenirMetadata = {
-                    name: `${ticket.name} Souvenir`,
-                    description: `This is a ${ticket.name} souvenir for ${name}`,
+                    name: `${ticket.name.trim()} Souvenir`,
+                    description: `This is a ${ticket.name.trim()} souvenir for ${name.trim()}`,
                     image: encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`),
                     external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
                     attributes: {
@@ -133,22 +133,22 @@ function CreateEvent() {
                 const ticketBlob = new Blob([JSON.stringify(ticketMetadata)], { type: 'application/json' });
                 const souvenirBlob = new Blob([JSON.stringify(souvenirMetadata)], { type: 'application/json' });
                 return uploadImmutableData([
-                    new File([ticketBlob], `${ticket.name}_metadata.json`),
-                    new File([souvenirBlob], `${ticket.name}_souvenir_metadate.json`)
+                    new File([ticketBlob], `${ticket.name.trim()}_metadata.json`),
+                    new File([souvenirBlob], `${ticket.name.trim()}_souvenir_metadate.json`)
                 ]);
 
             })
             Promise.all(ticketPromises).then(async (responses) => {
                 const eventImagesCid = await uploadImmutableData(images);
-                const tx = await contract.createEvent(eventId, name, desc, eventImagesCid, location, startDateUNIX, endDateUNIX);
+                const tx = await contract.createEvent(eventId, name.trim(), desc.trim(), eventImagesCid, location.trim(), startDateUNIX, endDateUNIX);
                 tx.wait().then(() => {
                     const ticketTypes = ticketInputFields.map(async (ticket, index) => {
                         return await contract.createTicketType(
                             eventId,
-                            ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name])),
-                            ticket.name,
-                            encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${responses[index]}/${ticket.name}_metadata.json`),
-                            encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${responses[index]}/${ticket.name}_souvenir_metadate.json`),
+                            ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name.trim()])),
+                            ticket.name.trim(),
+                            encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${responses[index]}/${ticket.name.trim()}_metadata.json`),
+                            encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${responses[index]}/${ticket.name.trim()}_souvenir_metadate.json`),
                             ethers.utils.parseEther(String(ticket.price)),
                             ticket.quantity, {
                                  gasLimit: 500000
@@ -242,7 +242,7 @@ function CreateEvent() {
                         <Form.Control 
                             type="text"
                             placeholder="Enter event name"
-                            onChange={(e) => setName(e.target.value.trim())}
+                            onChange={(e) => setName(e.target.value)}
                             value={name}
                             maxLength='30'
                             required 
@@ -273,7 +273,7 @@ function CreateEvent() {
                     <Form.Control 
                         type="text"
                         placeholder="Enter event location"
-                        onChange={(e) => setLocation(e.target.value.trim())}
+                        onChange={(e) => setLocation(e.target.value)}
                         value={location}
                         maxLength='100'
                         required 

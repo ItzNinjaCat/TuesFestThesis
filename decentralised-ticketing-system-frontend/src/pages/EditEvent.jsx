@@ -119,7 +119,7 @@ function EditEvent() {
             else {
                 imagesCid = cid;
             }
-            const tx = await contract.updateEvent(id, name, desc, imagesCid, location, startDateUNIX, endDateUNIX);
+            const tx = await contract.updateEvent(id, name.trim(), desc.trim(), imagesCid, location.trim(), startDateUNIX, endDateUNIX);
             tx.wait().then(() => handleShow());
 
         } 
@@ -180,7 +180,7 @@ function EditEvent() {
                         <Form.Control 
                             type="text"
                             placeholder="Enter event name"
-                            onChange={(e) => setName(e.target.value.trim())}
+                            onChange={(e) => setName(e.target.value)}
                             value={name}
                             maxLength='30'
                             required 
@@ -207,7 +207,7 @@ function EditEvent() {
                     <Form.Control 
                         type="text"
                         placeholder="Enter event location"
-                        onChange={(e) => setLocation(e.target.value.trim())}
+                        onChange={(e) => setLocation(e.target.value)}
                         value={location}
                         maxLength='100'
                         required 

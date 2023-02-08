@@ -47,7 +47,8 @@ const TicketType = (({
                     signature.deadline,
                     signature.v,
                     signature.r,
-                    signature.s,
+            signature.s,
+            parseEther(String(amount * price))
         ).then((res) => {
             console.log(res);
             res.wait().then(() => {
@@ -60,6 +61,7 @@ const TicketType = (({
                         0, 0,
                         '0x0000000000000000000000000000000000000000000000000000000000000000',
                         '0x0000000000000000000000000000000000000000000000000000000000000000',
+                        0
                     )).wait();
                 });
                 Promise.all(ticketSale).then(() => {
@@ -82,7 +84,7 @@ const TicketType = (({
     });
 
     const changeRecipientAddress = ((event) => {
-        setRecipeintAddress(event.target.value.trim());
+        setRecipeintAddress(event.target.value);
     });
 
     const handleSubmitGift = ((event) => {

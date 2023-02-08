@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Row, Col, Button, Modal } from "react-bootstrap";
 import { EVENT_BY_ID_QUERY } from "../utils/subgraphQueries";
 import { useQuery } from "@apollo/client";

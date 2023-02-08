@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Image } from "react-bootstrap";
 import { TICKETS_QUERY } from "../../utils/subgraphQueries";
 import { formatEther } from "ethers/lib/utils";

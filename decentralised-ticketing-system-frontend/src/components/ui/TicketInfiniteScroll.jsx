@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import InfiniteScroll from '@alexcambose/react-infinite-scroll';
 import Ticket from './Ticket';

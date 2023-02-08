@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {ethers} from 'ethers';
 import { Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import TicketInfo from '../components/ui/TicketInfo';

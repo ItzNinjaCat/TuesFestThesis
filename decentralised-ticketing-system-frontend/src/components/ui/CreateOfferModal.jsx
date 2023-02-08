@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { BUY_TICKETS_EVENT_QUERY, SELL_TICKETS_QUERY } from '../../utils/subgraphQueries';
 import { useQuery } from '@apollo/client';

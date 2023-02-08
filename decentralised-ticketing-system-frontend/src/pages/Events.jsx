@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { EVENTS_QUERY } from '../utils/subgraphQueries';
 import EventCard from '../components/ui/EventCard';

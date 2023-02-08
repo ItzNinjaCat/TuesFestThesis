@@ -1,6 +1,6 @@
 
 import { Modal } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'react-bootstrap/Image';
 
 function Souvenir({

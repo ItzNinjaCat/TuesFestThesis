@@ -1,6 +1,6 @@
 
 import { Modal, Button } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'react-bootstrap/Image';
 import QRCode from "react-qr-code";
 import { useNavigate } from 'react-router-dom';

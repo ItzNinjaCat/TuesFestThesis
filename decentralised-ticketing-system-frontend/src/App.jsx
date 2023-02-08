@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import UserProfile from './pages/UserProfile';
@@ -15,8 +15,9 @@ import useScrollDirection from './hooks/useScrollDirection';
 import UseTicket from './pages/UseTicket';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from './utils/connectors';
-import { TICKET_ADDRESS, TICKET_ABI } from './constants/contracts';
-import { TIK_ADDRESS, TIK_ABI } from './constants/contracts';
+import { TICKET_ADDRESS, TIK_ADDRESS } from './constants/contracts';
+import TICKET_ABI from './constants/abis/ticketGenerator.json';
+import TIK_ABI from './constants/abis/TIK.json';
 import { getContract } from './utils/contractUtils';
 import useBalance from './hooks/useBalance';
 import { Web3ContextProvider } from './hooks/useWeb3Context';

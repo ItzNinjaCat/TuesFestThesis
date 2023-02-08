@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 import CreateOfferModal from '../components/ui/CreateOfferModal';
 import { useQuery } from '@apollo/client';

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Tabs, Tab } from 'react-bootstrap';
 import { useWeb3Context } from "../../hooks/useWeb3Context";
 import { USER_SELL_OFFERS_QUERY, USER_BUY_OFFERS_QUERY } from '../../utils/subgraphQueries';

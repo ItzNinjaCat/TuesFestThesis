@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
+import { resizeImage } from '../../utils/utils';
 function TicketInfo({
     ticketInputFields,
     setTicketInputFields,
@@ -50,10 +51,11 @@ function TicketInfo({
             alert("Only images are allowed");
             e.target.files = new DataTransfer().files;
         }
-
         const values = [...ticketInputFields];
-        values[index].image = e.target.files[0];
-        setTicketInputFields(values);
+        resizeImage(e.target.files[0]).then((resizedImage) => {
+            values[index].image = resizedImage;
+            setTicketInputFields(values);
+        });
     }
     const setTicketSouvenir = (e) => {
         if (e.target.files[0].size > 1024 * 1024 * 10) {
@@ -67,8 +69,11 @@ function TicketInfo({
             e.target.files = new DataTransfer().files;
         }
         const values = [...ticketInputFields];
-        values[index].souvenir = e.target.files[0];
-        setTicketInputFields(values);
+        resizeImage(e.target.files[0]).then((resizedImage) => {
+            console.log(resizedImage);
+            values[index].souvenir = resizedImage;
+            setTicketInputFields(values);
+        });
     }
     const removeTicketInfo = () => {
         const values = [...ticketInputFields];

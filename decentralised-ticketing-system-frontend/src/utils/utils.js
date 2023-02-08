@@ -86,3 +86,29 @@ export async function onAttemptToApprove(ticketContract, tokenContract, account,
     };
     return preparedSignature;
 }
+
+export function resizeImage(file) {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => {
+      canvas.width = 800;
+      canvas.height = 450;
+      ctx.drawImage(img, 0, 0, 800, 450);
+      URL.revokeObjectURL(img.src);
+
+      canvas.toBlob((blob) => {
+        const resizedFile = new File([blob], file.name, {
+          type: file.type,
+          lastModified: file.lastModified
+        });
+        resolve(resizedFile);
+      });
+    };
+  });
+}
+
+
+

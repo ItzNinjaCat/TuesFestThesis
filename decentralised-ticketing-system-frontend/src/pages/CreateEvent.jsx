@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {ethers} from 'ethers';
+import { ethers } from 'ethers';
+import { resizeImage } from '../utils/utils';
 import { Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import TicketInfo from '../components/ui/TicketInfo';
 import { useNavigate } from 'react-router-dom';
@@ -106,7 +107,9 @@ function CreateEvent() {
             setEventId(eventId);
             const ticketCids = [];
             const ticketPromises = ticketInputFields.map(async ticket => {
-                const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir])
+                console.log("sdasdasdas");
+                console.log(ticket);
+                const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir]);
                 const ticketMetadata = {
                     name: ticket.name.trim(),
                     description: `This is a ${ticket.name.trim()} ticket for ${name.trim()}`,
@@ -138,6 +141,7 @@ function CreateEvent() {
                 ]);
 
             })
+            console.log("here");
             Promise.all(ticketPromises).then(async (responses) => {
                 const eventImagesCid = await uploadImmutableData(images);
                 const tx = await contract.createEvent(eventId, name.trim(), desc.trim(), eventImagesCid, location.trim(), startDateUNIX, endDateUNIX);
@@ -202,13 +206,19 @@ function CreateEvent() {
             }
         });
         const items = new DataTransfer();
+        const images = [];
         Array.from(e.target.files).forEach((fileObj, i) => {
             if (!removeIndexes.includes(i)) {
-                items.items.add(fileObj);
+                images.push(resizeImage(fileObj));
             }
         });
-        e.target.files = items.files;
-        setImages(e.target.files);
+        Promise.all(images).then((images) => {
+            images.forEach((image) => {
+                items.items.add(image);
+            });
+            e.target.files = items.files;
+            setImages(e.target.files);
+        });
     }
 
     const addTicketInfo = () => {
@@ -261,7 +271,8 @@ function CreateEvent() {
                             required
                         />
                         <Form.Text className="text-muted">
-                            The first image will be used as a thumbnail
+                            The first image will be used as a thumbnail<br />
+                            Please use 16 x 9 aspect ratio for best results
                         </Form.Text>
                         <Form.Control.Feedback type="invalid">
                             Please provide atleast one event image.

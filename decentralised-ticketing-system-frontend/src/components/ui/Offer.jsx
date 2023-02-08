@@ -3,7 +3,7 @@ import { Button, Image } from "react-bootstrap";
 import { TICKETS_QUERY } from "../../utils/subgraphQueries";
 import { formatEther } from "ethers/lib/utils";
 import { useQuery } from "@apollo/client";
-import { onAttemptToApprove } from "../../utils/contractUtils";
+import { onAttemptToApprove } from "../../utils/utils";
 import { useWeb3Context } from "../../hooks/useWeb3Context";
 function Offer({ offer }) {
     const [image, setImage] = useState(undefined);

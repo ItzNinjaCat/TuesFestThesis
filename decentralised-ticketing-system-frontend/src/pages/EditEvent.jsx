@@ -6,6 +6,7 @@ import { useQuery } from "@apollo/client";
 import { uploadImmutableData } from '../utils/web3.storageEndpoints';
 import { useWeb3Context } from "../hooks/useWeb3Context";
 import Loader from "../components/ui/Loader";
+import { resizeImage } from "../utils/utils";
 function EditEvent() {
     const { account, contract } = useWeb3Context();
     const [show, setShow] = useState(false);
@@ -157,13 +158,19 @@ function EditEvent() {
             }
         });
         const items = new DataTransfer();
+        const images = [];
         Array.from(e.target.files).forEach((fileObj, i) => {
             if (!removeIndexes.includes(i)) {
-                items.items.add(fileObj);
+                images.push(resizeImage(fileObj));
             }
         });
-        e.target.files = items.files;
-        setImages(e.target.files);
+        Promise.all(images).then((images) => {
+            images.forEach((image) => {
+                items.items.add(image);
+            });
+            e.target.files = items.files;
+            setImages(e.target.files);
+        });
     }
     if (loading) return <Loader />;
     return (

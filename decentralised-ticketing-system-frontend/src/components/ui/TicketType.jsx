@@ -1,7 +1,7 @@
 
 import { Button, Modal, Form, InputGroup, Image } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
-import { onAttemptToApprove } from '../../utils/contractUtils';
+import { onAttemptToApprove } from '../../utils/utils';
 import { ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import { useWeb3Context } from "../../hooks/useWeb3Context";

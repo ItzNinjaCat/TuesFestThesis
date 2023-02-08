@@ -7,6 +7,7 @@ import { uploadImmutableData } from "../utils/web3.storageEndpoints";
 import { useWeb3Context } from "../hooks/useWeb3Context";
 import { useQuery } from "@apollo/client";
 import { EVENT_WITH_TYPES_BY_ID_QUERY } from "../utils/subgraphQueries";
+import { resizeImage } from "../utils/utils";
 
 function Tickets() {
     const { id } = useParams();
@@ -123,10 +124,15 @@ function Tickets() {
             e.target.files = new DataTransfer().files;
         }
         if (newTicket) {
-            setNewTokenURI(e.target.files[0]);
+            
+            resizeImage(e.target.files[0]).then((resizedImage) => {
+                setNewTokenURI(resizedImage);
+            });
         }
         else {
-            setSelectedTicket({ ...selectedTicket, image: e.target.files[0] });
+            resizeImage(e.target.files[0]).then((resizedImage) => {
+                setSelectedTicket({ ...selectedTicket, image: resizedImage });
+            });
         }
     });
     const setTicketSouvenir = ((e, newTicket = false) => {
@@ -141,10 +147,14 @@ function Tickets() {
             e.target.files = new DataTransfer().files;
         }
         if (newTicket) {
-            setNewSouvenirURI(e.target.files[0]);
+            resizeImage(e.target.files[0]).then((resizedImage) => {
+                setNewSouvenirURI(resizedImage);
+            });
         }
         else {
-            setSelectedTicket({ ...selectedTicket, souvenir: e.target.files[0] });
+            resizeImage(e.target.files[0]).then((resizedImage) => {
+                setSelectedTicket({ ...selectedTicket, souvenir: resizedImage });
+            });
         }
     });
 

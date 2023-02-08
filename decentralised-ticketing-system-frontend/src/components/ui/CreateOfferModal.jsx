@@ -5,7 +5,7 @@ import { BUY_TICKETS_EVENT_QUERY, SELL_TICKETS_QUERY } from '../../utils/subgrap
 import { useQuery } from '@apollo/client';
 import { randomBytes } from 'ethers/lib/utils';
 import { ethers } from 'ethers';
-import { onAttemptToApprove } from "../../utils/contractUtils";
+import { onAttemptToApprove } from "../../utils/utils";
 import { parseEther } from "ethers/lib/utils";
 import { useWeb3Context } from "../../hooks/useWeb3Context";
 

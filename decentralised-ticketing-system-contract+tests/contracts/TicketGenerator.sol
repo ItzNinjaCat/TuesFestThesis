@@ -212,7 +212,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     }
 
     function createEvent(
-        bytes32 _eventId,
         string memory _name,
         string memory _description,
         string memory eventStorage,
@@ -220,6 +219,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         uint256 startTime,
         uint256 endTime
     ) external onlyRole(ORGANIZER_ROLE) {
+        bytes32 _eventId = keccak256(abi.encode(_name));
         require(events[_eventId].id == 0, "Event already exists");
         events[_eventId].id = _eventId;
         events[_eventId].organizer = msg.sender;
@@ -289,13 +289,13 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
 
     function createTicketType(
         bytes32 _eventId,
-        bytes32 _ticketTypeId,
         string memory _ticketName,
         string memory _tokenURI,
         string memory _souvenirTokenURI,
         uint256 _price,
         uint256 _maxSupply
     ) external eventExists(_eventId) onlyRole(ORGANIZER_ROLE) {
+        bytes32 _ticketTypeId = keccak256(abi.encode(_eventId, _ticketName));
         require(
             events[_eventId].organizer == msg.sender,
             "Only the organizer of this event can create ticket type"
@@ -503,7 +503,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         emit BecomeOrganizer(msg.sender);
     }
 
-    // rewrite this function
     function ownerWithdraw() external onlyRole(OWNER_ROLE) {
         require(withdrawableBalance > 0, "Not enough to be withdrawn");
         bool success = payable(msg.sender).send(withdrawableBalance);
@@ -534,7 +533,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     }
 
     function createBuyOffer(
-        bytes32 id,
         bytes32 eventId,
         bytes32 ticketTypeId,
         uint256 price,
@@ -542,7 +540,10 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) external {
+    ) external eventExists(eventId) ticketTypeExists(eventId, ticketTypeId) {
+        bytes32 id = keccak256(
+            abi.encode(msg.sender, eventId, ticketTypeId, v, r, s)
+        );
         token.permit(msg.sender, address(this), price, deadline, v, r, s);
         Structs.Offer memory offer;
         offer.id = id;
@@ -596,7 +597,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     }
 
     function createSellOffer(
-        bytes32 id,
         bytes32 eventId,
         bytes32 ticketTypeId,
         uint256 ticketId,
@@ -608,6 +608,13 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
         ticketExists(ticketId)
         onlyTicketOwner(ticketId)
     {
+        bytes32 id = keccak256(
+            abi.encode(msg.sender, eventId, ticketTypeId, ticketId)
+        );
+        require(
+            !offers[id].sellOffer,
+            "Sell offer already exists for this ticket"
+        );
         Structs.Offer memory offer;
         offer.id = id;
         offer.seller = msg.sender;

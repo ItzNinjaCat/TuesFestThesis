@@ -144,12 +144,11 @@ function CreateEvent() {
             console.log("here");
             Promise.all(ticketPromises).then(async (responses) => {
                 const eventImagesCid = await uploadImmutableData(images);
-                const tx = await contract.createEvent(eventId, name.trim(), desc.trim(), eventImagesCid, location.trim(), startDateUNIX, endDateUNIX);
+                const tx = await contract.createEvent(name.trim(), desc.trim(), eventImagesCid, location.trim(), startDateUNIX, endDateUNIX);
                 tx.wait().then(() => {
                     const ticketTypes = ticketInputFields.map(async (ticket, index) => {
                         return await contract.createTicketType(
                             eventId,
-                            ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [ticket.name.trim()])),
                             ticket.name.trim(),
                             encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${responses[index]}/${ticket.name.trim()}_metadata.json`),
                             encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${responses[index]}/${ticket.name.trim()}_souvenir_metadate.json`),

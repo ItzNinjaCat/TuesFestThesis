@@ -204,7 +204,6 @@ function Tickets() {
             const souvenirTOkenURI = encodeURI(`${import.meta.env.VITE_W3LINK_URL}/${cid}/${newName}_souvenir_metadate.json`);
             contract.createTicketType(
                 event.id,
-                ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [newName])),
                 newName,
                 tokenURI,
                 souvenirTOkenURI,

@@ -208,9 +208,9 @@
     "@ethersproject/strings" "^5.7.0"
 
 "@float-capital/float-subgraph-uncrashable@^0.0.0-alpha.4":
-  version "0.0.0-internal-testing.4"
-  resolved "https://registry.yarnpkg.com/@float-capital/float-subgraph-uncrashable/-/float-subgraph-uncrashable-0.0.0-internal-testing.4.tgz#7886b6fc1c75ea5b36d4c953e7150875954b94cf"
-  integrity sha512-jjGnze6R8ro5Stf1mQwOPVCCmOf6smEZeDD7q2QEP14Mg8O5zTfvE/3U2bHAiV1y8G+affZsBu9sG1yarD/WRw==
+  version "0.0.0-internal-testing.5"
+  resolved "https://registry.yarnpkg.com/@float-capital/float-subgraph-uncrashable/-/float-subgraph-uncrashable-0.0.0-internal-testing.5.tgz#060f98440f6e410812766c5b040952d2d02e2b73"
+  integrity sha512-yZ0H5e3EpAYKokX/AbtplzlvSxEJY7ZfpvQyDzyODkks0hakAAlDG6fQu1SlDJMWorY7bbq1j7fCiFeTWci6TA==
   dependencies:
     "@rescript/std" "9.0.0"
     graphql "^16.6.0"
@@ -311,9 +311,9 @@
   integrity sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==
 
 "@types/node@*":
-  version "18.11.18"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.18.tgz#8dfb97f0da23c2293e554c5a50d61ef134d7697f"
-  integrity sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==
+  version "18.13.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.13.0.tgz#0400d1e6ce87e9d3032c19eb6c58205b0d3f7850"
+  integrity sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==
 
 "@types/node@^10.0.3":
   version "10.17.60"
@@ -2297,11 +2297,9 @@ minipass@^3.0.0:
     yallist "^4.0.0"
 
 minipass@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-4.0.0.tgz#7cebb0f9fa7d56f0c5b17853cbe28838a8dbbd3b"
-  integrity sha512-g2Uuh2jEKoht+zvO6vJqXmYpflPqzRBT+Th2h01DKh5z7wbY/AZ2gCQ78cP70YoHPyFdY30YBV5WxgLOEwOykw==
-  dependencies:
-    yallist "^4.0.0"
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-4.0.3.tgz#00bfbaf1e16e35e804f4aa31a7c1f6b8d9f0ee72"
+  integrity sha512-OW2r4sQ0sI+z5ckEt5c1Tri4xTgZwYDxpE54eqWlQloQRoWtXjqt9udJ5Z4dSv7wK+nfFI7FRXyCpBSft+gpFw==
 
 minizlib@^2.1.1:
   version "2.1.2"
@@ -2500,9 +2498,9 @@ node-fetch@2.6.0:
   integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
 
 node-fetch@^2.3.0:
-  version "2.6.8"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.8.tgz#a68d30b162bc1d8fd71a367e81b997e1f4d4937e"
-  integrity sha512-RZ6dBYuj8dRSfxpUSu+NsdF1dpPpluJxwOp+6IoDp/sH2QNDSvurYsAa+F1WxY2RjA1iP93xhcsUoYbF2XBqVg==
+  version "2.6.9"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.9.tgz#7c7f744b5cc6eb5fd404e0c7a9fec630a55657e6"
+  integrity sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==
   dependencies:
     whatwg-url "^5.0.0"
 

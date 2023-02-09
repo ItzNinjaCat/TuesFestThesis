@@ -929,11 +929,12 @@ export class TicketGenerator extends ethereum.SmartContract {
     deadline: BigInt,
     v: i32,
     r: Bytes,
-    s: Bytes
+    s: Bytes,
+    amount: BigInt
   ): BigInt {
     let result = super.call(
       "buyTicket",
-      "buyTicket(bytes32,bytes32,address,uint256,uint8,bytes32,bytes32):(uint256)",
+      "buyTicket(bytes32,bytes32,address,uint256,uint8,bytes32,bytes32,uint256):(uint256)",
       [
         ethereum.Value.fromFixedBytes(_eventId),
         ethereum.Value.fromFixedBytes(_ticketTypeId),
@@ -941,7 +942,8 @@ export class TicketGenerator extends ethereum.SmartContract {
         ethereum.Value.fromUnsignedBigInt(deadline),
         ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(v)),
         ethereum.Value.fromFixedBytes(r),
-        ethereum.Value.fromFixedBytes(s)
+        ethereum.Value.fromFixedBytes(s),
+        ethereum.Value.fromUnsignedBigInt(amount)
       ]
     );
 
@@ -955,11 +957,12 @@ export class TicketGenerator extends ethereum.SmartContract {
     deadline: BigInt,
     v: i32,
     r: Bytes,
-    s: Bytes
+    s: Bytes,
+    amount: BigInt
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "buyTicket",
-      "buyTicket(bytes32,bytes32,address,uint256,uint8,bytes32,bytes32):(uint256)",
+      "buyTicket(bytes32,bytes32,address,uint256,uint8,bytes32,bytes32,uint256):(uint256)",
       [
         ethereum.Value.fromFixedBytes(_eventId),
         ethereum.Value.fromFixedBytes(_ticketTypeId),
@@ -967,7 +970,8 @@ export class TicketGenerator extends ethereum.SmartContract {
         ethereum.Value.fromUnsignedBigInt(deadline),
         ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(v)),
         ethereum.Value.fromFixedBytes(r),
-        ethereum.Value.fromFixedBytes(s)
+        ethereum.Value.fromFixedBytes(s),
+        ethereum.Value.fromUnsignedBigInt(amount)
       ]
     );
     if (result.reverted) {
@@ -1416,6 +1420,10 @@ export class BuyTicketCall__Inputs {
   get s(): Bytes {
     return this._call.inputValues[6].value.toBytes();
   }
+
+  get amount(): BigInt {
+    return this._call.inputValues[7].value.toBigInt();
+  }
 }
 
 export class BuyTicketCall__Outputs {
@@ -1477,36 +1485,32 @@ export class CreateBuyOfferCall__Inputs {
     this._call = call;
   }
 
-  get id(): Bytes {
+  get eventId(): Bytes {
     return this._call.inputValues[0].value.toBytes();
   }
 
-  get eventId(): Bytes {
+  get ticketTypeId(): Bytes {
     return this._call.inputValues[1].value.toBytes();
   }
 
-  get ticketTypeId(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
-  }
-
   get price(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get deadline(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 
   get v(): i32 {
-    return this._call.inputValues[5].value.toI32();
+    return this._call.inputValues[4].value.toI32();
   }
 
   get r(): Bytes {
-    return this._call.inputValues[6].value.toBytes();
+    return this._call.inputValues[5].value.toBytes();
   }
 
   get s(): Bytes {
-    return this._call.inputValues[7].value.toBytes();
+    return this._call.inputValues[6].value.toBytes();
   }
 }
 
@@ -1535,32 +1539,28 @@ export class CreateEventCall__Inputs {
     this._call = call;
   }
 
-  get _eventId(): Bytes {
-    return this._call.inputValues[0].value.toBytes();
-  }
-
   get _name(): string {
-    return this._call.inputValues[1].value.toString();
+    return this._call.inputValues[0].value.toString();
   }
 
   get _description(): string {
-    return this._call.inputValues[2].value.toString();
+    return this._call.inputValues[1].value.toString();
   }
 
   get eventStorage(): string {
-    return this._call.inputValues[3].value.toString();
+    return this._call.inputValues[2].value.toString();
   }
 
   get location(): string {
-    return this._call.inputValues[4].value.toString();
+    return this._call.inputValues[3].value.toString();
   }
 
   get startTime(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[4].value.toBigInt();
   }
 
   get endTime(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
+    return this._call.inputValues[5].value.toBigInt();
   }
 }
 
@@ -1589,24 +1589,20 @@ export class CreateSellOfferCall__Inputs {
     this._call = call;
   }
 
-  get id(): Bytes {
+  get eventId(): Bytes {
     return this._call.inputValues[0].value.toBytes();
   }
 
-  get eventId(): Bytes {
+  get ticketTypeId(): Bytes {
     return this._call.inputValues[1].value.toBytes();
   }
 
-  get ticketTypeId(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
-  }
-
   get ticketId(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get price(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 }
 
@@ -1639,28 +1635,24 @@ export class CreateTicketTypeCall__Inputs {
     return this._call.inputValues[0].value.toBytes();
   }
 
-  get _ticketTypeId(): Bytes {
-    return this._call.inputValues[1].value.toBytes();
-  }
-
   get _ticketName(): string {
-    return this._call.inputValues[2].value.toString();
+    return this._call.inputValues[1].value.toString();
   }
 
   get _tokenURI(): string {
-    return this._call.inputValues[3].value.toString();
+    return this._call.inputValues[2].value.toString();
   }
 
   get _souvenirTokenURI(): string {
-    return this._call.inputValues[4].value.toString();
+    return this._call.inputValues[3].value.toString();
   }
 
   get _price(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[4].value.toBigInt();
   }
 
   get _maxSupply(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
+    return this._call.inputValues[5].value.toBigInt();
   }
 }
 
@@ -2124,52 +2116,6 @@ export class SetTIKContractCall__Outputs {
   _call: SetTIKContractCall;
 
   constructor(call: SetTIKContractCall) {
-    this._call = call;
-  }
-}
-
-export class TicketPurchasePermitCall extends ethereum.Call {
-  get inputs(): TicketPurchasePermitCall__Inputs {
-    return new TicketPurchasePermitCall__Inputs(this);
-  }
-
-  get outputs(): TicketPurchasePermitCall__Outputs {
-    return new TicketPurchasePermitCall__Outputs(this);
-  }
-}
-
-export class TicketPurchasePermitCall__Inputs {
-  _call: TicketPurchasePermitCall;
-
-  constructor(call: TicketPurchasePermitCall) {
-    this._call = call;
-  }
-
-  get amount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get deadline(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get v(): i32 {
-    return this._call.inputValues[2].value.toI32();
-  }
-
-  get r(): Bytes {
-    return this._call.inputValues[3].value.toBytes();
-  }
-
-  get s(): Bytes {
-    return this._call.inputValues[4].value.toBytes();
-  }
-}
-
-export class TicketPurchasePermitCall__Outputs {
-  _call: TicketPurchasePermitCall;
-
-  constructor(call: TicketPurchasePermitCall) {
     this._call = call;
   }
 }

@@ -886,7 +886,8 @@
       { "internalType": "uint256", "name": "deadline", "type": "uint256" },
       { "internalType": "uint8", "name": "v", "type": "uint8" },
       { "internalType": "bytes32", "name": "r", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "s", "type": "bytes32" }
+      { "internalType": "bytes32", "name": "s", "type": "bytes32" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "buyTicket",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -902,7 +903,6 @@
   },
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "id", "type": "bytes32" },
       { "internalType": "bytes32", "name": "eventId", "type": "bytes32" },
       { "internalType": "bytes32", "name": "ticketTypeId", "type": "bytes32" },
       { "internalType": "uint256", "name": "price", "type": "uint256" },
@@ -918,7 +918,6 @@
   },
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "_eventId", "type": "bytes32" },
       { "internalType": "string", "name": "_name", "type": "string" },
       { "internalType": "string", "name": "_description", "type": "string" },
       { "internalType": "string", "name": "eventStorage", "type": "string" },
@@ -933,7 +932,6 @@
   },
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "id", "type": "bytes32" },
       { "internalType": "bytes32", "name": "eventId", "type": "bytes32" },
       { "internalType": "bytes32", "name": "ticketTypeId", "type": "bytes32" },
       { "internalType": "uint256", "name": "ticketId", "type": "uint256" },
@@ -947,7 +945,6 @@
   {
     "inputs": [
       { "internalType": "bytes32", "name": "_eventId", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "_ticketTypeId", "type": "bytes32" },
       { "internalType": "string", "name": "_ticketName", "type": "string" },
       { "internalType": "string", "name": "_tokenURI", "type": "string" },
       {
@@ -1180,19 +1177,6 @@
     "name": "symbol",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "internalType": "uint256", "name": "deadline", "type": "uint256" },
-      { "internalType": "uint8", "name": "v", "type": "uint8" },
-      { "internalType": "bytes32", "name": "r", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "s", "type": "bytes32" }
-    ],
-    "name": "ticketPurchasePermit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

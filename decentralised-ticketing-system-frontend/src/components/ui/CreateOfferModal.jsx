@@ -92,12 +92,11 @@ function CreateOfferModal() {
       e.preventDefault();
       e.stopPropagation();
       setValidated(true);
-      const offerId = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string"], [randomBytes(32).toLocaleString()]));
         if (offerType === 'buy') {
             const event = events.find((event) => event.id === selectedEvent);
             const signature = await onAttemptToApprove(contract, tokenContract, account, price, +new Date(event.startTime * 1000) + 60 * 60);
         contract.createBuyOffer(
-          offerId, selectedEvent, selectedTicketId, parseEther(price), signature.deadline, signature.v, signature.r, signature.s).then(() => {
+          selectedEvent, selectedTicketId, parseEther(price), signature.deadline, signature.v, signature.r, signature.s).then(() => {
             handleClose();
             handleClose();
             setSelectedEvent("");
@@ -108,7 +107,7 @@ function CreateOfferModal() {
       }
         else {
         const ticket = tickets.find((ticket) => ticket.ticketType.id === selectedTicketId);
-        contract.createSellOffer(offerId, selectedEvent, selectedTicketId, ticket.tokenId, parseEther(price)).then(() => {
+        contract.createSellOffer(selectedEvent, selectedTicketId, ticket.tokenId, parseEther(price)).then(() => {
           handleClose();
           setSelectedEvent("");
           setSelectedTicket("");

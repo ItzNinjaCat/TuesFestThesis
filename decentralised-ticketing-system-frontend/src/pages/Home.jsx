@@ -16,44 +16,43 @@ function Home() {
 
   useEffect(() => {
     if (!loading) {
-      console.log(data);
       setEvents(data.events);
     }
   }, [loading, data]);
+
   if (loading || events === undefined) return <Loader />;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div className="container">
-      <div className=" my-5">
+      <div className="my-5">
         <h1>Recent events</h1>
       </div>
+
       <hr className="my-4" />
-      <div id="eventHolder" className="d-flex justify-content-center flex-wrap m-5">
-        {events?.map((event, index) => {
-          if (index % 4 === 0) {
-            return (
-              <div key={event?.id} className="row w-75 d-flex justify-content-start">
-                {events.slice(index, index + 4).map(event => (
-                  <div key={event.id} className="w-25 col-3 d-flex flex-wrap text-wrap event-card">
-                    <EventCard
-                      key={event.id}
-                      name={event.name}
-                      location={event.location}
-                      startTime={event.startTime}
-                      endTime={event.endTime}
-                      imagesCid={event.eventStorage}
-                      url={`/events/${event.id}`}
-                      creator={event.organizer}
-                    />
-                  </div>
-                ))}
+
+      {events.length > 0 ? (
+        <div id="eventHolder" className="row">
+          {events?.map((event, index) => (
+            <div key={index} className="col-md-3">
+              <div key={event.id} className="event-card">
+                <EventCard
+                  key={event.id}
+                  name={event.name}
+                  location={event.location}
+                  startTime={event.startTime}
+                  endTime={event.endTime}
+                  imagesCid={event.eventStorage}
+                  url={`/events/${event.id}`}
+                  creator={event.organizer}
+                />
               </div>
-            );
-          }
-          return null;
-        })}
-      </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center my-5">No events</div>
+      )}
     </div>
   );
 }

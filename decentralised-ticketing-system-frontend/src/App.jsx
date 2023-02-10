@@ -27,38 +27,54 @@ function App() {
   const scrollDirection = useScrollDirection();
   const { connector } = useWeb3React();
   const hooks = connectorHooks[getName(connector)];
-  const { useAccount, useAccounts, useIsActive, useProvider} = hooks;
+  const { useAccount, useAccounts, useIsActive, useProvider } = hooks;
   const provider = useProvider();
   const account = useAccount();
   const isActive = useIsActive();
   const accounts = useAccounts();
   const tokenContract = getContract(TIK_ADDRESS, TIK_ABI.abi, provider, account);
   const contract = getContract(TICKET_ADDRESS, TICKET_ABI.abi, provider, account);
-  const balance = (useBalance(isActive, provider, account, tokenContract, balanceUpdate, setBalanceUpdate));
+  const balance = useBalance(
+    isActive,
+    provider,
+    account,
+    tokenContract,
+    balanceUpdate,
+    setBalanceUpdate,
+  );
   return (
     <Web3ContextProvider
-      value={{ connector, provider, account, isActive, accounts, tokenContract, contract, balance, setBalanceUpdate }}>
-    <BrowserRouter>
-      <div className="wrapper">
-        {scrollDirection !== "down" ? <Header/> : null}
-        <div className="main">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="events/:eventId" element={<Event />}/>
-            <Route path="events" element={<Events />}/>
-            <Route
-              path="create-event"
-              element={<CreateEvent />} />
-            <Route path="user/:address" element={<UserProfile />} />
-            <Route path="organizer/:address" element={<OrganizerProfile/>} />
-            <Route path="marketplace" element={<Marketplace />} />
-            <Route path="events/:id/dashboard" element={<EventDashboard />} />
-            <Route path="events/:id/edit" element={<EditEvent />} />
-            <Route path="events/:id/tickets/edit" element={<Tickets />} />
-            <Route path="use/:id" element={<UseTicket />} />
-          </Routes>
+      value={{
+        connector,
+        provider,
+        account,
+        isActive,
+        accounts,
+        tokenContract,
+        contract,
+        balance,
+        setBalanceUpdate,
+      }}
+    >
+      <BrowserRouter>
+        <div className="wrapper">
+          {scrollDirection !== 'down' ? <Header /> : null}
+          <div className="main">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="events/:eventId" element={<Event />} />
+              <Route path="events" element={<Events />} />
+              <Route path="create-event" element={<CreateEvent />} />
+              <Route path="user/:address" element={<UserProfile />} />
+              <Route path="organizer/:address" element={<OrganizerProfile />} />
+              <Route path="marketplace" element={<Marketplace />} />
+              <Route path="events/:id/dashboard" element={<EventDashboard />} />
+              <Route path="events/:id/edit" element={<EditEvent />} />
+              <Route path="events/:id/tickets/edit" element={<Tickets />} />
+              <Route path="use/:id" element={<UseTicket />} />
+            </Routes>
+          </div>
         </div>
-      </div>
       </BrowserRouter>
     </Web3ContextProvider>
   );

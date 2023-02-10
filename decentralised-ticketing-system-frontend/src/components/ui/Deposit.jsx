@@ -1,7 +1,8 @@
 import { ethers } from 'ethers';
 import { Button, Modal, Form } from 'react-bootstrap';
 import React, { useState } from 'react';
-import { useWeb3Context } from "../../hooks/useWeb3Context";
+import { useWeb3Context } from '../../hooks/useWeb3Context';
+
 function Deposit() {
   const [validated, setValidated] = useState(false);
   const [show, setShow] = useState(false);
@@ -15,110 +16,92 @@ function Deposit() {
     setDepositAmount(0);
   };
   const handleShowSuccess = () => setShowSuccess(true);
-  const validateDepositAmount = (e) => {
-      const value = Number(e.target.value);
-      if (value < 0 && value > -100) {
-          e.target.value = -Number(e.target.value);
-      }
-      else if (value < -100 || value > 100) {
-          e.target.value = 100;
-      }
-      setDepositAmount(e.target.value);
-  }
+  const validateDepositAmount = e => {
+    const value = Number(e.target.value);
+    if (value < 0 && value > -100) {
+      e.target.value = -Number(e.target.value);
+    } else if (value < -100 || value > 100) {
+      e.target.value = 100;
+    }
+    setDepositAmount(e.target.value);
+  };
 
-  const handleSubmit = async (e) => {
-      const form = e.currentTarget;
-      if (form.checkValidity() === false) {
-          e.preventDefault();
-          e.stopPropagation();
-          setValidated(true);
-      }
-      else {
-          e.preventDefault();
-          setValidated(true);
-          const amount = ethers.utils.parseEther(depositAmount);
-          const tx = await contract.deposit({value: amount});
-          handleClose();
-          await tx.wait();
-          setValidated(false);
-          setBalanceUpdate(true);
-          handleShowSuccess();
-        }
-      }
+  const handleSubmit = async e => {
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
+      setValidated(true);
+    } else {
+      e.preventDefault();
+      setValidated(true);
+      const amount = ethers.utils.parseEther(depositAmount);
+      const tx = await contract.deposit({ value: amount });
+      handleClose();
+      await tx.wait();
+      setValidated(false);
+      setBalanceUpdate(true);
+      handleShowSuccess();
+    }
+  };
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
         Deposit
       </Button>
-      <Modal
-          show={show}
-          onHide={handleClose}
-          centered
-          keyboard={false}
-      >
+      <Modal show={show} onHide={handleClose} centered keyboard={false}>
         <Modal.Header closeButton>
           <Modal.Title>Deposit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form
-                noValidate
-                validated={validated}
-                onSubmit={handleSubmit}
-            >
+          <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group controlId="ticketPrice">
-                <Form.Label>Ticket price (in TIK)</Form.Label>
-                <Form.Control 
-                    type="number"
-                    step="0.001"
-                    placeholder="Ticket price"
-                    onChange={validateDepositAmount}
-                    value={depositAmount}
-                    required
-                    min="0.001"
-                    max="100"
-                />
-                <Form.Control.Feedback type="invalid">
-                    Minimum deposit is 0.001 Tik.
-                </Form.Control.Feedback>
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Deposit
-                </Button>
-            </Form>
+              <Form.Label>Ticket price (in TIK)</Form.Label>
+              <Form.Control
+                type="number"
+                step="0.001"
+                placeholder="Ticket price"
+                onChange={validateDepositAmount}
+                value={depositAmount}
+                required
+                min="0.001"
+                max="100"
+              />
+              <Form.Control.Feedback type="invalid">
+                Minimum deposit is 0.001 Tik.
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Deposit
+            </Button>
+          </Form>
           <p
-          style ={{
-            fontSize: "16px",
-            fontFamily: "monospace",
-            fontWeight: "bold"
-          }}
+            style={{
+              fontSize: '16px',
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+            }}
           >
-            Balance after deposit : {(Number(balance) + Number(depositAmount))} TIK (ETH:TIK - 1:1)
+            Balance after deposit : {Number(balance) + Number(depositAmount)} TIK (ETH:TIK - 1:1)
           </p>
         </Modal.Body>
-        </Modal>
+      </Modal>
 
-        <Modal
-          show={showSuccess}
-          onHide={handleCloseSuccess}
-          centered
-          keyboard={false}
-        >
+      <Modal show={showSuccess} onHide={handleCloseSuccess} centered keyboard={false}>
         <Modal.Header closeButton>
           <Modal.Title>Sucessfull deposit</Modal.Title>
         </Modal.Header>
-          <Modal.Body>
-            <div className="d-flex flex-column align-items-center">
-              <p>
-                You have successfully deposited {depositAmount} TIK.
-              </p>
-              <Button variant="primary" onClick={handleCloseSuccess}>
-                  Continue
-              </Button>
-            </div>
-          </Modal.Body>
-        </Modal>
-      </>
-    )
+        <Modal.Body>
+          <div className="d-flex flex-column align-items-center">
+            <p>You have successfully deposited {depositAmount} TIK.</p>
+            <Button variant="primary" onClick={handleCloseSuccess}>
+              Continue
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </>
+  );
 }
 
 export default Deposit;

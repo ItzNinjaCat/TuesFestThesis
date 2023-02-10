@@ -10,41 +10,39 @@ import { hooks as walletConnectHooks, walletConnect } from './utils/walletConnec
 import { SUBGRAPH_URL } from './constants/contracts';
 
 const connectors = [
-    [metaMask, metaMaskHooks],
-    [walletConnect, walletConnectHooks],
-    [coinbaseWallet, coinbaseWalletHooks],
+  [metaMask, metaMaskHooks],
+  [walletConnect, walletConnectHooks],
+  [coinbaseWallet, coinbaseWalletHooks],
 ];
 const client = new ApolloClient({
-    cache: new InMemoryCache(
-        {
-            typePolicies: {
-                fields: {
-                    offers: {
-                        keyArgs: ["buyer", "seller"],
-                    },
-                    tickets: {
-                        keyArgs: ["owner"],
-                    },
-                    souvenirs: {
-                        keyArgs: ["owner"],
-                    },
-                    organizers: {
-                        keyArgs: ["account"],
-                    },
-                },
-            },
-        }
-    ),
-    uri: SUBGRAPH_URL,
+  cache: new InMemoryCache({
+    typePolicies: {
+      fields: {
+        offers: {
+          keyArgs: ['buyer', 'seller'],
+        },
+        tickets: {
+          keyArgs: ['owner'],
+        },
+        souvenirs: {
+          keyArgs: ['owner'],
+        },
+        organizers: {
+          keyArgs: ['account'],
+        },
+      },
+    },
+  }),
+  uri: SUBGRAPH_URL,
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <React.StrictMode>
-        <Web3ReactProvider connectors={connectors}>
-            <ApolloProvider client={client}>
-                <App />
-            </ApolloProvider>
-        </Web3ReactProvider>
-    </React.StrictMode>,
+  <React.StrictMode>
+    <Web3ReactProvider connectors={connectors}>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </Web3ReactProvider>
+  </React.StrictMode>,
 );

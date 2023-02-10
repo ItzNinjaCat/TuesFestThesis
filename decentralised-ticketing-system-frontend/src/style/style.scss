@@ -3,65 +3,73 @@
 @import 'bootstrap.scss';
 @import 'typography.scss';
 @import 'layout.scss';
-@import "/node_modules/react-image-gallery/styles/scss/image-gallery.scss";
+@import '/node_modules/react-image-gallery/styles/scss/image-gallery.scss';
 
-.event-card{
-    border-radius: 4%;
+.event-card {
+  border-radius: 4%;
 }
 
-.event-card:hover{
-    transform: scale(1.05);
-    transition-duration: 0.5s;
-    background-color: rgba(98, 99, 98, 0.1);
+.event-card:hover {
+  transform: scale(1.05);
+  transition-duration: 0.5s;
+  background-color: rgba(98, 99, 98, 0.1);
 }
 
-.ticket-card{
-    border-radius: 4%;
+.ticket-card {
+  border-radius: 4%;
 }
 
-.ticket-card:hover{
-    background-color: rgba(98, 99, 98, 0.1);
+.ticket-card:hover {
+  background-color: rgba(98, 99, 98, 0.1);
 }
 
-.loader-div{
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+.loader-div {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .desc-text {
-    font: 400 0.75rem/1.6667 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-style: normal;
-    font-variant-caps: normal;
-    font-variant-ligatures: normal;
-    font-variant-numeric: normal;
-    font-variant-east-asian: normal;
-    font-weight: 400;
-    font-stretch: normal;
-    font-size: 0.75rem;
-    line-height: 1.6667;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    color: #999;
+  font: 400 0.75rem/1.6667 system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  font-style: normal;
+  font-variant-caps: normal;
+  font-variant-ligatures: normal;
+  font-variant-numeric: normal;
+  font-variant-east-asian: normal;
+  font-weight: 400;
+  font-stretch: normal;
+  font-size: 0.75rem;
+  line-height: 1.6667;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  color: #999;
 }
 
-.offers-modal-w{
-    width: 90vw !important;
-    max-width: 90vw !important;
-    height: 80vh !important;
-    max-height: 80vh !important;
+.offers-modal-w {
+  width: 90vw !important;
+  max-width: 90vw !important;
+  height: 80vh !important;
+  max-height: 80vh !important;
 }
 
-.image-gallery-image{
-    border-radius: 0.5rem !important;
+.image-gallery-image {
+  border-radius: 0.5rem !important;
 }
 
-.image-gallery-slide{
-    border-radius: 0.5rem !important;
+.image-gallery-slide {
+  border-radius: 0.5rem !important;
 }
 
 .ticket-modal-w {
-    width: 50vw !important;
-    max-width: 50vw !important;
+  width: 50vw !important;
+  max-width: 50vw !important;
+}
+
+.img-profile {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
 }

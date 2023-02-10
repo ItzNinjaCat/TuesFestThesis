@@ -86,21 +86,22 @@ function Header() {
                 <Nav.Link href="/events">Events</Nav.Link>
                 <Nav.Link href="/marketplace">Marketplace</Nav.Link>
               </Nav>
-            {
+              {
               account !== undefined && isOrganizer !== undefined && isOwner !== undefined ?
                 
-                (
-                  isOrganizer ? 
-                  <div>
-                    <Button className="me-3" onClick={createEvent}>Create event</Button>
-                    <Button onClick={organizerProfile}>Your events</Button>
-                    {isOwner ? <Button className="ms-3" onClick={ownerWithdraw}>Withdraw fees</Button> : null}
-                  </div>
+                    (
+                      isOrganizer ? 
+                        <div> 
+                          <Button className="me-3" onClick={createEvent}>Create event</Button>
+                          <Button onClick={organizerProfile}>Your events</Button>
+                        </div>
                   : 
                   <Button onClick={becomeOrganizer}>Become an organizer</Button>
                   )
-                : null
+                  : null 
               }
+                {isOwner ? <Button className="ms-3" onClick={ownerWithdraw}>Withdraw fees</Button> : null}
+
               {isActive ?
                 <div className="d-flex align-items-center">
                 <div className="d-flex flex-column align-items-end mx-2">

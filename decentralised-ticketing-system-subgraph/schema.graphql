@@ -1,69 +1,69 @@
 type Event @entity {
-    id: ID!
-    creator: Bytes!
-    name: String!
-    description: String!
-    eventStorage: String!
-    location: String!
-    startTime: BigInt!
-    endTime: BigInt!
-    ticketTypes: [TicketType!]! @derivedFrom(field: "event")
-    createdAt: BigInt!
-    updatedAt: BigInt
-    deleted: Boolean!
+  id: ID!
+  creator: Bytes!
+  name: String!
+  description: String!
+  eventStorage: String!
+  location: String!
+  startTime: BigInt!
+  endTime: BigInt!
+  ticketTypes: [TicketType!]! @derivedFrom(field: "event")
+  createdAt: BigInt!
+  updatedAt: BigInt
+  deleted: Boolean!
 }
 
 type TicketType @entity {
-    id: ID!
-    event: Event!
-    name: String!
-    price: BigInt!
-    maxSupply: BigInt!
-    currentSupply: BigInt!
-    tokenURI: String!
-    souvenirTokenURI: String!
-    deleted: Boolean!
+  id: ID!
+  event: Event!
+  name: String!
+  price: BigInt!
+  maxSupply: BigInt!
+  currentSupply: BigInt!
+  tokenURI: String!
+  souvenirTokenURI: String!
+  deleted: Boolean!
 }
 
 type Ticket @entity {
-    id: ID!
-    event: Event!
-    ticketType: TicketType!
-    creator: Bytes!
-    owner: Bytes!
-    deleted: Boolean!
-    souvenirMinted: Boolean!
-    souvenir: Souvenir
-    usable: Boolean!
-    used: Boolean!
-    tokenId: BigInt!
-    tokenURI: String!
-    timestamp: BigInt!
+  id: ID!
+  event: Event!
+  ticketType: TicketType!
+  creator: Bytes!
+  owner: Bytes!
+  deleted: Boolean!
+  souvenirMinted: Boolean!
+  souvenir: Souvenir
+  usable: Boolean!
+  used: Boolean!
+  tokenId: BigInt!
+  tokenURI: String!
+  timestamp: BigInt!
 }
 
 type Souvenir @entity(immutable: true) {
-    id: ID!
-    owner: Bytes!
-    tokenId: BigInt!
-    tokenURI: String!
-    ticket: Ticket! @derivedFrom(field: "souvenir")
+  id: ID!
+  owner: Bytes!
+  tokenId: BigInt!
+  tokenURI: String!
+  ticket: Ticket! @derivedFrom(field: "souvenir")
 }
 
 type Offer @entity {
-    id: ID!
-    event: Event!
-    ticketType: TicketType!
-    ticket: Ticket
-    price: BigInt!
-    buyer: Bytes
-    seller: Bytes
-    buyOffer: Boolean!
-    sellOffer: Boolean!
-    deadline: BigInt
-    deleted: Boolean!
+  id: ID!
+  event: Event!
+  ticketType: TicketType!
+  ticket: Ticket
+  price: BigInt!
+  buyer: Bytes
+  seller: Bytes
+  buyOffer: Boolean!
+  sellOffer: Boolean!
+  deadline: BigInt
+  deleted: Boolean!
 }
 
 type Organizer @entity {
-    id: ID!
-    account: Bytes!
+  id: ID!
+  account: Bytes!
 }

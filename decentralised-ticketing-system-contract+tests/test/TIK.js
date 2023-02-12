@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-async function generateSignature(tik, address, addr1, value) {
-    const nonce = (await tik.nonces(address)); // Our Token Contract Nonces
+async function generateSignature(tikToken, address, addr1, value) {
+    const nonce = (await tikToken.nonces(address)); // Our Token Contract Nonces
     const deadline = + new Date() + 60 * 60; // Permit with deadline which the permit is valid
     const wrapValue = ethers.utils.parseEther(value); // Value to approve for the spender to use
       
@@ -12,9 +12,9 @@ async function generateSignature(tik, address, addr1, value) {
     ];
     
     const domain = {
-      name: await tik.name(),
+      name: await tikToken.name(),
       version: '1',
-      verifyingContract: tik.address
+      verifyingContract: tikToken.address
     };
     
     const Permit = [ // array of objects -> properties from erc20withpermit
@@ -54,58 +54,69 @@ async function generateSignature(tik, address, addr1, value) {
     })
 }
 describe("TIK ERC20", function () {
-    it("Should deploy TIK ERC20", async function () {
-        const TIK = await ethers.getContractFactory("TIK");
-        const tik = await TIK.deploy();
-        await tik.deployed();
-        expect(await tik.name()).to.equal("Ticket Token");
-    });
+  let TikToken;
+  let tikToken;
 
-    it("Should mint 1000 TIK to owner", async function () {
-        const [owner] = await ethers.getSigners();
-        const TIK = await ethers.getContractFactory("TIK");
-        const tik = await TIK.deploy();
-        await tik.deployed();
-        await tik.mint(owner.address, 1000);
-        expect(await tik.balanceOf(owner.address)).to.equal(1000);
-    });
-
-    it("Should transfer 100 TIK from owner to addr1", async function () {
-        const [owner, addr1] = await ethers.getSigners();
-        const TIK = await ethers.getContractFactory("TIK");
-        const tik = await TIK.deploy();
-        await tik.deployed();
-        await tik.mint(owner.address, 1000);
-        await tik.transfer(addr1.address, 100);
-        expect(await tik.balanceOf(addr1.address)).to.equal(100);
-    });
-
-    it("Should burn 100 TIK from owner", async function () {
-        const [owner, addr1] = await ethers.getSigners();
-        const TIK = await ethers.getContractFactory("TIK");
-        const tik = await TIK.deploy();
-        await tik.deployed();
-        await tik.mint(owner.address, 1000);
-        await tik.burn(owner.address, 100);
-        expect(await tik.balanceOf(owner.address)).to.equal(900);
-    });
-
-    it("Should revert becauce of an invalid signature", async function () {
-        const [owner, addr1] = await ethers.getSigners();
-        const TIK = await ethers.getContractFactory("TIK");
-        const tik = await TIK.deploy();
-        await tik.deployed();
-        await tik.mint(owner.address, 1000);
-        const signature = await generateSignature(tik, owner.address, addr1, "100");
-        await expect(tik.permit(owner.address, addr1.address, ethers.utils.parseEther("100"), signature.deadline, 0, signature.r, signature.s)).to.be.revertedWith("ERC20WithPermit: INVALID_SIGNATURE");
-    });
-      it("Should revert becauce the permit is expired", async function () {
-        const [owner, addr1] = await ethers.getSigners();
-        const TIK = await ethers.getContractFactory("TIK");
-        const tik = await TIK.deploy();
-        await tik.deployed();
-        await tik.mint(owner.address, 1000);
-        const signature = await generateSignature(tik, owner.address, addr1, "100");
-        await expect(tik.permit(owner.address, addr1.address, ethers.utils.parseEther("100"), 0, signature.v, signature.r, signature.s)).to.be.revertedWith("ERC20WithPermit: EXPIRED");
-    });
+  before(async function () {
+    TikToken = await ethers.getContractFactory("TIK");
+    SouvenirGenerator = await ethers.getContractFactory("SouvenirGenerator");
+    TicketGenerator = await ethers.getContractFactory("TicketGenerator");
   });
+  beforeEach(async function () {
+    tikToken = await TikToken.deploy();
+    await tikToken.deployed();
+    const [owner] = await ethers.getSigners();
+    await tikToken.setTicketContractAddress(owner.address);
+  });
+  it("Should deploy TIK ERC20", async function () {
+    expect(await tikToken.name()).to.equal("Ticket Token");
+  });
+  it("Should mint 1000 TIK to owner", async function () {
+    const [owner] = await ethers.getSigners();
+    await tikToken.mint(owner.address, 1000);
+    expect(await tikToken.balanceOf(owner.address)).to.equal(1000);
+  });
+  it("Should revert mint because caller is not ticket generator", async function () {    
+    const [owner, addr1] = await ethers.getSigners();
+    await expect(tikToken.connect(addr1).mint(addr1.address, 1000)).to.be.revertedWith('TIK: Only Ticket contract can call this function');
+  });
+  it("Should transfer 100 TIK from owner to addr1", async function () {
+    const [owner, addr1] = await ethers.getSigners();
+    await tikToken.mint(owner.address, 1000);
+    await tikToken.transfer(addr1.address, 100);
+    expect(await tikToken.balanceOf(addr1.address)).to.equal(100);
+  });
+
+  it("Should burn 100 TIK from owner", async function () {
+    const [owner] = await ethers.getSigners();
+    await tikToken.mint(owner.address, 1000);
+    await tikToken.burn(owner.address, 100);
+    expect(await tikToken.balanceOf(owner.address)).to.equal(900);
+  });
+  it("Should revert burning because caller is not ticket generator", async function () {
+    const [owner, addr1] = await ethers.getSigners();
+    await tikToken.mint(addr1.address, 1000);
+    await expect(tikToken.connect(addr1).burn(addr1.address, 1000)).to.be.revertedWith('TIK: Only Ticket contract can call this function');
+  });
+  it("Should revert permit because caller is not ticket generator", async function () {
+    const [owner, addr1] = await ethers.getSigners();
+    const signature = await generateSignature(tikToken, owner.address, addr1, "100");
+    await expect(tikToken.connect(addr1).permit(addr1.address, owner.address, ethers.utils.parseEther("100"), signature.deadline, signature.v, signature.r, signature.s)).to.be.revertedWith('TIK: Only Ticket contract can call this function');
+  });
+  it("Should revert becauce of an invalid signature", async function () {
+    const [owner, addr1] = await ethers.getSigners();
+    await tikToken.mint(owner.address, 1000);
+    const signature = await generateSignature(tikToken, owner.address, addr1, "100");
+    await expect(tikToken.permit(owner.address, addr1.address, ethers.utils.parseEther("100"), signature.deadline, 0, signature.r, signature.s)).to.be.revertedWith("ERC20WithPermit: INVALID_SIGNATURE");
+  });
+  it("Should revert becauce the permit is expired", async function () {
+    const [owner, addr1] = await ethers.getSigners();
+    await tikToken.mint(owner.address, 1000);
+    const signature = await generateSignature(tikToken, owner.address, addr1, "100");
+    await expect(tikToken.permit(owner.address, addr1.address, ethers.utils.parseEther("100"), 0, signature.v, signature.r, signature.s)).to.be.revertedWith("ERC20WithPermit: EXPIRED");
+  });
+  it("Should revert because caller is not owner", async function () {
+    const [owner, addr1] = await ethers.getSigners();
+    await expect(tikToken.connect(addr1).setTicketContractAddress(addr1.address)).to.be.revertedWith("Ownable: caller is not the owner");
+  });
+});

@@ -854,21 +854,6 @@ export class TicketGenerator extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
-  MINTER_ROLE(): Bytes {
-    let result = super.call("MINTER_ROLE", "MINTER_ROLE():(bytes32)", []);
-
-    return result[0].toBytes();
-  }
-
-  try_MINTER_ROLE(): ethereum.CallResult<Bytes> {
-    let result = super.tryCall("MINTER_ROLE", "MINTER_ROLE():(bytes32)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBytes());
-  }
-
   ORGANIZER_ROLE(): Bytes {
     let result = super.call("ORGANIZER_ROLE", "ORGANIZER_ROLE():(bytes32)", []);
 
@@ -1000,25 +985,6 @@ export class TicketGenerator extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  getMetadata(_tokenId: BigInt): string {
-    let result = super.call("getMetadata", "getMetadata(uint256):(string)", [
-      ethereum.Value.fromUnsignedBigInt(_tokenId)
-    ]);
-
-    return result[0].toString();
-  }
-
-  try_getMetadata(_tokenId: BigInt): ethereum.CallResult<string> {
-    let result = super.tryCall("getMetadata", "getMetadata(uint256):(string)", [
-      ethereum.Value.fromUnsignedBigInt(_tokenId)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toString());
   }
 
   getRoleAdmin(role: Bytes): Bytes {

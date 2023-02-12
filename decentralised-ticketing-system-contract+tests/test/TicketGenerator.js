@@ -84,6 +84,7 @@ describe("Ticket NFT generator", function () {
     ticketGenerator = await TicketGenerator.deploy(tikToken.address, souvenirGenerator.address);
     await ticketGenerator.deployed();
     await souvenirGenerator.setTicketContractAddress(ticketGenerator.address);
+    await tikToken.setTicketContractAddress(ticketGenerator.address);
   })
 
   
@@ -897,7 +898,7 @@ describe("Ticket NFT generator", function () {
           preparedSignature.s,
           ethers.utils.parseEther("1")
         );
-        expect(await ticketGenerator.getMetadata(1)).to.equal("https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU");
+        expect(await ticketGenerator.tokenURI(1)).to.equal("https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU");
       });
     });
 
@@ -969,7 +970,7 @@ describe("Ticket NFT generator", function () {
         );
       await ticketGenerator.connect(owner).useTicket(1);
       await ticketGenerator.connect(owner).getSouvenir(1)
-      expect(await souvenirGenerator.connect(owner).getSouvenirMetadata(1)).to.equal('https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU');        
+      expect(await souvenirGenerator.connect(owner).tokenURI(1)).to.equal('https://gateway.pinata.cloud/ipfs/QmUkwQwYJT7TKLvQfLCppJdQq7KSCpWmszvs47yRwUN5tU');        
       });
       it("Should revert because ticket does not exist", async function () {
         await expect(ticketGenerator.connect(owner).getSouvenir(1)).to.be.revertedWith('Ticket does not exist');

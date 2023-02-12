@@ -26,6 +26,7 @@ async function main() {
   const ticketGenerator = await TicketGenerator.deploy(tikToken.address, souvenirGenerator.address);
   await ticketGenerator.deployed();
   await souvenirGenerator.setTicketContractAddress(ticketGenerator.address);
+  await tikToken.setTicketContractAddress(ticketGenerator.address);
   console.log("Ticket generator contract deployed to address: ", ticketGenerator.address);
 }
 

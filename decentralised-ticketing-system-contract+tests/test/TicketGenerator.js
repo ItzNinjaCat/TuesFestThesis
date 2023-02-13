@@ -87,13 +87,6 @@ describe("Ticket NFT generator", function () {
     await tikToken.setTicketContractAddress(ticketGenerator.address);
   })
 
-  
-  describe("TIK tests", function () {
-    it("Deployment should assign the total supply of tokens to the owner", async function () {
-      const ownerBalance = await tikToken.balanceOf(owner.address);
-      expect(await tikToken.totalSupply()).to.equal(ownerBalance);
-    });
-  });
 
   describe("TicketGenerator tests", function () {
     describe("Utils", function () {

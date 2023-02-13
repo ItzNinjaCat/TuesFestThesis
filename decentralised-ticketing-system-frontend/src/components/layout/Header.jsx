@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Navbar, Nav, Offcanvas, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { CgProfile } from 'react-icons/cg';
 import { ethers } from 'ethers';
 
 import SelectWalletModal from '../ui/ConnectModal';

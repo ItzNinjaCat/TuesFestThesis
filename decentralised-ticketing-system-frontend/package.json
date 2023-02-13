@@ -38,7 +38,6 @@
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.7.1",
     "react-image-gallery": "^1.2.11",
     "react-loader-spinner": "^5.3.4",
     "react-qr-code": "^2.0.11",
@@ -47,6 +46,7 @@
     "rollup-plugin-polyfill-node": "^0.12.0",
     "sass": "^1.58.0",
     "typescript": "^4.9.5",
+    "vite-plugin-chunk-split": "^0.4.7",
     "web3.storage": "^4.4.0"
   },
   "devDependencies": {

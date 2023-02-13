@@ -1,4 +1,5 @@
-import { defineConfig } from 'vite'
+import { defineConfig, splitVendorChunkPlugin } from 'vite';
+import { chunkSplitPlugin } from 'vite-plugin-chunk-split';
 import react from "@vitejs/plugin-react-swc";
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
@@ -22,14 +23,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    chunkSizeWarningLimit: 2700,
     rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return id.toString().split('node_modules/')[1].split('/')[0].toString();
-          }
-        }
-      },
       plugins: [
         rollupNodePolyFill()
       ]
@@ -37,5 +32,9 @@ export default defineConfig({
   },
   plugins: [
     react({ plugins: [["@swc/plugin-styled-components", {}]] }),
+    splitVendorChunkPlugin(),
+    chunkSplitPlugin({
+      strategy: 'unbundle',
+    }),
   ],
 })

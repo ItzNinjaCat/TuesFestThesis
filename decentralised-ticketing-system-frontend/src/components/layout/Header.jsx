@@ -14,7 +14,7 @@ import logo from '../../assets/logo.png';
 
 function Header() {
   const navigate = useNavigate();
-  const { connector, provider, account, isActive, balance, contract } = useWeb3Context();
+  const { connector, provider, account, isActive, balance, contract, setBalanceUpdate } = useWeb3Context();
   const [isOrganizer, setIsOrganizer] = useState(undefined);
   const [isOwner, setIsOwner] = useState(undefined);
 
@@ -31,6 +31,7 @@ function Header() {
         res.wait().then(res => {
           alert('You are now an organizer');
           setIsOrganizer(true);
+          setBalanceUpdate(true);
         });
       })
       .catch(e => {

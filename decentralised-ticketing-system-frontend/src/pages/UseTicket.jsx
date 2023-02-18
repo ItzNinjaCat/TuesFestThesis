@@ -19,11 +19,9 @@ function UseTicket() {
             });
         contract.useTicket(id).then((tx) => {
             tx.wait().then((receipt) => {
-                console.log(receipt);
                 setSuccess(true);
             })
         }).catch((e) => {
-            console.log(e.reason);
             setError(e.reason);
         });
     }, [provider, account, id]);

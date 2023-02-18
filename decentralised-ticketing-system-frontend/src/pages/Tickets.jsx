@@ -49,7 +49,6 @@ function Tickets() {
                     setAcc(data.event.creator);
                 }
             }catch(e){
-                console.log(e);
                 navigate('/');
             }
         }
@@ -211,7 +210,6 @@ function Tickets() {
                 newMaxSupply
             ).then((tx) => {
                 tx.wait().then((receipt) => {
-                    console.log(receipt);
                     setNewName("");
                     setNewPrice(0);
                     setNewMaxSupply(0);
@@ -412,7 +410,7 @@ function Tickets() {
                             disabled = {selectedTicketId === ""}
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please provide a ticket quantity of atleast 1.
+                            Please provide a ticket quantity of at least 1.
                         </Form.Control.Feedback>
                     </Form.Group>
                 </Row>
@@ -509,7 +507,7 @@ function Tickets() {
                             max="100000"
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please provide a ticket quantity of atleast 1.
+                            Please provide a ticket quantity of at least 1.
                         </Form.Control.Feedback>
                     </Form.Group>
                 </Row>

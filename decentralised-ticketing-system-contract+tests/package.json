@@ -7,5 +7,8 @@
     "ganache-cli": "^6.12.2",
     "hardhat": "^2.12.3",
     "solidity-coverage": "^0.8.2"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.6"
   }
 }

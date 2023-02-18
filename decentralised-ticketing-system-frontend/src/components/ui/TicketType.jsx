@@ -50,7 +50,6 @@ const TicketType = (({
             signature.s,
             parseEther(String(amount * price))
         ).then((res) => {
-            console.log(res);
             res.wait().then(() => {
                 const ticketSale = Array(Number(amount - 1)).fill(0).map(async () => {
                         

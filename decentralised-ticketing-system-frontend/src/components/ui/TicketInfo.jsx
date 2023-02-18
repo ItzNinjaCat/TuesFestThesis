@@ -70,7 +70,6 @@ function TicketInfo({
         }
         const values = [...ticketInputFields];
         resizeImage(e.target.files[0]).then((resizedImage) => {
-            console.log(resizedImage);
             values[index].souvenir = resizedImage;
             setTicketInputFields(values);
         });
@@ -131,7 +130,7 @@ function TicketInfo({
                     max="100000"
                 />
                 <Form.Control.Feedback type="invalid">
-                    Please provide a ticket quantity of atleast 1.
+                    Please provide a ticket quantity of at least 1.
                 </Form.Control.Feedback>
                 </Form.Group>
             </Row>

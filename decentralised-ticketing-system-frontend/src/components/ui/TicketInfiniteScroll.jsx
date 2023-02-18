@@ -24,7 +24,6 @@ function TicketInfiniteScroll({ query, contract, address }) {
     }, [address, loading]);
 
     const loadMore = () => {
-        console.log("load more");
         fetchMore({
             variables: {
                 owner: String(address),

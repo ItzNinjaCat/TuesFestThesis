@@ -28,7 +28,6 @@ function Offer({ offer }) {
 
     async function cancelOffer() {
         contract.cancelOffer(offer.id).then((res) => {
-            console.log(res);
             res.wait().then((res) => {
                 setBalanceUpdate(true);
             });
@@ -41,7 +40,6 @@ function Offer({ offer }) {
         if(offer.sellOffer === true){
             const signature = await onAttemptToApprove(contract, tokenContract, account, formatEther(offer.price), +new Date() + 60 * 60);
             contract.acceptSellOffer(offer.id, signature.deadline, signature.v, signature.r, signature.s).then((res) => {
-                console.log(res);
                 res.wait().then((res) => {
                     setBalanceUpdate(true);
                 });
@@ -56,7 +54,6 @@ function Offer({ offer }) {
                 return;
             }
             contract.acceptBuyOffer(offer.id, ticketAvailable.id).then((res) => {
-                console.log(res);
                 res.wait().then((res) => {
                     setBalanceUpdate(true);
                 });

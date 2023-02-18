@@ -50,7 +50,6 @@ function EventDashboard() {
                     setAcc(data.event.creator);
                 }
             }catch(e){
-                console.log(e);
                 navigate('/');
             }
         }

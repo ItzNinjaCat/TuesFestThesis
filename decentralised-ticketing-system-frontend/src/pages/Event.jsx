@@ -16,7 +16,6 @@ function Event() {
 
   useEffect(() => {
     if (!loading) {
-      console.log(data.event);
       getData(data.event.eventStorage).then(res => {
         res.files().then(files => {
           setImageUrls(
@@ -93,23 +92,19 @@ function Event() {
         </div>
 
         <div className="col-md-3 mt-5 mt-md-0">
-          {data.event.ticketTypes.map((ticketType, index) => {
+          {data.event.ticketTypes.map((type, index) => {
             return (
-              <div key={ticketType.id}>
-                {data.event.ticketTypes.slice(index, index + 4).map(type => (
-                  <div key={type.id} className="ticket-card p-4">
-                    <TicketType
-                      eventId={eventId}
-                      ticketTypeId={type.id}
-                      name={type.name}
-                      price={ethers.utils.formatEther(type.price)}
-                      eventName={data.event.name}
-                      currentSupply={type.currentSupply}
-                      tokenURI={type.tokenURI}
-                      souvenirTokenURI={type.souvenirTokenURI}
-                    />
-                  </div>
-                ))}
+              <div key={type.id} className="ticket-card p-4">
+                <TicketType
+                  eventId={eventId}
+                  ticketTypeId={type.id}
+                  name={type.name}
+                  price={ethers.utils.formatEther(type.price)}
+                  eventName={data.event.name}
+                  currentSupply={type.currentSupply}
+                  tokenURI={type.tokenURI}
+                  souvenirTokenURI={type.souvenirTokenURI}
+                />
               </div>
             );
           })}

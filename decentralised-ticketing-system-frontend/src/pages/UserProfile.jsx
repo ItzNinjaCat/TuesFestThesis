@@ -53,7 +53,6 @@ function UserProfile() {
 
     useEffect(() => {
         if (!loadingSouvenirs) {
-            console.log(dataSouvenirs);
             if (dataSouvenirs.souvenirs.length < 20) setHasMoreSouvenirs(false);
             setInitialLoadSouvenirs(false);
             setSouvenirs(dataSouvenirs.souvenirs);

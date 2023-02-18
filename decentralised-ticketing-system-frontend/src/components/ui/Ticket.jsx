@@ -20,7 +20,6 @@ function Ticket({
             res.wait().then(() => {
                 alert("Successfully minted souvenir!");
             });
-            console.log(res)
         }).catch((e) => {
             alert(e.reason);
         });

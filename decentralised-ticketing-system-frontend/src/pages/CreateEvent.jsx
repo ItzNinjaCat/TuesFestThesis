@@ -107,8 +107,6 @@ function CreateEvent() {
       setEventId(eventId);
       const ticketCids = [];
       const ticketPromises = ticketInputFields.map(async ticket => {
-        console.log('sdasdasdas');
-        console.log(ticket);
         const ticketImagesCid = await uploadImmutableData([ticket.image, ticket.souvenir]);
         const ticketMetadata = {
           name: ticket.name.trim(),
@@ -146,7 +144,6 @@ function CreateEvent() {
           new File([souvenirBlob], `${ticket.name.trim()}_souvenir_metadate.json`),
         ]);
       });
-      console.log('here');
       Promise.all(ticketPromises).then(async responses => {
         const eventImagesCid = await uploadImmutableData(images);
         const tx = await contract.createEvent(
@@ -295,7 +292,7 @@ function CreateEvent() {
               Please use 16 x 9 aspect ratio for best results
             </Form.Text>
             <Form.Control.Feedback type="invalid">
-              Please provide atleast one event image.
+              Please provide at least one event image.
             </Form.Control.Feedback>
           </Form.Group>
         </Row>

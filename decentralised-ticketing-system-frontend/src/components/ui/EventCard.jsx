@@ -29,9 +29,9 @@ function EventCard({ name, location, imagesCid, url, startTime, endTime }) {
     <>
       <div role="button" onClick={openEventPage}>
         {imageUrls.length > 0 ? <Image src={imageUrls[0]} className="mt-2" fluid rounded /> : null}
-        <h4 className="text-break">{name}</h4>
-        <p className="text-break desc-text">{location}</p>
-        <p className="text-break desc-text">
+        <h4 className="text-break mt-4">{name}</h4>
+        <p className="text-break desc-text mt-2">{location}</p>
+        <p className="text-break desc-text mt-2">
           {`
                         ${new Date(startTime * 1000).toLocaleDateString()}
                         ${new Date(startTime * 1000).toLocaleTimeString().slice(0, -3)}

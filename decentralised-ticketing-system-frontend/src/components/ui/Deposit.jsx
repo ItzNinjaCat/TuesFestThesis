@@ -54,6 +54,9 @@ function Deposit() {
           <Modal.Title>Deposit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <p className="mt-b alert alert-info">
+            Balance after deposit : {Number(balance) + Number(depositAmount)} TIK (ETH:TIK - 1:1)
+          </p>
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group controlId="ticketPrice">
               <Form.Label>Ticket price (in TIK)</Form.Label>
@@ -71,19 +74,12 @@ function Deposit() {
                 Minimum deposit is 0.001 Tik.
               </Form.Control.Feedback>
             </Form.Group>
-            <Button variant="primary" type="submit">
-              Deposit
-            </Button>
+            <div className="d-flex justify-content-center">
+              <Button className="mt-3" variant="primary" type="submit">
+                Deposit
+              </Button>
+            </div>
           </Form>
-          <p
-            style={{
-              fontSize: '16px',
-              fontFamily: 'monospace',
-              fontWeight: 'bold',
-            }}
-          >
-            Balance after deposit : {Number(balance) + Number(depositAmount)} TIK (ETH:TIK - 1:1)
-          </p>
         </Modal.Body>
       </Modal>
 

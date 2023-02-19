@@ -44,6 +44,7 @@ function CreateEvent() {
       souvenir: '',
     },
   ]);
+  const [loadingButton, setLoadingButton] = useState(false);
 
   const handleShow = () => setShow(true);
   const handleClose = () => {
@@ -54,6 +55,7 @@ function CreateEvent() {
   const getTypeIndex = ticket => {
     return ticketTypes.indexOf(ticket);
   };
+
   useEffect(() => {
     if (validated) {
       return;
@@ -70,6 +72,7 @@ function CreateEvent() {
   }, [loading, account, data]);
 
   const handleSubmit = async e => {
+    setLoadingButton(true);
     const form = e.currentTarget;
     if (form.checkValidity() === false) {
       e.preventDefault();
@@ -183,6 +186,7 @@ function CreateEvent() {
               }),
             ).then(() => {
               handleShow();
+              setLoadingButton(false);
             });
           });
         });
@@ -379,8 +383,8 @@ function CreateEvent() {
           <Button variant="light" onClick={addTicketInfo}>
             Add ticket
           </Button>
-          <Button variant="primary" type="submit">
-            Submit
+          <Button disabled={loadingButton} variant="primary" type="submit">
+            {loadingButton ? 'Loading...' : 'Submit'}
           </Button>
         </div>
       </Form>

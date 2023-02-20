@@ -14,7 +14,6 @@ import md5 from 'md5';
 import logo from '../../assets/logo.png';
 
 function Header() {
-  const navigate = useNavigate();
   const { connector, provider, account, isActive, balance, contract, setBalanceUpdate } = useWeb3Context();
   const [isOrganizer, setIsOrganizer] = useState(undefined);
   const [isOwner, setIsOwner] = useState(undefined);
@@ -62,7 +61,7 @@ function Header() {
         });
     }
   }, [provider, account, contract]);
-
+  
   useEffect(() => {
     connector.connectEagerly().catch(() => {
       console.debug('Failed to connect eagerly');
@@ -70,7 +69,12 @@ function Header() {
   }, [connector]);
 
   return (
-    <Navbar bg="light" expand="xl" sticky="top" className={scrollDirection !== 'down' ? 'fade-in-header' : 'fade-out-header'}>
+    <Navbar 
+      bg="light" 
+      expand="xl" 
+      sticky="top" 
+      className={scrollDirection !== 'down' ? 'fade-in-header' : 'fade-out-header'}
+    >
       <Container fluid>
         <img className="me-3 my-3" height={50} src={logo} alt="" />
         <Navbar.Brand href="/">Decentralized ticketing system</Navbar.Brand>

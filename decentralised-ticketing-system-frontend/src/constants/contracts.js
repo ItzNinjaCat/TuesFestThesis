@@ -1,5 +1,5 @@
-export const TIK_ADDRESS = '0xb591818289BffFbB69F20391C6e7dF6A7B968B0e';
-export const SOUVENIR_ADDRESS = '0xCe73410f693bE36265d40CfC85f0d76c3C6f36cc';
-export const TICKET_ADDRESS = '0xD1E48Fd1ddEf458DBb327d8437576286b0a7B8fB';
+export const TIK_ADDRESS = '0x2eE25E7D6414b3dc717253AD69E85Eb1480139B0';
+export const SOUVENIR_ADDRESS = '0xED2FFa307E0A804DaeA15CF81258467f656EF3f0';
+export const TICKET_ADDRESS = '0x5F6159495eeD43c95a3030eD96E9C5080610e552';
 export const SUBGRAPH_URL =
-    'https://api.studio.thegraph.com/query/39731/decentralised-ticketing-system/v0.3';
+    'https://api.studio.thegraph.com/query/39731/decentralised-ticketing-system/v0.3.4';

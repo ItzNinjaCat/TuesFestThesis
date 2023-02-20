@@ -128,24 +128,14 @@ function Marketplace() {
                 initialLoad={false}
                 noMore={false}
               >
-                <div className="d-flex justify-content-center flex-wrap mt-5">
-                  {sellOffers?.map((off, index) => {
-                    if (index % 4 === 0) {
-                      return (
-                        <div key={index} className="row w-75 d-flex justify-content-start">
-                          {sellOffers.slice(index, index + 4).map(offer => (
-                            <div
-                              key={offer.id}
-                              className="w-25 col-3 d-flex flex-wrap text-wrap ticket-card"
-                            >
-                              <Offer key={offer.id} offer={offer} />
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
+                <div className="row mt-5">
+                  {sellOffers?.map((offer, index) => (
+                    <div key={index} className="col-md-3">
+                      <div className="ticket-card">
+                        <Offer key={offer.id} offer={offer} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </InfiniteScroll>
             ) : null}

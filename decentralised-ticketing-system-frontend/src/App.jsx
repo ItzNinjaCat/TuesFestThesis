@@ -11,7 +11,7 @@ import Marketplace from './pages/Marketplace';
 import EventDashboard from './pages/EventDashboard';
 import EditEvent from './pages/EditEvent';
 import Tickets from './pages/Tickets';
-import useScrollDirection from './hooks/useScrollDirection';
+// import useScrollDirection from './hooks/useScrollDirection';
 import UseTicket from './pages/UseTicket';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from './utils/connectors';
@@ -24,7 +24,7 @@ import { Web3ContextProvider } from './hooks/useWeb3Context';
 
 function App() {
   const [balanceUpdate, setBalanceUpdate] = useState(false);
-  const scrollDirection = useScrollDirection();
+  // const scrollDirection = useScrollDirection();
   const { connector } = useWeb3React();
   const hooks = connectorHooks[getName(connector)];
   const { useAccount, useAccounts, useIsActive, useProvider } = hooks;
@@ -58,7 +58,8 @@ function App() {
     >
       <BrowserRouter>
         <div className="wrapper">
-          {scrollDirection !== 'down' ? <Header /> : null}
+          {/* {scrollDirection !== 'down' ? <Header /> : null} */}
+          <Header />
           <div className="main">
             <Routes>
               <Route path="/" element={<Home />} />

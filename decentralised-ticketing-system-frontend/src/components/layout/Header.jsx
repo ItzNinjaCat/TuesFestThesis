@@ -100,18 +100,17 @@ function Header() {
               ) : null}
             </Nav>
 
-            {isOwner ? (
-              <Button className="ms-3" onClick={ownerWithdraw}>
-                Withdraw fees
-              </Button>
-            ) : null}
-
             {isActive ? (
               <div className="d-flex align-items-center justify-content-end">
                 <div className="d-flex">
                   <div className="me-2">
                     {!isOrganizer ? (
                       <Button onClick={becomeOrganizer}>Become an organizer</Button>
+                    ) : null}
+                    {isOwner ? (
+                      <Button className="ms-3" onClick={ownerWithdraw}>
+                        Withdraw fees
+                      </Button>
                     ) : null}
                   </div>
                   <div className="me-2">

@@ -179,7 +179,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
   ) public view virtual override(ERC721, AccessControl) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
-  
+
   function createEvent(
     string memory _name,
     string memory _description,
@@ -345,7 +345,7 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     bytes32 r,
     bytes32 s,
     uint256 amount
-  ) external eventExists(_eventId) ticketTypeExists(_eventId, _ticketTypeId) returns (uint256) {
+  ) external eventExists(_eventId) ticketTypeExists(_eventId, _ticketTypeId) {
     Structs.Event storage _event = events[_eventId]; // Stack too deep error workoaround
     Structs.TicketType storage ticketType = events[_eventId].ticketTypes[_ticketTypeId];
     require(ticketType.currentSupply > 0, 'Tickets from this type sold out');
@@ -378,12 +378,11 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
       tokenId,
       ticketType.tokenURI
     );
-    return tokenId;
   }
 
   function getSouvenir(
     uint256 _ticketId
-  ) external ticketExists(_ticketId) onlyTicketOwner(_ticketId) returns (uint256) {
+  ) external ticketExists(_ticketId) onlyTicketOwner(_ticketId) {
     Structs.Ticket memory ticket = tickets[_ticketId];
     require(!ticket.souvenirMinted, 'Souvenir already minted');
     require(ticket.used, "Ticket still hasn't been used");
@@ -400,7 +399,6 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
       souvenirId,
       events[ticket.eventId].ticketTypes[ticket.ticketTypeId].souvenirTokenURI
     );
-    return souvenirId;
   }
 
   function deposit() public payable {

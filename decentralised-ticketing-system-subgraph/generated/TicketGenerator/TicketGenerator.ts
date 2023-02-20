@@ -907,65 +907,6 @@ export class TicketGenerator extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  buyTicket(
-    _eventId: Bytes,
-    _ticketTypeId: Bytes,
-    _recipient: Address,
-    deadline: BigInt,
-    v: i32,
-    r: Bytes,
-    s: Bytes,
-    amount: BigInt
-  ): BigInt {
-    let result = super.call(
-      "buyTicket",
-      "buyTicket(bytes32,bytes32,address,uint256,uint8,bytes32,bytes32,uint256):(uint256)",
-      [
-        ethereum.Value.fromFixedBytes(_eventId),
-        ethereum.Value.fromFixedBytes(_ticketTypeId),
-        ethereum.Value.fromAddress(_recipient),
-        ethereum.Value.fromUnsignedBigInt(deadline),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(v)),
-        ethereum.Value.fromFixedBytes(r),
-        ethereum.Value.fromFixedBytes(s),
-        ethereum.Value.fromUnsignedBigInt(amount)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_buyTicket(
-    _eventId: Bytes,
-    _ticketTypeId: Bytes,
-    _recipient: Address,
-    deadline: BigInt,
-    v: i32,
-    r: Bytes,
-    s: Bytes,
-    amount: BigInt
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "buyTicket",
-      "buyTicket(bytes32,bytes32,address,uint256,uint8,bytes32,bytes32,uint256):(uint256)",
-      [
-        ethereum.Value.fromFixedBytes(_eventId),
-        ethereum.Value.fromFixedBytes(_ticketTypeId),
-        ethereum.Value.fromAddress(_recipient),
-        ethereum.Value.fromUnsignedBigInt(deadline),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(v)),
-        ethereum.Value.fromFixedBytes(r),
-        ethereum.Value.fromFixedBytes(s),
-        ethereum.Value.fromUnsignedBigInt(amount)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   getApproved(tokenId: BigInt): Address {
     let result = super.call("getApproved", "getApproved(uint256):(address)", [
       ethereum.Value.fromUnsignedBigInt(tokenId)
@@ -1006,27 +947,6 @@ export class TicketGenerator extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBytes());
-  }
-
-  getSouvenir(_ticketId: BigInt): BigInt {
-    let result = super.call("getSouvenir", "getSouvenir(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(_ticketId)
-    ]);
-
-    return result[0].toBigInt();
-  }
-
-  try_getSouvenir(_ticketId: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getSouvenir",
-      "getSouvenir(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(_ticketId)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   hasRole(role: Bytes, account: Address): boolean {
@@ -1398,10 +1318,6 @@ export class BuyTicketCall__Outputs {
   constructor(call: BuyTicketCall) {
     this._call = call;
   }
-
-  get value0(): BigInt {
-    return this._call.outputValues[0].value.toBigInt();
-  }
 }
 
 export class CancelOfferCall extends ethereum.Call {
@@ -1747,10 +1663,6 @@ export class GetSouvenirCall__Outputs {
 
   constructor(call: GetSouvenirCall) {
     this._call = call;
-  }
-
-  get value0(): BigInt {
-    return this._call.outputValues[0].value.toBigInt();
   }
 }
 

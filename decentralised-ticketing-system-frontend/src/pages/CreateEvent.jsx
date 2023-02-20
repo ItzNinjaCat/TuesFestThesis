@@ -117,7 +117,7 @@ function CreateEvent() {
           image: encodeURI(
             `${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`,
           ),
-          external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
+          external_url: encodeURI(`${window.location.origin}/events/${eventId}`),
           attributes: {
             price: ticket.price,
             quantity: ticket.quantity,
@@ -131,7 +131,7 @@ function CreateEvent() {
           image: encodeURI(
             `${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`,
           ),
-          external_url: encodeURI(`https://localhost:3000/events/${eventId}`),
+          external_url: encodeURI(`${window.location.origin}/events/${eventId}`),
           attributes: {
             ticketPrice: ticket.price,
             quantity: ticket.quantity,

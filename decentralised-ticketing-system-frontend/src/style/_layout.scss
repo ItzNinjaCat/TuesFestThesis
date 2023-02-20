@@ -16,6 +16,25 @@
   background-color: $light;
 }
 
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.fade-in-header {
+  animation: fadeIn 0.5s;
+}
+
+.fade-out-header{
+  animation: fadeOut 0.5s;
+  opacity: 0;
+}
+
 .main {
   flex: 1;
 }

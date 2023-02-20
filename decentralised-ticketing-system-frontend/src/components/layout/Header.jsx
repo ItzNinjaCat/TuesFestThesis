@@ -6,6 +6,7 @@ import { ethers } from 'ethers';
 import SelectWalletModal from '../ui/ConnectModal';
 import Deposit from '../ui/Deposit';
 import Withdraw from '../ui/Withdraw';
+import useScrollDirection from '../../hooks/useScrollDirection';
 
 import { useWeb3Context } from '../../hooks/useWeb3Context';
 
@@ -17,7 +18,7 @@ function Header() {
   const { connector, provider, account, isActive, balance, contract, setBalanceUpdate } = useWeb3Context();
   const [isOrganizer, setIsOrganizer] = useState(undefined);
   const [isOwner, setIsOwner] = useState(undefined);
-
+  const scrollDirection = useScrollDirection();
   function truncate(str, n) {
     return str.length > n
       ? str.substr(0, n - 1) + '...' + str.substr(str.length - 4, str.length - 1)
@@ -69,7 +70,7 @@ function Header() {
   }, [connector]);
 
   return (
-    <Navbar bg="light" expand="xl" sticky="top">
+    <Navbar bg="light" expand="xl" sticky="top" className={scrollDirection !== 'down' ? 'fade-in-header' : 'fade-out-header'}>
       <Container fluid>
         <img className="me-3 my-3" height={50} src={logo} alt="" />
         <Navbar.Brand href="/">Decentralized ticketing system</Navbar.Brand>

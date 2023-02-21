@@ -33,17 +33,23 @@ function EventCard({ name, location, imagesCid, url, startTime, endTime }) {
         <p className="text-break desc-text mt-2">{location}</p>
         <p className="text-break desc-text mt-2">
           {`
-                        ${new Date(startTime * 1000).toLocaleDateString()}
-                        ${new Date(startTime * 1000).toLocaleTimeString().slice(0, -3)}
+                        ${new Date(Number(startTime)).toLocaleDateString()}
+                        ${new Date(Number(startTime)).toLocaleTimeString().slice(0, -3)}
                         ${`
                             ${
-                              endTime * 1000 === 0
+                              endTime === 0
                                 ? ''
-                                : new Date(endTime * 1000).toLocaleDateString() !==
-                                  new Date(startTime * 1000).toLocaleDateString()
-                                ? ` - ${new Date(endTime * 1000).toLocaleDateString()}
-                                ${new Date(endTime * 1000).toLocaleTimeString().slice(0, -3)}`
-                                : ` - ${new Date(endTime * 1000).toLocaleTimeString().slice(0, -3)}`
+                                : new Date(Number(endTime)).toLocaleDateString() ===
+                                  new Date(Number(startTime)).toLocaleDateString()
+                                ? ` - ${new Date(Number(endTime))
+                                    .toLocaleTimeString()
+                                    .slice(0, -3)}`
+                                : new Date(Number(endTime)).getMilliseconds() !== 1 
+                                ? ` - ${new Date(Number(endTime)).toLocaleDateString()}
+                                    ${new Date(Number(endTime))
+                                      .toLocaleTimeString()
+                                      .slice(0, -3)}`
+                                : ` - ${new Date(Number(endTime)).toLocaleDateString()}`
                             }
                         `}
 

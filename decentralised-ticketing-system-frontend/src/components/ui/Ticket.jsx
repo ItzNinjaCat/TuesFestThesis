@@ -41,7 +41,7 @@ function Ticket({
             </p>
             <p className='desc-text d-flex justify-content-between '>
                 <span>Name: {ticketType?.name}</span>
-                <span>{event === undefined ? null : new Date(event?.startTime * 1000).toLocaleString().slice(0, -3)}</span>
+                <span>{event === undefined ? null : new Date(Number(event?.startTime)).toLocaleString().slice(0, -3)}</span>
                 </p>
                 {ticketMetadata !== undefined ? 
             <p className='desc-text d-flex justify-content-between'>
@@ -72,10 +72,10 @@ function Ticket({
                                     <p>Total tickets: {Number(ticketMetadata?.attributes.quantity)}</p>
                                     </> : null
                                 }
-                                <p>Event start time: {new Date(event?.startTime * 1000).toLocaleString().slice(0, -3)}</p>
+                                <p>Event start time: {new Date(Number(event?.startTime)).toLocaleString().slice(0, -3)}</p>
                                 {
-                                    event?.endTime * 1000 === 0 ? null :
-                                        <p>Event end time: {new Date(event?.endTime * 1000).toLocaleString().slice(0, -3)}</p>
+                                    event?.endTime === 0 ? null :
+                                        <p>Event end time: {new Date(Number(event?.endTime)).toLocaleString().slice(0, -3)}</p>
                                 }
                         </div>
                         <QRCode value={`${window.location.origin}/use/${ticket?.id}`} />

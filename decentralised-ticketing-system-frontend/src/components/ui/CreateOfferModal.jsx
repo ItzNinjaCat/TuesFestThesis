@@ -94,7 +94,7 @@ function CreateOfferModal() {
       setValidated(true);
         if (offerType === 'buy') {
             const event = events.find((event) => event.id === selectedEvent);
-            const signature = await onAttemptToApprove(contract, tokenContract, account, price, +new Date(event.startTime * 1000) + 60 * 60);
+            const signature = await onAttemptToApprove(contract, tokenContract, account, price, +new Date(Number(event.startTime)) + 60 * 60);
         contract.createBuyOffer(
           selectedEvent, selectedTicketId, parseEther(price), signature.deadline, signature.v, signature.r, signature.s).then(() => {
             handleClose();

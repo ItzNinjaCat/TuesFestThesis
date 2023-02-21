@@ -78,6 +78,7 @@ function CreateEvent() {
       e.preventDefault();
       e.stopPropagation();
       setValidated(true);
+      setLoadingButton(false);
     } else {
       e.preventDefault();
       e.stopPropagation();
@@ -87,22 +88,24 @@ function CreateEvent() {
       let startDateUNIX = new Date(`${startDate}T00:00`);
       startDateUNIX.setHours(startTimeSplit[0]);
       startDateUNIX.setMinutes(startTimeSplit[1]);
-      startDateUNIX = startDateUNIX.getTime() / 1000;
+      startDateUNIX = startDateUNIX.getTime();
       let endDateUNIX = 0;
       if (endDate !== '' && endTime !== '') {
         const endTimeSplit = endTime.split(':');
         endDateUNIX = new Date(`${endDate}T00:00`);
         endDateUNIX.setHours(endTimeSplit[0]);
         endDateUNIX.setMinutes(endTimeSplit[1]);
-        endDateUNIX = endDateUNIX.getTime() / 1000;
+        endDateUNIX = endDateUNIX.getTime();
       } else if (endTime !== '') {
         const endTimeSplit = endTime.split(':');
         endDateUNIX = new Date(`${startDate}T00:00`);
         endDateUNIX.setHours(endTimeSplit[0]);
         endDateUNIX.setMinutes(endTimeSplit[1]);
-        endDateUNIX = endDateUNIX.getTime() / 1000;
+        endDateUNIX = endDateUNIX.getTime();
       } else if (endDate !== '') {
-        endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
+        const tmp = new Date(`${endDate}T00:00`);
+        tmp.setMilliseconds(1);
+        endDateUNIX = tmp.getTime();
       }
       const eventId = ethers.utils.keccak256(
         ethers.utils.defaultAbiCoder.encode(['string'], [name.trim()]),
@@ -156,7 +159,12 @@ function CreateEvent() {
           location.trim(),
           startDateUNIX,
           endDateUNIX,
-        );
+        ).catch(e => {
+          alert(e.reason);
+          setLoadingButton(false);
+          return null;
+        });
+        if(tx === null) return;
         tx.wait().then(() => {
           const ticketTypes = ticketInputFields.map(async (ticket, index) => {
             return await contract.createTicketType(
@@ -186,6 +194,9 @@ function CreateEvent() {
               }),
             ).then(() => {
               handleShow();
+              setLoadingButton(false);
+            }).catch(e => {
+              alert(e.reason)
               setLoadingButton(false);
             });
           });

@@ -51,7 +51,7 @@ function EventDashboard() {
       setTicketSales(data.tickets);
       let current = new Date(data.event.createdAt * 1000);
       current.setHours(0, 0, 0, 0);
-      const end = new Date(data.event.startTime * 1000);
+      const end = new Date(Number(data.event.startTime));
       end.setHours(0, 0, 0, 0);
       const tmpDates = [];
       const tmpChartData = [];
@@ -112,7 +112,7 @@ function EventDashboard() {
             dates.forEach(date => {
               const dateEnd = new Date(date);
               dateEnd.setHours(24, 0, 0, 0);
-              const dateSale = new Date(ticketSale.timestamp * 1000);
+              const dateSale = new Date(ticketSale.timestamp);
               if (dateSale.getTime() >= date.getTime() && dateSale.getTime() < dateEnd.getTime()) {
                 tmpChartData.forEach(data => {
                   if (
@@ -195,12 +195,21 @@ function EventDashboard() {
           <div className="d-flex align-items-start flex-column">
             <p>
               <span className="text-bold">Start time:</span>{' '}
-              {new Date(event.startTime * 1000).toLocaleString()}
+              {new Date(Number(event.startTime)).toLocaleString(
+                [], {year: "numeric", month: "numeric", day: "numeric", hour: '2-digit', minute:'2-digit'}
+              )}
             </p>
-            {event.endTime * 1000 === 0 ? null : (
+            {event.endTime === 0 ? null : (
               <p>
-                <span className="text-bold">End time:</span>{' '}
-                {new Date(event.endTime * 1000).toLocaleString()}
+                <span className="text-bold">End time:</span>
+                {
+                  new Date(Number(data.event.endTime)).getMilliseconds() !== 1 
+                  ? ` ${new Date(Number(data.event.endTime)).toLocaleDateString()}, 
+                      ${new Date(Number(data.event.endTime))
+                        .toLocaleTimeString()
+                        .slice(0, -3)}`
+                  : ` ${new Date(Number(data.event.endTime)).toLocaleDateString()}`
+                }
               </p>
             )}
             <p>

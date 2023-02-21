@@ -7,7 +7,7 @@ export const EVENTS_QUERY = gql`
             orderDirection: desc, 
             skip: $skip, 
             first: $first, 
-            where: { deleted: false, startTime_gt: ${Math.floor(Date.now() / 1000)} 
+            where: { deleted: false, startTime_gt: ${Date.now()} 
         }) {
             id
             creator
@@ -200,7 +200,7 @@ export const BUY_OFFERS_QUERY = gql`
                 deleted: false,
                 buyOffer: true,
                 buyer_not: $account,
-                event_: { startTime_gt: ${Math.floor(Date.now() / 1000)} }
+                event_: { startTime_gt: ${Date.now()} }
             }
         ) {
             id
@@ -239,7 +239,7 @@ export const SELL_OFFERS_QUERY = gql`
                 deleted: false,
                 sellOffer: true,
                 seller_not: $account,
-                event_: { startTime_gt: ${Math.floor(Date.now() / 1000)} }
+                event_: { startTime_gt: ${Date.now()} }
             }
         ) {
             id
@@ -556,7 +556,7 @@ export const RECENT_EVENTS_QUERY = gql`
             orderBy: createdAt, 
             orderDirection: desc, 
             first: 20
-        where: { deleted: false, startTime_gt: ${Math.floor(Date.now() / 1000)} }) {
+        where: { deleted: false, startTime_gt: ${Date.now()} }) {
             id
             creator
             name

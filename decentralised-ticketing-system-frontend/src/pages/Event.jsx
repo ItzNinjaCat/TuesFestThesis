@@ -31,7 +31,6 @@ function Event() {
       });
     }
   }, [loading]);
-
   if (loading) return <Loader />;
 
   return (
@@ -62,21 +61,24 @@ function Event() {
             <span className="text-bold">Date:</span>
             <span>
               {`
-                        ${new Date(data.event.startTime * 1000).toLocaleDateString()}
-                        ${new Date(data.event.startTime * 1000).toLocaleTimeString().slice(0, -3)}
+                        ${new Date(Number(data.event.startTime)).toLocaleDateString()}
+                        ${new Date(Number(data.event.startTime)).toLocaleTimeString().slice(0, -3)}
                         ${`
                             ${
-                              data.event.endTime * 1000 === 0
+                              data.event.endTime === 0
                                 ? ''
-                                : new Date(data.event.endTime * 1000).toLocaleDateString() !==
-                                  new Date(data.event.startTime * 1000).toLocaleDateString()
-                                ? ` - ${new Date(data.event.endTime * 1000).toLocaleDateString()}
-                                ${new Date(data.event.endTime * 1000)
-                                  .toLocaleTimeString()
-                                  .slice(0, -3)}`
-                                : ` - ${new Date(data.event.endTime * 1000)
+                                : new Date(Number(data.event.endTime)).toLocaleDateString() ===
+                                  new Date(Number(data.event.startTime)).toLocaleDateString()
+                                ? ` - ${new Date(Number(data.event.endTime))
                                     .toLocaleTimeString()
                                     .slice(0, -3)}`
+                                : new Date(Number(data.event.endTime)).getMilliseconds() !== 1 
+                                ? ` - ${new Date(Number(data.event.endTime)).toLocaleDateString()}
+                                    ${new Date(Number(data.event.endTime))
+                                      .toLocaleTimeString()
+                                      .slice(0, -3)}`
+                                : ` - ${new Date(Number(data.event.endTime)).toLocaleDateString()}`
+                                  
                             }
                         `}
 
@@ -92,7 +94,7 @@ function Event() {
         </div>
 
         <div className="col-md-3 mt-5 mt-md-0">
-          {data.event.ticketTypes.map((type, index) => {
+          {data.event.ticketTypes.map((type) => {
             return (
               <div key={type.id} className="ticket-card p-4">
                 <TicketType

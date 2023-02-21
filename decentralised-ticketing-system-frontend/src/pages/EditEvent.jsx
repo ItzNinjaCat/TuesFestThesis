@@ -62,18 +62,18 @@ function EditEvent() {
             setName(data.event.name);
             setDesc(data.event.description);
             setLocation(data.event.location);
-            setStartTime(new Date(data.event.startTime).toLocaleTimeString([], {
+            setStartTime(new Date(Number(data.event.startTime)).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',
             }));
             if (data.event.endTime !== 0) {
-                setEndTime(new Date(data.event.endTime).toLocaleTimeString([], {
+                setEndTime(new Date(Number(data.event.endTime)).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                 }));
-                setEndDate(new Date(data.event.endTime).toJSON().slice(0, 10).replace(/-/g, '-'));
+                setEndDate(new Date(Number(data.event.endTime)).toJSON().slice(0, 10).replace(/-/g, '-'));
             }
-            setStartDate(new Date(data.event.startTime).toJSON().slice(0, 10).replace(/-/g, '-'));
+            setStartDate(new Date(Number(data.event.startTime)).toJSON().slice(0, 10).replace(/-/g, '-'));
             setCid(data.event.eventStorage);
         }
     }, [loading, data, id]);
@@ -113,7 +113,6 @@ function EditEvent() {
                 const tmp = new Date(`${endDate}T00:00`);
                 tmp.setMilliseconds(1);
                 endDateUNIX = tmp.getTime();
-                console.log(endDateUNIX);
             }
             let imagesCid;
             if (images !== undefined) {

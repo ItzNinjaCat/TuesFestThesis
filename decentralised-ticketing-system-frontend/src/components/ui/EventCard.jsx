@@ -2,13 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Image from 'react-bootstrap/Image';
 import { getData } from '../../utils/web3.storageEndpoints';
-
+import { W3LINK_URL } from '../../constants/constants';
 function fetchImageUrls(storageBytes, setImageUrls) {
   getData(storageBytes).then(res => {
     res.files().then(files => {
       setImageUrls(
         files.map(file => {
-          return `${import.meta.env.VITE_W3LINK_URL}/${storageBytes}/${file.name}`;
+          return `${W3LINK_URL}/${storageBytes}/${file.name}`;
         }),
       );
     });

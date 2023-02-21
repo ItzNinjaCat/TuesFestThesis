@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { resizeImage } from '../utils/utils';
+import { W3LINK_URL } from '../constants/constants';
 import { Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import TicketInfo from '../components/ui/TicketInfo';
 import { useNavigate } from 'react-router-dom';
@@ -118,7 +119,7 @@ function CreateEvent() {
           name: ticket.name.trim(),
           description: `This is a ${ticket.name.trim()} ticket for ${name.trim()}`,
           image: encodeURI(
-            `${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`,
+            `${W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`,
           ),
           external_url: encodeURI(`${window.location.origin}/events/${eventId}`),
           attributes: {
@@ -132,7 +133,7 @@ function CreateEvent() {
           name: `${ticket.name.trim()} Souvenir`,
           description: `This is a ${ticket.name.trim()} souvenir for ${name.trim()}`,
           image: encodeURI(
-            `${import.meta.env.VITE_W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`,
+            `${W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`,
           ),
           external_url: encodeURI(`${window.location.origin}/events/${eventId}`),
           attributes: {
@@ -171,12 +172,12 @@ function CreateEvent() {
               eventId,
               ticket.name.trim(),
               encodeURI(
-                `${import.meta.env.VITE_W3LINK_URL}/${
+                `${W3LINK_URL}/${
                   responses[index]
                 }/${ticket.name.trim()}_metadata.json`,
               ),
               encodeURI(
-                `${import.meta.env.VITE_W3LINK_URL}/${
+                `${W3LINK_URL}/${
                   responses[index]
                 }/${ticket.name.trim()}_souvenir_metadate.json`,
               ),

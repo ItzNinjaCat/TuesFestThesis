@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import TicketType from '../components/ui/TicketType';
+import { W3LINK_URL } from '../constants/constants';
 import { ethers } from 'ethers';
 import Loader from '../components/ui/Loader';
 import { useQuery } from '@apollo/client';
@@ -21,7 +22,7 @@ function Event() {
           setImageUrls(
             files.map(file => {
               return {
-                original: `${import.meta.env.VITE_W3LINK_URL}/${data.event.eventStorage}/${
+                original: `${W3LINK_URL}/${data.event.eventStorage}/${
                   file.name
                 }`,
               };

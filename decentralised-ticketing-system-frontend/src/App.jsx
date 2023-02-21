@@ -14,7 +14,7 @@ import Tickets from './pages/Tickets';
 import UseTicket from './pages/UseTicket';
 import { useWeb3React } from '@web3-react/core';
 import { connectorHooks, getName } from './utils/connectors';
-import { TICKET_ADDRESS, TIK_ADDRESS } from './constants/contracts';
+import { TICKET_ADDRESS, TIK_ADDRESS } from './constants/constants';
 import TICKET_ABI from './constants/abis/ticketGenerator.json';
 import TIK_ABI from './constants/abis/TIK.json';
 import { getContract } from './utils/utils';

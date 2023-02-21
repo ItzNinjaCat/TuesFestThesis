@@ -23,7 +23,7 @@ module.exports = {
     hardhat: {},
     goerli: {
       chainId: 5,
-      url: `https://goerli.infura.io/v3/${process.env.GOERLI_API_KEY}`,
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [`${process.env.PRIVATE_KEY_OWNER}`, `${process.env.PRIVATE_KEY_ADDR1}`],
     },
   },

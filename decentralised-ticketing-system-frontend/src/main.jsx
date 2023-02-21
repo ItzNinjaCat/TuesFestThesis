@@ -7,7 +7,7 @@ import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 import { coinbaseWallet, hooks as coinbaseWalletHooks } from './utils/coinbaseWalletConnector';
 import { hooks as metaMaskHooks, metaMask } from './utils/metaMaskConnector';
 import { hooks as walletConnectHooks, walletConnect } from './utils/walletConnectConnector';
-import { SUBGRAPH_URL } from './constants/contracts';
+import { SUBGRAPH_URL } from './constants/constants';
 
 const connectors = [
   [metaMask, metaMaskHooks],

@@ -62,18 +62,18 @@ function EditEvent() {
             setName(data.event.name);
             setDesc(data.event.description);
             setLocation(data.event.location);
-            setStartTime(new Date(data.event.startTime * 1000).toLocaleTimeString([], {
+            setStartTime(new Date(data.event.startTime).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',
             }));
-            if (data.event.endTime * 1000 !== 0) {
-                setEndTime(new Date(data.event.endTime * 1000).toLocaleTimeString([], {
+            if (data.event.endTime !== 0) {
+                setEndTime(new Date(data.event.endTime).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                 }));
-                setEndDate(new Date(data.event.endTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
+                setEndDate(new Date(data.event.endTime).toJSON().slice(0, 10).replace(/-/g, '-'));
             }
-            setStartDate(new Date(data.event.startTime * 1000).toJSON().slice(0, 10).replace(/-/g, '-'));
+            setStartDate(new Date(data.event.startTime).toJSON().slice(0, 10).replace(/-/g, '-'));
             setCid(data.event.eventStorage);
         }
     }, [loading, data, id]);
@@ -93,24 +93,27 @@ function EditEvent() {
             let startDateUNIX = new Date(`${startDate}T00:00`)
             startDateUNIX.setHours(startTimeSplit[0]);
             startDateUNIX.setMinutes(startTimeSplit[1]);
-            startDateUNIX = startDateUNIX.getTime() / 1000;
+            startDateUNIX = startDateUNIX.getTime();
             let endDateUNIX = 0;
             if (endDate !== 0 && endTime !== 0) {
                 const endTimeSplit = endTime.split(':');
                 endDateUNIX = new Date(`${endDate}T00:00`)
                 endDateUNIX.setHours(endTimeSplit[0]);
                 endDateUNIX.setMinutes(endTimeSplit[1]);
-                endDateUNIX = endDateUNIX.getTime() / 1000;
+                endDateUNIX = endDateUNIX.getTime();
             }
             else if (endTime !== 0) {
                 const endTimeSplit = endTime.split(':');
                 endDateUNIX = new Date(`${startDate}T00:00`)
                 endDateUNIX.setHours(endTimeSplit[0]);
                 endDateUNIX.setMinutes(endTimeSplit[1]);
-                endDateUNIX = endDateUNIX.getTime() / 1000;
+                endDateUNIX = endDateUNIX.getTime();
             }
             else if (endDate !== 0) {
-                endDateUNIX = new Date(`${endDate}T00:00`).getTime() / 1000;
+                const tmp = new Date(`${endDate}T00:00`);
+                tmp.setMilliseconds(1);
+                endDateUNIX = tmp.getTime();
+                console.log(endDateUNIX);
             }
             let imagesCid;
             if (images !== undefined) {

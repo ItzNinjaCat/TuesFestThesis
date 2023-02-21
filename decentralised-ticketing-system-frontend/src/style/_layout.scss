@@ -9,31 +9,10 @@
 }
 
 .header {
-  position: fixed;
-  z-index: 1;
-  padding: 24px;
   width: 100%;
+  top: 0;
+  transition: top 0.4s;
   background-color: $light;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-.fade-in-header {
-  animation: fadeIn 0.5s forwards;
-}
-
-.fade-out-header{
-  animation: fadeOut 0.5s forwards;
-  opacity: 0;
-  display: none;
 }
 
 .main {

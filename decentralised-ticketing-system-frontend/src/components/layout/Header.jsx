@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Navbar, Nav, Offcanvas, Container } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
 
 import SelectWalletModal from '../ui/ConnectModal';
 import Deposit from '../ui/Deposit';
 import Withdraw from '../ui/Withdraw';
-import useScrollDirection from '../../hooks/useScrollDirection';
 
 import { useWeb3Context } from '../../hooks/useWeb3Context';
 
@@ -17,7 +16,7 @@ function Header() {
   const { connector, provider, account, isActive, balance, contract, setBalanceUpdate } = useWeb3Context();
   const [isOrganizer, setIsOrganizer] = useState(undefined);
   const [isOwner, setIsOwner] = useState(undefined);
-  const scrollDirection = useScrollDirection();
+  const navRef = useRef(null);
   function truncate(str, n) {
     return str.length > n
       ? str.substr(0, n - 1) + '...' + str.substr(str.length - 4, str.length - 1)
@@ -68,12 +67,26 @@ function Header() {
     });
   }, [connector]);
 
+  useEffect(() => {
+    var prevScrollpos = window.pageYOffset;
+    window.onscroll = function() {
+    var currentScrollPos = window.pageYOffset;
+      if (prevScrollpos > currentScrollPos) {
+        navRef.current.style.top = "0";
+      } else {
+        navRef.current.style.top = "-100px";
+      }
+      prevScrollpos = currentScrollPos;
+    }
+  }, []);
+
   return (
     <Navbar 
       bg="light" 
       expand="xl" 
-      sticky="top" 
-      className={scrollDirection !== 'down' ? 'fade-in-header' : 'fade-out-header'}
+      className="header"
+      sticky='top'
+      ref={navRef}
     >
       <Container fluid>
         <img className="me-3 my-3" height={50} src={logo} alt="" />

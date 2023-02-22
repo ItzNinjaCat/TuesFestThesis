@@ -1,7 +1,6 @@
 {
   "name": "decentralised-ticketing-system-frontend",
   "private": true,
-  "homepage": "./",
   "version": "0.1.0",
   "type": "module",
   "scripts": {

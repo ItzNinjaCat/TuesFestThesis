@@ -112,7 +112,7 @@ function EventDashboard() {
             dates.forEach(date => {
               const dateEnd = new Date(date);
               dateEnd.setHours(24, 0, 0, 0);
-              const dateSale = new Date(ticketSale.timestamp);
+              const dateSale = new Date(ticketSale.timestamp * 1000);
               if (dateSale.getTime() >= date.getTime() && dateSale.getTime() < dateEnd.getTime()) {
                 tmpChartData.forEach(data => {
                   if (

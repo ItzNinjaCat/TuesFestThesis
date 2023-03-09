@@ -59,11 +59,11 @@ function Deposit() {
           </p>
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group controlId="ticketPrice">
-              <Form.Label>Ticket price (in TIK)</Form.Label>
+              <Form.Label>Deposit amount (in TIK)</Form.Label>
               <Form.Control
                 type="number"
                 step="0.001"
-                placeholder="Ticket price"
+                placeholder="Deposit amount"
                 onChange={validateDepositAmount}
                 value={depositAmount}
                 required

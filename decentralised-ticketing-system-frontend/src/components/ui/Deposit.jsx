@@ -58,7 +58,7 @@ function Deposit() {
             Balance after deposit : {Number(balance) + Number(depositAmount)} TIK (ETH:TIK - 1:1)
           </p>
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <Form.Group controlId="ticketPrice">
+            <Form.Group controlId="withdrawAmount">
               <Form.Label>Deposit amount (in TIK)</Form.Label>
               <Form.Control
                 type="number"

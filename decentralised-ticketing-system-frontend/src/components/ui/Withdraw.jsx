@@ -57,7 +57,7 @@ function Withdraw() {
             Balance after withdraw : {Number(balance) - Number(withdrawAmount)} TIK (ETH:TIK - 1:1)
           </p>
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <Form.Group controlId="ticketPrice">
+            <Form.Group controlId="withdrawAmount">
               <Form.Label>Withdraw amount (in TIK)</Form.Label>
               <Form.Control
                 type="number"

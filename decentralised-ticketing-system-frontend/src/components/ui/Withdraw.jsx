@@ -58,7 +58,7 @@ function Withdraw() {
           </p>
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group controlId="ticketPrice">
-              <Form.Label>Ticket price (in TIK)</Form.Label>
+              <Form.Label>Withdraw amount (in TIK)</Form.Label>
               <Form.Control
                 type="number"
                 step="0.001"

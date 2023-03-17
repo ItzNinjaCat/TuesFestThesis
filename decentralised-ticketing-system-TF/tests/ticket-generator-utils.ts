@@ -288,7 +288,9 @@ export function createCreateEventEvent(
   eventStorage: string,
   location: string,
   startTime: BigInt,
-  endTime: BigInt
+  endTime: BigInt,
+  category: string,
+  subCategory: string
 ): CreateEvent {
   let createEventEvent = changetype<CreateEvent>(newMockEvent())
 
@@ -328,6 +330,15 @@ export function createCreateEventEvent(
     new ethereum.EventParam(
       "endTime",
       ethereum.Value.fromUnsignedBigInt(endTime)
+    )
+  )
+  createEventEvent.parameters.push(
+    new ethereum.EventParam("category", ethereum.Value.fromString(category))
+  )
+  createEventEvent.parameters.push(
+    new ethereum.EventParam(
+      "subCategory",
+      ethereum.Value.fromString(subCategory)
     )
   )
 

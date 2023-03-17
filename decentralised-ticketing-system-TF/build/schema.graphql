@@ -1,3 +1,22 @@
+type _Schema_
+  @fulltext(
+    name: "eventSearch"
+    language: en
+    algorithm: rank
+    include: [
+      {
+        entity: "Event"
+        fields: [
+          { name: "name" },
+          { name: "description" },
+          { name: "category" },
+          { name: "subcategory" },
+          { name: "location" }
+        ]
+      }
+    ]
+  )
+
 type Event @entity {
   id: ID!
   creator: Bytes!
@@ -7,6 +26,8 @@ type Event @entity {
   location: String!
   startTime: BigInt!
   endTime: BigInt!
+  category: String!
+  subcategory: String!
   ticketTypes: [TicketType!]! @derivedFrom(field: "event")
   createdAt: BigInt!
   updatedAt: BigInt

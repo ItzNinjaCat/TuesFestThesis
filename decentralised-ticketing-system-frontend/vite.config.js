@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react-swc';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
+import mkcert from 'vite-plugin-mkcert';
 export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {
@@ -20,6 +21,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    https: true,
   },
   build: {
     outDir: 'build',
@@ -29,6 +31,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    mkcert(),
     react({ plugins: [['@swc/plugin-styled-components', {}]] }),
     splitVendorChunkPlugin(),
     // chunkSplitPlugin({

@@ -314,6 +314,14 @@ export class CreateEvent__Params {
   get endTime(): BigInt {
     return this._event.parameters[7].value.toBigInt();
   }
+
+  get category(): string {
+    return this._event.parameters[8].value.toString();
+  }
+
+  get subCategory(): string {
+    return this._event.parameters[9].value.toString();
+  }
 }
 
 export class CreateSellOffer extends ethereum.Event {
@@ -1443,6 +1451,14 @@ export class CreateEventCall__Inputs {
 
   get endTime(): BigInt {
     return this._call.inputValues[5].value.toBigInt();
+  }
+
+  get category(): string {
+    return this._call.inputValues[6].value.toString();
+  }
+
+  get subCategory(): string {
+    return this._call.inputValues[7].value.toString();
   }
 }
 

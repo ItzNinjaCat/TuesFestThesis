@@ -58,6 +58,7 @@ function UserProfile() {
 
   useEffect(() => {
     if (!loadingSouvenirs) {
+      console.log(dataSouvenirs);
       if (dataSouvenirs.souvenirs.length < 20) setHasMoreSouvenirs(false);
       setInitialLoadSouvenirs(false);
       setSouvenirs(dataSouvenirs.souvenirs);
@@ -143,7 +144,7 @@ function UserProfile() {
               noMore={false}
             >
               <div className="row mt-10">
-                {souvenirs.map((souvenirs, index) => (
+                {souvenirs.map((souvenir, index) => (
                   <div key={index} className="col-3 event-card">
                     <Souvenir key={souvenir.id} souvenir={souvenir} />
                   </div>

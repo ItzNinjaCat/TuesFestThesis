@@ -37,6 +37,8 @@ export function handleCreateEvent(event: CreateEvent): void {
   entity.location = event.params.location;
   entity.startTime = event.params.startTime;
   entity.endTime = event.params.endTime;
+  entity.category = event.params.category;
+  entity.subcategory = event.params.subCategory;
   entity.createdAt = event.block.timestamp;
   entity.deleted = false;
   entity.save();

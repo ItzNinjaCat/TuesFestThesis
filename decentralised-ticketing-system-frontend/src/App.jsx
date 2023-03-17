@@ -20,8 +20,13 @@ import TIK_ABI from './constants/abis/TIK.json';
 import { getContract } from './utils/utils';
 import useBalance from './hooks/useBalance';
 import { Web3ContextProvider } from './hooks/useWeb3Context';
+import { Configuration, OpenAIApi } from "openai";
 
 function App() {
+  const configuration = new Configuration({
+    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  });
+  const openai = new OpenAIApi(configuration);
   const [balanceUpdate, setBalanceUpdate] = useState(false);
   const { connector } = useWeb3React();
   const hooks = connectorHooks[getName(connector)];
@@ -52,6 +57,7 @@ function App() {
         contract,
         balance,
         setBalanceUpdate,
+        openai,
       }}
     >
       <BrowserRouter>
@@ -69,7 +75,7 @@ function App() {
               <Route path="events/:id/dashboard" element={<EventDashboard />} />
               <Route path="events/:id/edit" element={<EditEvent />} />
               <Route path="events/:id/tickets/edit" element={<Tickets />} />
-              <Route path="use/:id" element={<UseTicket />} />
+              <Route path="use/:ownerHash/:id" element={<UseTicket />} />
             </Routes>
           </div>
         </div>

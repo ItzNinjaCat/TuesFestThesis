@@ -1,0 +1,8 @@
+{
+  "goerli": {
+    "TicketGenerator": {
+      "address": "0xeB4c1F4f5105139e59dC85edF8DE036Bf061a82b",
+      "startBlock": 0
+    }
+  }
+}

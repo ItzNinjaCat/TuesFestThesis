@@ -1,13 +1,16 @@
 specVersion: 0.0.5
 schema:
   file: schema.graphql
+features:
+  - fullTextSearch
 dataSources:
   - kind: ethereum
     name: TicketGenerator
     network: goerli
     source:
-      address: "0x94A0824a11986777180A5D27ec12Ad829857ede2"
+      address: "0xeB4c1F4f5105139e59dC85edF8DE036Bf061a82b"
       abi: TicketGenerator
+      startBlock: 0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -41,7 +44,8 @@ dataSources:
           handler: handleCancelOffer
         - event: CreateBuyOffer(bytes32,indexed address,bytes32,bytes32,uint256,uint256)
           handler: handleCreateBuyOffer
-        - event: CreateEvent(indexed address,bytes32,string,string,string,string,uint256,uint256)
+        - event: CreateEvent(indexed
+            address,bytes32,string,string,string,string,uint256,uint256,string,string)
           handler: handleCreateEvent
         - event: CreateSellOffer(indexed bytes32,indexed address,bytes32,bytes32,uint256,uint256)
           handler: handleCreateSellOffer

@@ -22,7 +22,9 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     string eventStorage,
     string location,
     uint256 startTime,
-    uint256 endTime
+    uint256 endTime,
+    string category,
+    string subCategory
   );
 
   event UpdateEvent(
@@ -186,7 +188,9 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     string memory eventStorage,
     string memory location,
     uint256 startTime,
-    uint256 endTime
+    uint256 endTime,
+    string memory category,
+    string memory subCategory
   ) external onlyRole(ORGANIZER_ROLE) {
     bytes32 _eventId = keccak256(abi.encode(_name));
     require(events[_eventId].id == 0, 'Event already exists');
@@ -206,7 +210,9 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
       eventStorage,
       location,
       startTime,
-      endTime
+      endTime,
+      category,
+      subCategory
     );
   }
 
@@ -570,10 +576,13 @@ contract TicketGenerator is AccessControl, ERC721URIStorage {
     require(!tickets[_ticketId].used, 'Ticket is already used');
     require(events[tickets[_ticketId].eventId].organizer == msg.sender, 'Not the organizer');
     if (events[tickets[_ticketId].eventId].endTime != 0) {
-      require(block.timestamp < events[tickets[_ticketId].eventId].endTime, 'Event has ended');
+      require(
+        block.timestamp < events[tickets[_ticketId].eventId].endTime / 1000,
+        'Event has ended'
+      );
     }
     require(
-      block.timestamp >= events[tickets[_ticketId].eventId].startTime,
+      block.timestamp >= events[tickets[_ticketId].eventId].startTime / 1000,
       'Event has not started'
     );
     tickets[_ticketId].usable = false;

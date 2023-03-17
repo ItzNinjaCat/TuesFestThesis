@@ -11,7 +11,7 @@ import ImageGallery from 'react-image-gallery';
 function Event() {
   const { eventId } = useParams();
   const [imageUrls, setImageUrls] = useState([]);
-  const { loading, data } = useQuery(EVENT_BY_ID_WITH_TICKETS_QUERY, {
+  const { loading, data, error } = useQuery(EVENT_BY_ID_WITH_TICKETS_QUERY, {
     variables: { id: String(eventId) },
   });
 
@@ -66,7 +66,7 @@ function Event() {
                         ${new Date(Number(data.event.startTime)).toLocaleTimeString().slice(0, -3)}
                         ${`
                             ${
-                              data.event.endTime === 0
+                              Number(data.event.endTime) === 0
                                 ? ''
                                 : new Date(Number(data.event.endTime)).toLocaleDateString() ===
                                   new Date(Number(data.event.startTime)).toLocaleDateString()

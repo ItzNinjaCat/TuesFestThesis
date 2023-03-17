@@ -1,6 +1,7 @@
 
 import { Modal, Button } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
 import Image from 'react-bootstrap/Image';
 import QRCode from "react-qr-code";
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +14,7 @@ function Ticket({
     const [ticketMetadata, setTicketMetadata] = useState(undefined);
     const [show, setShow] = useState(false);
     const navigate = useNavigate();
-    const { contract } = useWeb3Context();
+    const { contract, account } = useWeb3Context();
     function getSouvenir() {
         contract.getSouvenir(ticket.id).then((res) => {
             setShow(false);
@@ -74,11 +75,11 @@ function Ticket({
                                 }
                                 <p>Event start time: {new Date(Number(event?.startTime)).toLocaleString().slice(0, -3)}</p>
                                 {
-                                    event?.endTime === 0 ? null :
+                                    Number(event?.endTime) === 0 ? null :
                                         <p>Event end time: {new Date(Number(event?.endTime)).toLocaleString().slice(0, -3)}</p>
                                 }
                         </div>
-                        <QRCode value={`${window.location.origin}/use/${ticket?.id}`} />
+                        <QRCode value={`${window.location.origin}/use/${ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(['string'], [account.toLowerCase()]))}/${ticket?.id}`} />
                     </div>
                 </Modal.Body>
                 <Modal.Footer className='d-flex justify-content-between'>

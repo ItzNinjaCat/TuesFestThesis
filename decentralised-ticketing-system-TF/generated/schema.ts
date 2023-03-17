@@ -105,6 +105,24 @@ export class Event extends Entity {
     this.set("endTime", Value.fromBigInt(value));
   }
 
+  get category(): string {
+    let value = this.get("category");
+    return value!.toString();
+  }
+
+  set category(value: string) {
+    this.set("category", Value.fromString(value));
+  }
+
+  get subcategory(): string {
+    let value = this.get("subcategory");
+    return value!.toString();
+  }
+
+  set subcategory(value: string) {
+    this.set("subcategory", Value.fromString(value));
+  }
+
   get ticketTypes(): Array<string> {
     let value = this.get("ticketTypes");
     return value!.toStringArray();

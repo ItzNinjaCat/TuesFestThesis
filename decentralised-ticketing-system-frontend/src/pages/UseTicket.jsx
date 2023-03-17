@@ -8,7 +8,7 @@ import { ethers } from 'ethers';
 function UseTicket() {
     const [error, setError] = useState(undefined);
     const [success, setSuccess] = useState(undefined);
-    const { id } = useParams();
+    const { ownerHash, id } = useParams();
     const navigate = useNavigate();
     const { account, provider, contract } = useWeb3Context();
     useEffect(() => {
@@ -17,6 +17,10 @@ function UseTicket() {
             (status) => {
               if(!status) navigate('/');
             });
+        contract.ownerOf(id).then((owner) => {
+            if (ethers.utils.keccak256(
+        ethers.utils.defaultAbiCoder.encode(['string'], [owner.toLowerCase()])) !== ownerHash)  setError('Invalid owner hash');
+        });
         contract.useTicket(id).then((tx) => {
             tx.wait().then((receipt) => {
                 setSuccess(true);

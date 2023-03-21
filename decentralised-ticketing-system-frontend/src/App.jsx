@@ -20,8 +20,10 @@ import TIK_ABI from './constants/abis/TIK.json';
 import { getContract } from './utils/utils';
 import useBalance from './hooks/useBalance';
 import { Web3ContextProvider } from './hooks/useWeb3Context';
-import { Configuration, OpenAIApi } from "openai";
-
+import { Configuration, OpenAIApi } from 'openai';
+import { DndContext, DragOverlay } from '@dnd-kit/core';
+import Draggable from './components/ui/Draggable';
+import Droppable from './components/ui/Droppable';
 function App() {
   const configuration = new Configuration({
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -45,6 +47,15 @@ function App() {
     balanceUpdate,
     setBalanceUpdate,
   );
+  function handleDragStart(event) {
+    setActiveId(event.active.id);
+  }
+
+  function handleDragEnd() {
+    setActiveId(null);
+  }
+  const [items] = useState(['1', '2', '3', '4', '5']);
+  const [activeId, setActiveId] = useState(null);
   return (
     <Web3ContextProvider
       value={{
@@ -60,26 +71,32 @@ function App() {
         openai,
       }}
     >
-      <BrowserRouter>
-        <div className="wrapper">
-          <Header />
-          <div className="main">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="events/:eventId" element={<Event />} />
-              <Route path="events" element={<Events />} />
-              <Route path="create-event" element={<CreateEvent />} />
-              <Route path="user/:address" element={<UserProfile />} />
-              <Route path="organizer/:address" element={<OrganizerProfile />} />
-              <Route path="marketplace" element={<Marketplace />} />
-              <Route path="events/:id/dashboard" element={<EventDashboard />} />
-              <Route path="events/:id/edit" element={<EditEvent />} />
-              <Route path="events/:id/tickets/edit" element={<Tickets />} />
-              <Route path="use/:ownerHash/:id" element={<UseTicket />} />
-            </Routes>
+      <DndContext onDragEnd={handleDragEnd}>
+        <BrowserRouter>
+          <div className="wrapper">
+            <Header />
+            <Draggable id={'test'}>
+              <div>Test div </div>
+            </Draggable>
+            <DragOverlay>{activeId ? <div>Test div </div> : null}</DragOverlay>
+            <div className="main">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="events/:eventId" element={<Event />} />
+                <Route path="events" element={<Events />} />
+                <Route path="create-event" element={<CreateEvent />} />
+                <Route path="user/:address" element={<UserProfile />} />
+                <Route path="organizer/:address" element={<OrganizerProfile />} />
+                <Route path="marketplace" element={<Marketplace />} />
+                <Route path="events/:id/dashboard" element={<EventDashboard />} />
+                <Route path="events/:id/edit" element={<EditEvent />} />
+                <Route path="events/:id/tickets/edit" element={<Tickets />} />
+                <Route path="use/:ownerHash/:id" element={<UseTicket />} />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </BrowserRouter>
+        </BrowserRouter>
+      </DndContext>
     </Web3ContextProvider>
   );
 }

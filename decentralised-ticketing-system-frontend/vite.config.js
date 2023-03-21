@@ -21,7 +21,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    https: true,
+    // https: true,
   },
   build: {
     outDir: 'build',
@@ -31,7 +31,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    mkcert(),
+    // mkcert(),
     react({ plugins: [['@swc/plugin-styled-components', {}]] }),
     splitVendorChunkPlugin(),
     // chunkSplitPlugin({

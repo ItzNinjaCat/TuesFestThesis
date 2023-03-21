@@ -27,11 +27,12 @@ function RecommendedEventCard({ id }) {
   React.useEffect(() => {
     if (!loading) {
       setEvent(data.event);
+      console.log(data.event)
       Promise.resolve(fetchImageUrls(data.event.eventStorage, setImageUrls));
     }
   }, [loading]);
   function openEventPage() {
-    navigate(url);
+    navigate(`/events/${event.id}`);
   }
   if (imageUrls?.length === 0) return null;
   return (

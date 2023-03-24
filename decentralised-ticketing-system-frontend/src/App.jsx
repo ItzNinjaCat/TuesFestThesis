@@ -1,7 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Button from 'react-bootstrap/Button';
-import Draggable from 'react-draggable';
 import Home from './pages/Home';
 import UserProfile from './pages/UserProfile';
 import OrganizerProfile from './pages/OrganizerProfile';
@@ -23,9 +21,12 @@ import { getContract } from './utils/utils';
 import useBalance from './hooks/useBalance';
 import { Web3ContextProvider } from './hooks/useWeb3Context';
 import { Configuration, OpenAIApi } from 'openai';
-import chatSupport from './assets/chat-support.png';
+import { Widget, addResponseMessage, addUserMessage, deleteMessages } from 'react-chat-widget';
+
+import md5 from 'md5';
+import 'react-chat-widget/lib/styles.css';
+
 function App() {
-  const ref = useRef(null);
   const configuration = new Configuration({
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   });
@@ -48,7 +49,54 @@ function App() {
     balanceUpdate,
     setBalanceUpdate,
   );
-  console.log(ref);
+
+  useEffect(() => {
+    const messages = JSON.parse(localStorage.getItem('messages'));
+    if (messages !== null) {
+      messages?.forEach(message => {
+        if (message.role === 'user') {
+          addUserMessage(message.content);
+        } else {
+          addResponseMessage(message.content);
+        }
+      });
+    }
+  }, []);
+
+  window.ethereum.on('accountsChanged', function (accounts) {
+    deleteMessages(localStorage.getItem('messages')?.length);
+    localStorage.removeItem('messages');
+  });
+  const handleNewUserMessage = newMessage => {
+    console.log(`New message incoming! ${newMessage}`);
+    let msgs = JSON.parse(localStorage.getItem('messages'));
+    if (msgs === null) {
+      msgs = [{ content: newMessage, role: 'user' }];
+    } else {
+      msgs = [...msgs, { content: newMessage, role: 'user' }];
+    }
+    console.log(msgs);
+    // Now send the message throught the backend API
+    openai
+      .createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a chatbot. Your job is to help people buy tickets to events. The only topics you can answer are web3 related and questions about the events. You can ask questions to the user, but you cannot ask questions to other chatbots.',
+          },
+          ...msgs,
+        ],
+      })
+      .then(res => {
+        addResponseMessage(res.data.choices[0].message.content);
+        msgs = [...msgs, { content: res.data.choices[0].message.content, role: 'assistant' }];
+        console.log();
+        localStorage.setItem('messages', JSON.stringify(msgs));
+      });
+  };
+
   return (
     <Web3ContextProvider
       value={{
@@ -67,7 +115,7 @@ function App() {
       <BrowserRouter>
         <div className="wrapper">
           <Header />
-          <div className="main" ref={ref}>
+          <div className="main">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="events/:eventId" element={<Event />} />
@@ -82,44 +130,19 @@ function App() {
               <Route path="use/:ownerHash/:id" element={<UseTicket />} />
             </Routes>
           </div>
-          <Draggable
-            // grid={[100, 100]}
-            bounds="parent"
-            offsetParent={ref.current}
-          >
-            <Button
-              className="rounded-circle position-absolute bottom-0 end-0 my-5 mx-5"
-              onClick={() => {
-                console.log('egere');
-              }}
-            >
-              <img src={chatSupport} />
-            </Button>
-          </Draggable>
+          {account && (
+            <Widget
+              emojis={true}
+              handleNewUserMessage={handleNewUserMessage}
+              title="My new awesome title"
+              subtitle="And my cool subtitle"
+              showBadge={false}
+              profileClientAvatar={`https://www.gravatar.com/avatar/${md5(account)}/?d=identicon`}
+            />
+          )}
         </div>
       </BrowserRouter>
     </Web3ContextProvider>
   );
 }
 export default App;
-
-// <svg
-//   xmlns="http://www.w3.org/2000/svg"
-//   width="19"
-//   height="20"
-//   fill="none"
-//   viewBox="0 0 19 20"
-//   svg-inline=""
-//   role="presentation"
-//   focusable="false"
-//   tabindex="-1"
-//   class="kz-icon-xs icon--opacity-xl-full icon--stroke--white-snow icon--stroke--white-snow"
-// >
-//   <path
-//     stroke="#48576F"
-//     stroke-linecap="round"
-//     stroke-linejoin="round"
-//     stroke-width="1.5"
-//     d="M16.111 12.676v.486a5.928 5.928 0 01-1.66 4.128A5.584 5.584 0 0110.444 19M2.89 7.81c0-1.806.696-3.538 1.936-4.815A6.514 6.514 0 019.5 1c1.753 0 3.435.718 4.675 1.995A6.917 6.917 0 0116.11 7.81m-12.75 0v4.865H1.944a.93.93 0 01-.667-.285.988.988 0 01-.277-.688v-2.92c0-.257.1-.505.277-.687a.93.93 0 01.667-.285h1.417zM18 8.784v2.919c0 .258-.1.505-.277.688a.93.93 0 01-.667.285h-1.417V7.81h1.417c.25 0 .49.102.667.285.178.182.277.43.277.688z"
-//   ></path>
-// </svg>;

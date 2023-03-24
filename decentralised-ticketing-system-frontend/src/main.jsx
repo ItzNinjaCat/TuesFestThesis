@@ -38,11 +38,11 @@ const client = new ApolloClient({
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <Web3ReactProvider connectors={connectors}>
-      <ApolloProvider client={client}>
-        <App />
-      </ApolloProvider>
-    </Web3ReactProvider>
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <Web3ReactProvider connectors={connectors}>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </Web3ReactProvider>,
+  // </React.StrictMode>,
 );

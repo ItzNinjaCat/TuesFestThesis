@@ -86,17 +86,23 @@ function CreateEvent() {
       e.preventDefault();
       e.stopPropagation();
       setValidated(true);
-      openai.createChatCompletion({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          { "role": "system", "content": 'Pretend you are an AI model tasked with event categorization. Your receive an event in the form of a JSON object like this one: { "name" : "Example name", "description" : Example description"}And your job is to return a JSON object representing the event\'s category and subcategory in this format:{ "category" : "Example category", "sub-category" : Example sub-category"}Here is the list of categories you have to use for this task:{  "categories": {    "Music": [      "Concerts",      "Music Festivals",      "Concert Tours",      "Club Nights",      "Opera and Classical Performances"    ],    "Sports": [      "Football",      "Basketball",      "Tennis",      "Golf",      "Swimming and Diving",      "Soccer",      "Baseball",      "Hockey",      "Boxing",      "Wrestling",      "MMA",      "Racing",      "Cycling"    ],    "Arts": [      "Exhibitions",      "Performances",      "Visual Arts",      "Cinema",      "Literary Events"    ],    "Food and Drink": [      "Wine Tasting",      "Beer Festivals",      "Food Festivals",      "Cocktail Parties",      "Wine and Food Pairing Dinners",      "Brewery Tours"    ],    "Conferences and Networking": [      "Industry Conferences",      "Technology Conferences",      "Networking Events",      "Trade Shows"    ],    "Education and Learning": [      "Workshops and Classes",      "Seminars and Lectures",      "Educational Tours",      "Training Programs",      "Language Courses"    ],    "Outdoor and Adventure": [      "Hiking and Trekking",      "Camping",      "Rock Climbing",      "Skiing and Snowboarding",      "Surfing",      "Bungee Jumping",      "Zip Lining"    ],    "Charity and Causes": [      "Fundraising Events",      "Volunteering Opportunities",      "Benefit Concerts",      "Auctions",      "Charity Walks and Runs"    ],    "Family and Kids": [      "Children\'s Theater",      "Circus",      "Zoos and Aquariums",      "Amusement Parks",      "Kids\' Festivals",      "Science Museums"    ],    "Fashion and Beauty": [      "Fashion Shows",      "Beauty Pageants",      "Makeup and Skincare Workshops",      "Personal Styling Sessions"    ],    "Religious and Spiritual": [      "Church Services",      "Retreats",      "Religious Festivals",      "Pilgrimages",      "Meditation Workshops"    ],    "Nightlife": [      "Nightclubs",      "Bars and Lounges",      "Pub Crawls",      "Live Music Venues",      "Comedy Clubs"    ],    "Miscellaneous": [      "Conventions",      "Competitions",      "Expos",      "Award Ceremonies",      "Film Premieres",      "Political Rallies"    ]  }}You need to find the best category and sub-category for a given event. You should NOT provide a code solution for this problem. Your only responso should be a JSON object in the given format. The answer to this message should be and example response. Include only the json object in the response with NO additional data.' },
-          { "role": "user", "content": ` {"name" : "${name}", "description" : "${desc}"}`},
-        ]
-      }).then((res) => {
-        console.log(res.data.choices[0].message.content);
-        console.log(JSON.parse(res.data.choices[0].message.content));
-        setCategorys(JSON.parse(res.data.choices[0].message.content));
-      });
+      openai
+        .createChatCompletion({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content:
+                'Pretend you are an AI model tasked with event categorization. Your receive an event in the form of a JSON object like this one: { "name" : "Example name", "description" : Example description"}And your job is to return a JSON object representing the event\'s category and subcategory in this format:{ "category" : "Example category", "sub-category" : Example sub-category"}Here is the list of categories you have to use for this task:{  "categories": {    "Music": [      "Concerts",      "Music Festivals",      "Concert Tours",      "Club Nights",      "Opera and Classical Performances"    ],    "Sports": [      "Football",      "Basketball",      "Tennis",      "Golf",      "Swimming and Diving",      "Soccer",      "Baseball",      "Hockey",      "Boxing",      "Wrestling",      "MMA",      "Racing",      "Cycling"    ],    "Arts": [      "Exhibitions",      "Performances",      "Visual Arts",      "Cinema",      "Literary Events"    ],    "Food and Drink": [      "Wine Tasting",      "Beer Festivals",      "Food Festivals",      "Cocktail Parties",      "Wine and Food Pairing Dinners",      "Brewery Tours"    ],    "Conferences and Networking": [      "Industry Conferences",      "Technology Conferences",      "Networking Events",      "Trade Shows"    ],    "Education and Learning": [      "Workshops and Classes",      "Seminars and Lectures",      "Educational Tours",      "Training Programs",      "Language Courses"    ],    "Outdoor and Adventure": [      "Hiking and Trekking",      "Camping",      "Rock Climbing",      "Skiing and Snowboarding",      "Surfing",      "Bungee Jumping",      "Zip Lining"    ],    "Charity and Causes": [      "Fundraising Events",      "Volunteering Opportunities",      "Benefit Concerts",      "Auctions",      "Charity Walks and Runs"    ],    "Family and Kids": [      "Children\'s Theater",      "Circus",      "Zoos and Aquariums",      "Amusement Parks",      "Kids\' Festivals",      "Science Museums"    ],    "Fashion and Beauty": [      "Fashion Shows",      "Beauty Pageants",      "Makeup and Skincare Workshops",      "Personal Styling Sessions"    ],    "Religious and Spiritual": [      "Church Services",      "Retreats",      "Religious Festivals",      "Pilgrimages",      "Meditation Workshops"    ],    "Nightlife": [      "Nightclubs",      "Bars and Lounges",      "Pub Crawls",      "Live Music Venues",      "Comedy Clubs"    ],    "Miscellaneous": [      "Conventions",      "Competitions",      "Expos",      "Award Ceremonies",      "Film Premieres",      "Political Rallies"    ]  }}You need to find the best category and sub-category for a given event. You should NOT provide a code solution for this problem. Your only responso should be a JSON object in the given format. The answer to this message should be and example response. Include only the json object in the response with NO additional data.',
+            },
+            { role: 'user', content: ` {"name" : "${name}", "description" : "${desc}"}` },
+          ],
+        })
+        .then(res => {
+          console.log(res.data.choices[0].message.content);
+          console.log(JSON.parse(res.data.choices[0].message.content));
+          setCategorys(JSON.parse(res.data.choices[0].message.content));
+        });
       const creationTime = new Date().getTime() / 1000;
       const startTimeSplit = startTime.split(':');
       let startDateUNIX = new Date(`${startDate}T00:00`);
@@ -131,9 +137,7 @@ function CreateEvent() {
         const ticketMetadata = {
           name: ticket.name.trim(),
           description: `This is a ${ticket.name.trim()} ticket for ${name.trim()}`,
-          image: encodeURI(
-            `${W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`,
-          ),
+          image: encodeURI(`${W3LINK_URL}/${ticketImagesCid}/${ticket.image.name}`),
           external_url: encodeURI(`${window.location.origin}/events/${eventId}`),
           attributes: {
             price: ticket.price,
@@ -145,9 +149,7 @@ function CreateEvent() {
         const souvenirMetadata = {
           name: `${ticket.name.trim()} Souvenir`,
           description: `This is a ${ticket.name.trim()} souvenir for ${name.trim()}`,
-          image: encodeURI(
-            `${W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`,
-          ),
+          image: encodeURI(`${W3LINK_URL}/${ticketImagesCid}/${ticket.souvenir.name}`),
           external_url: encodeURI(`${window.location.origin}/events/${eventId}`),
           attributes: {
             ticketPrice: ticket.price,
@@ -166,15 +168,8 @@ function CreateEvent() {
       });
       Promise.all(ticketPromises).then(async responses => {
         const eventImagesCid = await uploadImmutableData(images);
-        console.log(name.trim(),
-          desc.trim(),
-          eventImagesCid,
-          location.trim(),
-          startDateUNIX,
-          endDateUNIX,
-          categorys['category'],
-          categorys['sub-category']);
-        const tx = await contract.createEvent(
+        console.log(categorys);
+        console.log(
           name.trim(),
           desc.trim(),
           eventImagesCid,
@@ -183,26 +178,32 @@ function CreateEvent() {
           endDateUNIX,
           categorys['category'],
           categorys['sub-category'],
-        ).catch(e => {
-          alert(e.reason);
-          setLoadingButton(false);
-          return null;
-        });
-        if(tx === null) return;
+        );
+        const tx = await contract
+          .createEvent(
+            name.trim(),
+            desc.trim(),
+            eventImagesCid,
+            location.trim(),
+            startDateUNIX,
+            endDateUNIX,
+            categorys['category'],
+            categorys['sub-category'],
+          )
+          .catch(e => {
+            alert(e.reason);
+            setLoadingButton(false);
+            return null;
+          });
+        if (tx === null) return;
         tx.wait().then(() => {
           const ticketTypes = ticketInputFields.map(async (ticket, index) => {
             return await contract.createTicketType(
               eventId,
               ticket.name.trim(),
+              encodeURI(`${W3LINK_URL}/${responses[index]}/${ticket.name.trim()}_metadata.json`),
               encodeURI(
-                `${W3LINK_URL}/${
-                  responses[index]
-                }/${ticket.name.trim()}_metadata.json`,
-              ),
-              encodeURI(
-                `${W3LINK_URL}/${
-                  responses[index]
-                }/${ticket.name.trim()}_souvenir_metadate.json`,
+                `${W3LINK_URL}/${responses[index]}/${ticket.name.trim()}_souvenir_metadate.json`,
               ),
               ethers.utils.parseEther(String(ticket.price)),
               ticket.quantity,
@@ -216,13 +217,15 @@ function CreateEvent() {
               types.map(type => {
                 return type.wait();
               }),
-            ).then(() => {
-              handleShow();
-              setLoadingButton(false);
-            }).catch(e => {
-              alert(e.reason)
-              setLoadingButton(false);
-            });
+            )
+              .then(() => {
+                handleShow();
+                setLoadingButton(false);
+              })
+              .catch(e => {
+                alert(e.reason);
+                setLoadingButton(false);
+              });
           });
         });
       });

@@ -6,6 +6,7 @@ import RecommendedEventCard from '../components/ui/RecommendedEventCard';
 import '../style/style.scss';
 import Loader from '../components/ui/Loader';
 import { useWeb3Context } from '../hooks/useWeb3Context';
+import { Watch } from 'react-loader-spinner';
 function Home() {
   const [events, setEvents] = useState(undefined);
   const [loadingRecommendations, setLoadingRecommendations] = useState(true);
@@ -44,99 +45,90 @@ function Home() {
           };
         }),
       );
-      const purchaseJSON = JSON.stringify(
-        dataPurchases?.tickets.map(purchase => {
-          return {
-            id: purchase.event.id,
-            name: purchase.event.name,
-            description: purchase.event.description,
-            category: purchase.event.category,
-            subcategory: purchase.event.subcategory,
-          };
-        }),
-      );
-      console.log('requesting openai');
-      const openaiMessage = `Purchases JSON: ${purchaseJSON} Event list JSON: ${eventJSON}`;
-      openai
-        .createChatCompletion({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'Pretend you are an AI model tasked with event recommendation. You should recommend events similliar to the ones the user has taken interest in. If there are no similiiar events return an empty array. Your receive 2 lists of eventn in the form of JSON objects like this one: {"id": "Example id", "name" : "Example name", "description" : Example description", "category": "Example category", "sub-category": "Example sub-category"}. The first list is of all the events a user has visited. The second one is a list of the current events. Your job is to return a list of up to 40 events that you would recommend the user based on their previous attendance. Your response should be a list of the JSON objects. Each object should hae only one property that being the event\'s id. Here is the list of categories you have to use for this task:{  "categories": {    "Music": [      "Concerts",      "Music Festivals",      "Concert Tours",      "Club Nights",      "Opera and Classical Performances"    ],    "Sports": [      "Football",      "Basketball",      "Tennis",      "Golf",      "Swimming and Diving",      "Soccer",      "Baseball",      "Hockey",      "Boxing",      "Wrestling",      "MMA",      "Racing",      "Cycling"    ],    "Arts": [      "Exhibitions",      "Performances",      "Visual Arts",      "Cinema",      "Literary Events"    ],    "Food and Drink": [      "Wine Tasting",      "Beer Festivals",      "Food Festivals",      "Cocktail Parties",      "Wine and Food Pairing Dinners",      "Brewery Tours"    ],    "Conferences and Networking": [      "Industry Conferences",      "Technology Conferences",      "Networking Events",      "Trade Shows"    ],    "Education and Learning": [      "Workshops and Classes",      "Seminars and Lectures",      "Educational Tours",      "Training Programs",      "Language Courses"    ],    "Outdoor and Adventure": [      "Hiking and Trekking",      "Camping",      "Rock Climbing",      "Skiing and Snowboarding",      "Surfing",      "Bungee Jumping",      "Zip Lining"    ],    "Charity and Causes": [      "Fundraising Events",      "Volunteering Opportunities",      "Benefit Concerts",      "Auctions",      "Charity Walks and Runs"    ],    "Family and Kids": [      "Children\'s Theater",      "Circus",      "Zoos and Aquariums",      "Amusement Parks",      "Kids\' Festivals",      "Science Museums"    ],    "Fashion and Beauty": [      "Fashion Shows",      "Beauty Pageants",      "Makeup and Skincare Workshops",      "Personal Styling Sessions"    ],    "Religious and Spiritual": [      "Church Services",      "Retreats",      "Religious Festivals",      "Pilgrimages",      "Meditation Workshops"    ],    "Nightlife": [      "Nightclubs",      "Bars and Lounges",      "Pub Crawls",      "Live Music Venues",      "Comedy Clubs"    ],    "Miscellaneous": [      "Conventions",      "Competitions",      "Expos",      "Award Ceremonies",      "Film Premieres",      "Political Rallies"    ]  }}. You need to find the best category and sub-category for a given event. You should NOT provide a code solution for this problem. Your only responso should be a JSON object in the given format. The answer to this message should be and example response. Include only the json object in the response with NO additional data. If you decide none of the provided events should be recommended please return an empty array. The list should have UP to 40 entries meaning that if there are less than 40 you do not need to fill the list to 40. The response should have a format of { "recommendations" : [{id: "Id 1", {id: "Id 2"}] }. The id should be the same format as the "id" property in the JSON object. In case you have no recommendations please return an empty array like this { "recommendations" : [] }. Please include another property describing the reasoning each event is recommended. Return only the recommended event. If you deem an event not worth recommending DO not return it\'s id.',
-            },
-            { role: 'user', content: `${openaiMessage}` },
-          ],
-        })
-        .then(res => {
-          setRecommendedEvents(JSON.parse(res.data.choices[0].message.content));
-          setLoadingRecommendations(false);
-          console.log(JSON.parse(res.data.choices[0].message.content));
-        });
+      if (account != undefined) {
+        const purchaseJSON = JSON.stringify(
+          dataPurchases?.tickets.map(purchase => {
+            return {
+              name: purchase.event.name,
+              description: purchase.event.description,
+              category: purchase.event.category,
+              subcategory: purchase.event.subcategory,
+            };
+          }),
+        );
+        console.log('requesting openai');
+        const openaiMessage = `Purchases JSON: ${purchaseJSON} Event list JSON: ${eventJSON}`;
+        openai
+          .createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'Pretend you are an AI model tasked with event recommendation. Your receive 2 lists of eventn in the form of JSON objects like this one: {"id": "Example id", "name" : "Example name", "description" : Example description", "category": "Example category", "sub-category": "Example sub-category"}. The first list is of all the events a user has visited. The second one is a list of the current events. Your job is to return a list of up to 40 events that you would recommend the user based on their previous attendance. Your response should be a list of the JSON objects. Each object should hae only one property that being the event\'s id. Here is the list of categories you have to use for this task:{  "categories": {    "Music": [      "Concerts",      "Music Festivals",      "Concert Tours",      "Club Nights",      "Opera and Classical Performances"    ],    "Sports": [      "Football",      "Basketball",      "Tennis",      "Golf",      "Swimming and Diving",      "Soccer",      "Baseball",      "Hockey",      "Boxing",      "Wrestling",      "MMA",      "Racing",      "Cycling"    ],    "Arts": [      "Exhibitions",      "Performances",      "Visual Arts",      "Cinema",      "Literary Events"    ],    "Food and Drink": [      "Wine Tasting",      "Beer Festivals",      "Food Festivals",      "Cocktail Parties",      "Wine and Food Pairing Dinners",      "Brewery Tours"    ],    "Conferences and Networking": [      "Industry Conferences",      "Technology Conferences",      "Networking Events",      "Trade Shows"    ],    "Education and Learning": [      "Workshops and Classes",      "Seminars and Lectures",      "Educational Tours",      "Training Programs",      "Language Courses"    ],    "Outdoor and Adventure": [      "Hiking and Trekking",      "Camping",      "Rock Climbing",      "Skiing and Snowboarding",      "Surfing",      "Bungee Jumping",      "Zip Lining"    ],    "Charity and Causes": [      "Fundraising Events",      "Volunteering Opportunities",      "Benefit Concerts",      "Auctions",      "Charity Walks and Runs"    ],    "Family and Kids": [      "Children\'s Theater",      "Circus",      "Zoos and Aquariums",      "Amusement Parks",      "Kids\' Festivals",      "Science Museums"    ],    "Fashion and Beauty": [      "Fashion Shows",      "Beauty Pageants",      "Makeup and Skincare Workshops",      "Personal Styling Sessions"    ],    "Religious and Spiritual": [      "Church Services",      "Retreats",      "Religious Festivals",      "Pilgrimages",      "Meditation Workshops"    ],    "Nightlife": [      "Nightclubs",      "Bars and Lounges",      "Pub Crawls",      "Live Music Venues",      "Comedy Clubs"    ],    "Miscellaneous": [      "Conventions",      "Competitions",      "Expos",      "Award Ceremonies",      "Film Premieres",      "Political Rallies"    ]  }}. Your recommendations should only be from categories the user has previously visited. If theere are no matches for this condition return an empty array. You should NOT provide a code solution for this problem. Your only response should be a JSON object in the given format. The answer to this message should be and example response. Include only the json object in the response with NO additional data. If you decide none of the provided events should be recommended please return an empty array.The list should have UP to 40 entries meaning that if there are less than 40 you do not need to fill the list to 40. The response should have a format of { "recommendations" : [{id: "Id 1"}, {id: "Id 2" }] }. Do not include any text outside the json as this response will be used as program input.',
+              },
+              { role: 'user', content: `${openaiMessage}` },
+            ],
+          })
+          .then(res => {
+            console.log(res.data.choices[0].message.content);
+            setRecommendedEvents(JSON.parse(res.data.choices[0].message.content));
+          });
+      }
       console.log(data);
     }
-  }, [loading, loadingPurchases, data, dataPurchases]);
-
+  }, [loading, loadingPurchases, data, dataPurchases, account]);
   if (loading || events === undefined) return <Loader />;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <>
-      <div className="container">
-        {recommendedEvents?.recommendations?.length > 0 ? (
-          <div>
-            <div className="my-5">
-              <h1>Recommended events</h1>
-            </div>
-            <hr className="my-4" />
-            {loadingRecommendations ? (
-              <Loader />
-            ) : (
-              <div id="eventHolder" className="row">
-                {recommendedEvents?.recommendations?.map((event, index) => (
-                  <div key={index} className="col-md-3">
-                    <div key={event.id} className="event-card">
-                      <RecommendedEventCard key={event.id} id={event.id} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+    <div className="container">
+      {recommendedEvents?.recommendations?.length > 0 ? (
+        <div>
+          <div className="my-5">
+            <h1>Recent events</h1>
           </div>
-        ) : null}
-      </div>
-      <div className="container">
-        <div className="my-5">
-          <h1>Recent events</h1>
-        </div>
-
-        <hr className="my-4" />
-
-        {events.length > 0 ? (
+          <hr className="my-4" />
           <div id="eventHolder" className="row">
-            {events?.map((event, index) => (
+            {recommendedEvents?.recommendations?.map((event, index) => (
               <div key={index} className="col-md-3">
                 <div key={event.id} className="event-card">
-                  <EventCard
-                    key={event.id}
-                    name={event.name}
-                    location={event.location}
-                    startTime={event.startTime}
-                    endTime={event.endTime}
-                    imagesCid={event.eventStorage}
-                    url={`/events/${event.id}`}
-                    creator={event.organizer}
-                  />
+                  <RecommendedEventCard key={event.id} id={event.id} />
                 </div>
               </div>
             ))}
           </div>
-        ) : (
-          <div className="text-center my-5">No events</div>
-        )}
+        </div>
+      ) : null}
+      <div className="my-5">
+        <h1>Recent events</h1>
       </div>
-    </>
+
+      <hr className="my-4" />
+
+      {events.length > 0 ? (
+        <div id="eventHolder" className="row">
+          {events?.map((event, index) => (
+            <div key={index} className="col-md-3">
+              <div key={event.id} className="event-card">
+                <EventCard
+                  key={event.id}
+                  name={event.name}
+                  location={event.location}
+                  startTime={event.startTime}
+                  endTime={event.endTime}
+                  imagesCid={event.eventStorage}
+                  url={`/events/${event.id}`}
+                  creator={event.organizer}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center my-5">No events</div>
+      )}
+    </div>
   );
 }
 

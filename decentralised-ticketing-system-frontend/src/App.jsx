@@ -51,9 +51,13 @@ function App() {
   );
 
   useEffect(() => {
+    if (!account) {
+      return;
+    }
     const messages = JSON.parse(localStorage.getItem('messages'));
     if (messages !== null) {
-      messages?.forEach(message => {
+      console.log(messages);
+      messages[account]?.forEach(message => {
         if (message.role === 'user') {
           addUserMessage(message.content);
         } else {
@@ -74,24 +78,20 @@ function App() {
         })
         .then(res => {
           addResponseMessage(res.data.choices[0].message.content);
-          msgs = [...msgs, { content: res.data.choices[0].message.content, role: 'assistant' }];
-          console.log();
-          localStorage.setItem('messages', JSON.stringify(msgs));
+          const msgs = [{ content: res.data.choices[0].message.content, role: 'assistant' }];
+          console.log(JSON.stringify({ [account]: msgs }));
+          localStorage.setItem('messages', JSON.stringify({ [account]: msgs }));
         });
     }
-  }, []);
+  }, [account]);
 
-  window.ethereum.on('accountsChanged', function (accounts) {
-    deleteMessages(localStorage.getItem('messages')?.length);
-    localStorage.removeItem('messages');
-  });
   const handleNewUserMessage = newMessage => {
     console.log(`New message incoming! ${newMessage}`);
     let msgs = JSON.parse(localStorage.getItem('messages'));
     if (msgs === null) {
       msgs = [{ content: newMessage, role: 'user' }];
     } else {
-      msgs = [...msgs, { content: newMessage, role: 'user' }];
+      msgs = [...msgs[account], { content: newMessage, role: 'user' }];
     }
     console.log(msgs);
     // Now send the message throught the backend API
@@ -111,9 +111,12 @@ function App() {
         addResponseMessage(res.data.choices[0].message.content);
         msgs = [...msgs, { content: res.data.choices[0].message.content, role: 'assistant' }];
         console.log();
-        localStorage.setItem('messages', JSON.stringify(msgs));
+        localStorage.setItem('messages', JSON.stringify({ [account]: msgs }));
       });
   };
+  window.ethereum.on('accountsChanged', function (accounts) {
+    deleteMessages(localStorage.getItem('messages')[accounts[1]]?.length);
+  });
 
   return (
     <Web3ContextProvider

@@ -60,6 +60,24 @@ function App() {
           addResponseMessage(message.content);
         }
       });
+    } else {
+      openai
+        .createChatCompletion({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are a chatbot embedded inside a decentralised ticketing system website. Your job is to help users by answering their questions about events, tickets, decentralisation, web3 and other topics related to this website. You can ask questions to the user, but you cannot ask questions to other chatbots.',
+            },
+          ],
+        })
+        .then(res => {
+          addResponseMessage(res.data.choices[0].message.content);
+          msgs = [...msgs, { content: res.data.choices[0].message.content, role: 'assistant' }];
+          console.log();
+          localStorage.setItem('messages', JSON.stringify(msgs));
+        });
     }
   }, []);
 
@@ -84,7 +102,7 @@ function App() {
           {
             role: 'system',
             content:
-              'You are a chatbot. Your job is to help people buy tickets to events. The only topics you can answer are web3 related and questions about the events. You can ask questions to the user, but you cannot ask questions to other chatbots.',
+              'You are a chatbot embedded inside a decentralised ticketing system website. Your job is to help users by answering their questions about events, tickets, decentralisation, web3 and other topics related to this website. You can ask questions to the user, but you cannot ask questions to other chatbots.',
           },
           ...msgs,
         ],
@@ -134,8 +152,8 @@ function App() {
             <Widget
               emojis={true}
               handleNewUserMessage={handleNewUserMessage}
-              title="My new awesome title"
-              subtitle="And my cool subtitle"
+              title="Get help"
+              subtitle={false}
               showBadge={false}
               profileClientAvatar={`https://www.gravatar.com/avatar/${md5(account)}/?d=identicon`}
             />

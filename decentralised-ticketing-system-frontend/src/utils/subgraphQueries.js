@@ -17,6 +17,8 @@ export const EVENTS_QUERY = gql`
             location
             startTime
             endTime
+            category
+            subcategory
         }
     }
 `;

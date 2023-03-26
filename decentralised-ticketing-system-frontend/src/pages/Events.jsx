@@ -14,8 +14,9 @@ function Events() {
   const [events, setEvents] = useState(undefined);
   const [searchEvents, setSearchEvents] = useState(undefined);
   const [hasMoreResults, setHasMoreResults] = useState(true);
-  const [categoriesFilter, setcategoriesFilter] = useState([]);
+  const [categoriesFilter, setCategoriesFilter] = useState([]);
   const [subcategoriesFilter, setSubcategoriesFilter] = useState([]);
+  const [filterList, setFilterList] = useState({ categories: [], subcategories: [] });
   const [hasMore, setHasMore] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
   const [show, setShow] = useState(false);
@@ -77,9 +78,9 @@ function Events() {
 
   const handleCategoryChange = e => {
     if (e.target.checked) {
-      setcategoriesFilter([...categoriesFilter, e.target.name]);
+      setCategoriesFilter([...categoriesFilter, e.target.name]);
     } else {
-      setcategoriesFilter(categoriesFilter.filter(category => category !== e.target.name));
+      setCategoriesFilter(categoriesFilter.filter(category => category !== e.target.name));
     }
   };
 
@@ -93,6 +94,15 @@ function Events() {
     }
   };
 
+  const filter = e => {
+    e.preventDefault();
+    setFilterList({
+      categories: categoriesFilter,
+      subcategories: subcategoriesFilter,
+    });
+    setShow(false);
+  };
+
   useEffect(() => {
     if (!loading && initialLoad) {
       if (data.events.length < 20) setHasMore(false);
@@ -100,9 +110,9 @@ function Events() {
       setEvents(data.events);
     }
   }, [loading, data]);
-
+  console.log(filterList);
   useEffect(() => {
-    if (!loadingEvents && searchEvents === undefined && searchQuery !== '') {
+    if (!loadingEvents && searchQuery !== '') {
       if (dataEvents.eventSearch.length < 20) setHasMoreResults(false);
       setSearchEvents(dataEvents.eventSearch);
     }
@@ -116,7 +126,27 @@ function Events() {
           <h1>Current events</h1>
         </div>
         <div className="d-flex align-items-center">
-          <Button onClick={() => setShow(true)} className="mx-3">
+          {filterList?.categories?.length === 0 &&
+          filterList?.subcategories?.length === 0 ? null : (
+            <Button
+              onClick={() => {
+                setFilterList({ categories: [], subcategories: [] });
+                setCategoriesFilter([]);
+                setSubcategoriesFilter([]);
+              }}
+              className="mx-3"
+            >
+              Clear filter
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              setShow(true);
+              setCategoriesFilter(filterList.categories);
+              setSubcategoriesFilter(filterList.subcategories);
+            }}
+            className="mx-3"
+          >
             Filter
           </Button>
           <Modal show={show} onHide={() => setShow(false)}>
@@ -124,7 +154,7 @@ function Events() {
               <Modal.Title>Filter events</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Form>
+              <Form onSubmit={filter}>
                 <ListGroup>
                   {Object.entries(CATEGORIES.categories).map(([category, subcategories], index) => (
                     <ListGroup.Item
@@ -137,6 +167,7 @@ function Events() {
                         name={category}
                         type={'checkbox'}
                         id={category}
+                        checked={categoriesFilter.includes(category)}
                         onChange={handleCategoryChange}
                       />
                       <ListGroup as={DropdownButton} title="Subcategories">
@@ -148,6 +179,7 @@ function Events() {
                               name={subcategory}
                               type={'checkbox'}
                               id={subcategory}
+                              checked={subcategoriesFilter.includes(subcategory)}
                               onChange={handleSubcategoryChange}
                             />
                           </ListGroup.Item>
@@ -156,16 +188,11 @@ function Events() {
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
+                <Button variant="primary" type="submit" className="float-end mt-4">
+                  Save Changes
+                </Button>
               </Form>
             </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShow(false)}>
-                Close
-              </Button>
-              <Button variant="primary" onClick={() => setShow(false)}>
-                Save Changes
-              </Button>
-            </Modal.Footer>
           </Modal>
           {searchEvents === undefined ? null : (
             <Button onClick={() => setSearchEvents(undefined)} className="mx-4">
@@ -193,22 +220,45 @@ function Events() {
         <InfiniteScroll hasMore={hasMore} loadMore={loadMore} initialLoad={false} noMore={false}>
           {events.length > 0 ? (
             <div id="eventHolder" className="row">
-              {events?.map((event, index) => (
-                <div key={index} className="col-md-3">
-                  <div key={event.id} className="event-card">
-                    <EventCard
-                      key={event.id}
-                      name={event.name}
-                      location={event.location}
-                      startTime={event.startTime}
-                      endTime={event.endTime}
-                      imagesCid={event.eventStorage}
-                      url={`/events/${event.id}`}
-                      creator={event.organizer}
-                    />
-                  </div>
-                </div>
-              ))}
+              {filterList?.categories?.length === 0 && filterList?.subcategories?.length === 0
+                ? events?.map((event, index) => (
+                    <div key={index} className="col-md-3">
+                      <div key={event.id} className="event-card">
+                        <EventCard
+                          key={event.id}
+                          name={event.name}
+                          location={event.location}
+                          startTime={event.startTime}
+                          endTime={event.endTime}
+                          imagesCid={event.eventStorage}
+                          url={`/events/${event.id}`}
+                          creator={event.organizer}
+                        />
+                      </div>
+                    </div>
+                  ))
+                : events
+                    ?.filter(
+                      event =>
+                        filterList?.categories.includes(event.category) ||
+                        filterList?.subcategories.includes(event.subcategory),
+                    )
+                    ?.map((event, index) => (
+                      <div key={index} className="col-md-3">
+                        <div key={event.id} className="event-card">
+                          <EventCard
+                            key={event.id}
+                            name={event.name}
+                            location={event.location}
+                            startTime={event.startTime}
+                            endTime={event.endTime}
+                            imagesCid={event.eventStorage}
+                            url={`/events/${event.id}`}
+                            creator={event.organizer}
+                          />
+                        </div>
+                      </div>
+                    ))}
             </div>
           ) : (
             <div className="text-center my-5">No events</div>

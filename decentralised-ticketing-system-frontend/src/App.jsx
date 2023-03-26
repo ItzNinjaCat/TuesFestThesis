@@ -64,24 +64,6 @@ function App() {
           addResponseMessage(message.content);
         }
       });
-    } else {
-      openai
-        .createChatCompletion({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are a chatbot embedded inside a decentralised ticketing system website. Your job is to help users by answering their questions about events, tickets, decentralisation, web3 and other topics related to this website. You can ask questions to the user, but you cannot ask questions to other chatbots.',
-            },
-          ],
-        })
-        .then(res => {
-          addResponseMessage(res.data.choices[0].message.content);
-          const msgs = [{ content: res.data.choices[0].message.content, role: 'assistant' }];
-          console.log(JSON.stringify({ [account]: msgs }));
-          localStorage.setItem('messages', JSON.stringify({ [account]: msgs }));
-        });
     }
   }, [account]);
 
@@ -117,6 +99,33 @@ function App() {
   window.ethereum.on('accountsChanged', function (accounts) {
     deleteMessages(localStorage.getItem('messages')[accounts[1]]?.length);
   });
+
+  const handleToggle = status => {
+    if (status === false) {
+      return;
+    }
+    const messages = JSON.parse(localStorage.getItem('messages'));
+    if (messages !== null) {
+      return;
+    }
+    openai
+      .createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a chatbot embedded inside a decentralised ticketing system website. Your job is to help users by answering their questions about events, tickets, decentralisation, web3 and other topics related to this website. You can ask questions to the user, but you cannot ask questions to other chatbots.',
+          },
+        ],
+      })
+      .then(res => {
+        addResponseMessage(res.data.choices[0].message.content);
+        const msgs = [{ content: res.data.choices[0].message.content, role: 'assistant' }];
+        console.log(JSON.stringify({ [account]: msgs }));
+        localStorage.setItem('messages', JSON.stringify({ [account]: msgs }));
+      });
+  };
 
   return (
     <Web3ContextProvider
@@ -158,6 +167,7 @@ function App() {
               title="Get help"
               subtitle={false}
               showBadge={false}
+              handleToggle={handleToggle}
               profileClientAvatar={`https://www.gravatar.com/avatar/${md5(account)}/?d=identicon`}
             />
           )}

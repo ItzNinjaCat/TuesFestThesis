@@ -604,3 +604,20 @@ export const GET_EVENT = gql`
     }
   }
 `;
+
+export const EVENT_SEARCH = gql`
+  query EventSearch($search: String!, $first: Int!) {
+    eventSearch(orderBy: createdAt, orderDirection: desc, first: $first, text: $search) {
+      id
+      creator
+      name
+      description
+      eventStorage
+      location
+      startTime
+      endTime
+      category
+      subcategory
+    }
+  }
+`;

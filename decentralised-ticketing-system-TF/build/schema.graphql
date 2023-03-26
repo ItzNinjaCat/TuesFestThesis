@@ -16,6 +16,12 @@ type _Schema_
       }
     ]
   )
+  @fulltext(
+    name: "ticketSearch"
+    language: en
+    algorithm: rank
+    include: [{ entity: "Ticket", fields: [{ name: "name" }, { name: "description" }] }]
+  )
 
 type Event @entity {
   id: ID!

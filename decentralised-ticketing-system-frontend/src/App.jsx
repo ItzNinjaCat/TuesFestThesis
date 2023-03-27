@@ -96,7 +96,7 @@ function App() {
         localStorage.setItem('messages', JSON.stringify({ [account]: msgs }));
       });
   };
-  window.ethereum.on('accountsChanged', function (accounts) {
+  window?.ethereum?.on('accountsChanged', function (accounts) {
     deleteMessages(localStorage.getItem('messages')[accounts[1]]?.length);
   });
 

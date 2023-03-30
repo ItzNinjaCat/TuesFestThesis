@@ -87,7 +87,7 @@ function Home() {
       {recommendedEvents?.recommendations?.length > 0 ? (
         <div>
           <div className="my-5">
-            <h1>Recent events</h1>
+            <h1>Recommended events</h1>
           </div>
           <hr className="my-4" />
           <div id="eventHolder" className="row">

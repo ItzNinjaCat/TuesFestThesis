@@ -152,7 +152,7 @@ export const SOUVENIRS_BY_OWNER_QUERY = gql`
 
 export const BUY_TICKETS_EVENT_QUERY = gql`
   query BuyTicketsEvent {
-    events(orderBy: createdAt, orderDirection: desc, where: { deleted: false }) {
+    events(orderBy: createdAt, orderDirection: desc, where: { deleted: false, startTime_gt: ${Date.now()} }) {
       id
       name
       startTime
@@ -170,7 +170,7 @@ export const BUY_TICKETS_EVENT_QUERY = gql`
 
 export const SELL_TICKETS_QUERY = gql`
   query SellTickets($owner: String!) {
-    tickets(where: { owner: $owner }) {
+    tickets(where: { owner: $owner, usable: true, event_: { startTime_gt: ${Date.now()} } }) {
       tokenId
       event {
         id
@@ -609,7 +609,7 @@ export const GET_EVENT = gql`
 
 export const EVENT_SEARCH = gql`
   query EventSearch($search: String!, $first: Int!) {
-    eventSearch(orderBy: createdAt, orderDirection: desc, first: $first, text: $search) {
+    eventSearch(orderBy: createdAt, orderDirection: desc, first: $first, text: $search, where: { deleted: false, startTime_gt: ${Date.now()} }) {
       id
       creator
       name

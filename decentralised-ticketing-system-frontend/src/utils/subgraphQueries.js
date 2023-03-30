@@ -609,7 +609,7 @@ export const GET_EVENT = gql`
 
 export const EVENT_SEARCH = gql`
   query EventSearch($search: String!, $first: Int!) {
-    eventSearch(orderBy: createdAt, orderDirection: desc, first: $first, text: $search) {
+    eventSearch(orderBy: createdAt, orderDirection: desc, first: $first, text: $search, where: { startTime_gt: ${Date.now()} }) {
       id
       creator
       name
